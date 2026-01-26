@@ -1,0 +1,156 @@
+import { useState } from 'react';
+import { TonConnectUIProvider } from '@tonconnect/ui-react';
+import { motion } from 'framer-motion';
+import './App.css';
+
+declare global {
+  interface Window {
+    tonConnectButton?: HTMLButtonElement;
+  }
+}
+
+function AgeGate({ onConfirm }: { onConfirm: () => void }) {
+  return (
+    <div className="age-overlay">
+      <motion.div
+        className="age-card"
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+      >
+        <h2 className="age-title">Вход в Weekend Millions</h2>
+        <p className="age-text">
+          Подтвердите, что вам уже <strong>18 лет</strong>, чтобы продолжить.
+        </p>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className="pill-btn pill-solid"
+          onClick={onConfirm}
+        >
+          Мне 18+
+        </motion.button>
+        <p className="age-subtext">Если вам нет 18 лет, покиньте приложение.</p>
+      </motion.div>
+    </div>
+  );
+}
+
+function Carousel() {
+  const [current, setCurrent] = useState(0);
+  const cardsCount = 7;
+
+  const handlePrev = () => {
+    setCurrent((prev) => (prev === 0 ? cardsCount - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrent((prev) => (prev === cardsCount - 1 ? 0 : prev + 1));
+  };
+
+  return (
+    <div className="carousel-container">
+      <motion.div
+        className="carousel-track"
+        animate={{ x: -current * 100 }}
+        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+      >
+        {Array.from({ length: cardsCount }).map((_, i) => (
+          <motion.div key={i} className="carousel-card">
+            <div className="card-content">
+              <div className="card-number">{i + 1}</div>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Навигационные кнопки */}
+      <div className="carousel-controls">
+        <motion.button
+          className="carousel-btn carousel-btn-prev"
+          onClick={handlePrev}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          ←
+        </motion.button>
+        <motion.button
+          className="carousel-btn carousel-btn-next"
+          onClick={handleNext}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          →
+        </motion.button>
+      </div>
+
+      {/* Кнопка Играть */}
+      <motion.button
+        className="cta-button"
+        whileHover={{ scale: 1.05, y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        style={{ marginTop: '30px' }}
+      >
+        <span>Играть</span>
+      </motion.button>
+    </div>
+  );
+}
+
+function MainScreen() {
+  return (
+    <div className="app-root">
+      {/* Динамичный градиентный фон */}
+      <div className="gradient-bg">
+        <div className="gradient-orb gradient-orb-1"></div>
+        <div className="gradient-orb gradient-orb-2"></div>
+        <div className="gradient-orb gradient-orb-3"></div>
+        <div className="gradient-orb gradient-orb-4"></div>
+      </div>
+
+      {/* Контейнер контента */}
+      <div className="content-wrapper">
+        {/* Пустой хэдер */}
+        <header className="header-container"></header>
+
+        {/* Основной контент - Карусель */}
+        <main className="main-content">
+          <Carousel />
+        </main>
+
+        {/* Футер с кнопкой */}
+        <footer className="footer">
+          <motion.button className="footer-link" whileHover={{ opacity: 0.7 }}>
+            Кабинет
+          </motion.button>
+          <motion.button className="footer-link" whileHover={{ opacity: 0.7 }}>
+            Поддержка
+          </motion.button>
+          <motion.button className="footer-link" whileHover={{ opacity: 0.7 }}>
+            Сайт
+          </motion.button>
+        </footer>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [ageConfirmed, setAgeConfirmed] = useState(() => {
+    return localStorage.getItem('ageConfirmed') === 'true';
+  });
+
+  const handleAgeConfirm = () => {
+    localStorage.setItem('ageConfirmed', 'true');
+    setAgeConfirmed(true);
+  };
+
+  return (
+    <TonConnectUIProvider manifestUrl="https://ton-connect-manifest.vercel.app/manifest.json">
+      {!ageConfirmed && <AgeGate onConfirm={handleAgeConfirm} />}
+      {ageConfirmed && <MainScreen />}
+    </TonConnectUIProvider>
+  );
+}
+
+export default App;

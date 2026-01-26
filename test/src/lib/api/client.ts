@@ -1,0 +1,137 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
+class ApiClient {
+  private baseURL: string;
+  private token: string | null = null;
+
+  constructor(baseURL: string) {
+    this.baseURL = baseURL;
+    this.token = localStorage.getItem('auth_token');
+  }
+
+  setToken(token: string) {
+    this.token = token;
+    localStorage.setItem('auth_token', token);
+  }
+
+  clearToken() {
+    this.token = null;
+    localStorage.removeItem('auth_token');
+  }
+
+  private async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...(this.token && { Authorization: `Bearer ${this.token}` }),
+      ...options.headers,
+    };
+
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'API request failed');
+    }
+
+    return response.json();
+  }
+
+  // Auth endpoints
+  async loginTelegram(telegramUser: {
+    id: number;
+    first_name?: string;
+    last_name?: string;
+    username?: string;
+    language_code?: string;
+  }) {
+    return this.request<{
+      success: boolean;
+      token: string;
+      user: any;
+    }>('/auth/telegram', {
+      method: 'POST',
+      body: JSON.stringify({
+        telegramId: telegramUser.id,
+        firstName: telegramUser.first_name,
+        lastName: telegramUser.last_name,
+        username: telegramUser.username,
+        languageCode: telegramUser.language_code || 'ru',
+      }),
+    });
+  }
+
+  async connectWallet(tonWallet: string) {
+    return this.request<{ success: boolean; user: any }>('/auth/connect-wallet', {
+      method: 'POST',
+      body: JSON.stringify({ tonWallet }),
+    });
+  }
+
+  // Lottery endpoints
+  async getLotteryList() {
+    return this.request<{
+      success: boolean;
+      lotteries: any[];
+    }>('/lottery/list');
+  }
+
+  async getLotteryInfo(slug: string) {
+    return this.request<{
+      success: boolean;
+      lottery: any;
+      nextDraw: any;
+    }>(`/lottery/${slug}/info`);
+  }
+
+  async buyTicket(slug: string, numbers: number[], txHash: string) {
+    return this.request<{
+      success: boolean;
+      ticket: any;
+    }>(`/lottery/${slug}/buy-ticket`, {
+      method: 'POST',
+      body: JSON.stringify({ numbers, txHash }),
+    });
+  }
+
+  async getMyTickets(slug: string, page = 1, limit = 20) {
+    return this.request<{
+      success: boolean;
+      tickets: any[];
+      pagination: any;
+    }>(`/lottery/${slug}/my-tickets?page=${page}&limit=${limit}`);
+  }
+
+  // Draws endpoints
+  async getCurrentDraw() {
+    return this.request<{
+      success: boolean;
+      draw: any;
+    }>('/draws/current');
+  }
+
+  // User endpoints
+  async getProfile() {
+    return this.request<{
+      success: boolean;
+      user: any;
+    }>('/user/profile');
+  }
+
+  async updateProfile(data: any) {
+    return this.request<{
+      success: boolean;
+      user: any;
+    }>('/user/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+}
+
+export const apiClient = new ApiClient(API_BASE_URL);

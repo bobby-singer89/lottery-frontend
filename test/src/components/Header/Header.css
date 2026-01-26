@@ -1,0 +1,120 @@
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(10, 10, 15, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #df600c, #f45da6, #9e0ac7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.wallet-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(223, 96, 12, 0.2), rgba(244, 93, 166, 0.2));
+  border: 1px solid rgba(223, 96, 12, 0.5);
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.wallet-btn:hover {
+  background: linear-gradient(135deg, rgba(223, 96, 12, 0.3), rgba(244, 93, 166, 0.3));
+  border-color: rgba(223, 96, 12, 0.8);
+  box-shadow: 0 4px 20px rgba(223, 96, 12, 0.3);
+}
+
+.header-gradient {
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent,
+    rgba(223, 96, 12, 0.5) 20%,
+    rgba(244, 93, 166, 0.5) 50%,
+    rgba(158, 10, 199, 0.5) 80%,
+    transparent
+  );
+}
+
+.header-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.demo-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  color: #fbbf24;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.demo-nav-link:hover {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.5);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: 16px 16px;
+  }
+
+  .logo-text {
+    font-size: 18px;
+  }
+
+  .wallet-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .demo-nav-link span {
+    display: none;
+  }
+  
+  .demo-nav-link {
+    padding: 8px 12px;
+  }
+}

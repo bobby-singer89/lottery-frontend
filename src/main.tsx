@@ -1,4 +1,7 @@
-// КРИТИЧЕСКИ ВАЖНО: Buffer ДОЛЖЕН быть первым!
+import * as buffer from "buffer";
+window.Buffer = buffer.Buffer;
+// or, more simply:
+// window.Buffer = window.Buffer || require("buffer").Buffer;
 import './polyfills';
 
 import { StrictMode } from 'react'

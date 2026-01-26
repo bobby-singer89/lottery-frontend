@@ -3,29 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    
-    <!-- Telegram Web App Script -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#df600c" />
-    <meta name="description" content="Крипто-лотерея на TON blockchain - Weekend Millions Lottery" />
-    <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
-    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Lottery" />
-    
-    <title>Weekend Millions Lottery</title>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Lottery Frontend</title>
+    <script type="module">
+      import { Buffer } from './node_modules/buffer/index.js';
+      window.Buffer = Buffer;
+      window.global = window;
+      window.process = { env: { DEBUG: undefined }, version: '', nextTick: (fn) => setTimeout(fn, 0) };
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

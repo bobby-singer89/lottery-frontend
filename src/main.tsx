@@ -1,5 +1,5 @@
-import { Buffer } from 'buffer';
-window.Buffer = Buffer;
+// КРИТИЧЕСКИ ВАЖНО: Buffer ДОЛЖЕН быть первым!
+import './polyfills';
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

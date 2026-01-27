@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { motion } from 'framer-motion';
 import Header from './components/Header/Header';
@@ -9,6 +9,10 @@ import LotteryCarousel from './components/LotteryCarousel/LotteryCarousel';
 import AnimatedBackground from './components/AnimatedBackground/AnimatedBackground';
 import DemoPage from './pages/DemoPage';
 import WeekendSpecial from './pages/WeekendSpecial';
+import ProfilePage from './pages/ProfilePage';
+import LotteriesPage from './pages/LotteriesPage';
+import HistoryPage from './pages/HistoryPage';
+import ReferralPage from './pages/ReferralPage';
 import { AuthProvider } from './contexts/AuthContext';
 import './App.css';
 
@@ -97,15 +101,43 @@ const sampleLotteries = [
 
 function MainScreen() {
   const [activeTab, setActiveTab] = useState('home');
+  const navigate = useNavigate();
 
   const handleBuyTicket = (lotteryId: string) => {
     console.log('Buying ticket for lottery:', lotteryId);
-    // TODO: Implement ticket purchase logic
+    // Navigate to lottery detail page
+    if (lotteryId === '2') {
+      navigate('/weekend-special');
+    } else {
+      // For other lotteries, navigate to a generic lottery detail page
+      navigate('/weekend-special');
+    }
   };
 
   const handleConnect = () => {
     console.log('Connecting wallet...');
     // TODO: Implement wallet connection logic
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    switch(tab) {
+      case 'home':
+        navigate('/');
+        break;
+      case 'lotteries':
+        navigate('/lotteries');
+        break;
+      case 'history':
+        navigate('/history');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+      case 'referral':
+        navigate('/referral');
+        break;
+    }
   };
 
   return (
@@ -131,7 +163,7 @@ function MainScreen() {
         </main>
 
         {/* Footer Navigation */}
-        <Footer activeTab={activeTab} onTabChange={setActiveTab} />
+        <Footer activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
     </div>
   );
@@ -156,6 +188,10 @@ function App() {
             <Route path="/" element={<MainScreen />} />
             <Route path="/demo" element={<DemoPage />} />
             <Route path="/weekend-special" element={<WeekendSpecial />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/lotteries" element={<LotteriesPage />} />
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/referral" element={<ReferralPage />} />
           </Routes>
         )}
       </AuthProvider>

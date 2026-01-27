@@ -54,7 +54,7 @@ export default function AdminTickets() {
 
   useEffect(() => {
     fetchTickets();
-  }, [pagination.page, searchQuery, statusFilter, selectedLottery]);
+  }, [pagination.page, pagination.limit, searchQuery, statusFilter, selectedLottery]);
 
   const fetchLotteries = async () => {
     try {

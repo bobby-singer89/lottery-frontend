@@ -47,7 +47,7 @@ export default function AdminUsers() {
 
   useEffect(() => {
     fetchUsers();
-  }, [pagination.page, searchQuery, levelFilter, walletFilter]);
+  }, [pagination.page, pagination.limit, searchQuery, levelFilter, walletFilter]);
 
   const fetchUsers = async () => {
     try {
@@ -229,7 +229,7 @@ export default function AdminUsers() {
                         <span className="balance">{user.balance.toFixed(2)}</span>
                       </td>
                       <td>
-                        <span className="level-badge level-{user.level}">
+                        <span className={`level-badge level-${user.level}`}>
                           Уровень {user.level}
                         </span>
                       </td>

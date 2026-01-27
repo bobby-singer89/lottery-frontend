@@ -66,13 +66,16 @@ export default function AdminNotifications() {
 
   const handleSendNotification = async () => {
     if (!message.trim()) {
-      alert('Пожалуйста, введите сообщение');
+      setError('Пожалуйста, введите сообщение');
       return;
     }
 
-    if (recipientType === 'user' && !userId.trim()) {
-      alert('Пожалуйста, введите ID пользователя');
-      return;
+    if (recipientType === 'user') {
+      const userIdNum = parseInt(userId);
+      if (!userId.trim() || isNaN(userIdNum) || userIdNum <= 0) {
+        setError('Пожалуйста, введите корректный ID пользователя');
+        return;
+      }
     }
 
     try {

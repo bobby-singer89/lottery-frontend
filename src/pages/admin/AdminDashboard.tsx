@@ -62,7 +62,7 @@ export default function AdminDashboard() {
     },
     {
       title: 'Общая выручка (TON)',
-      value: stats?.totalRevenue.toFixed(2) || '0.00',
+      value: stats?.totalRevenue?.toFixed(2) || '0.00',
       icon: DollarSign,
       color: '#10b981',
       bgGradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 100%)',

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Dice6,
@@ -177,7 +177,7 @@ export default function AdminDraws() {
               </thead>
               <tbody>
                 {draws.map((draw, index) => (
-                  <>
+                  <React.Fragment key={draw.id}>
                     <motion.tr
                       key={draw.id}
                       className="draw-row"
@@ -285,7 +285,7 @@ export default function AdminDraws() {
                         </td>
                       </motion.tr>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>

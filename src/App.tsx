@@ -13,6 +13,13 @@ import ProfilePage from './pages/ProfilePage';
 import LotteriesPage from './pages/LotteriesPage';
 import HistoryPage from './pages/HistoryPage';
 import ReferralPage from './pages/ReferralPage';
+import AdminGuard from './components/Admin/AdminGuard';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminLotteries from './pages/admin/AdminLotteries';
+import AdminDraws from './pages/admin/AdminDraws';
+import AdminTickets from './pages/admin/AdminTickets';
+import AdminNotifications from './pages/admin/AdminNotifications';
 import { AuthProvider } from './contexts/AuthContext';
 import './App.css';
 
@@ -192,6 +199,13 @@ function App() {
             <Route path="/lotteries" element={<LotteriesPage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/referral" element={<ReferralPage />} />
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+            <Route path="/admin/users" element={<AdminGuard><AdminUsers /></AdminGuard>} />
+            <Route path="/admin/lotteries" element={<AdminGuard><AdminLotteries /></AdminGuard>} />
+            <Route path="/admin/draws" element={<AdminGuard><AdminDraws /></AdminGuard>} />
+            <Route path="/admin/tickets" element={<AdminGuard><AdminTickets /></AdminGuard>} />
+            <Route path="/admin/notifications" element={<AdminGuard><AdminNotifications /></AdminGuard>} />
           </Routes>
         )}
       </AuthProvider>

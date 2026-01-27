@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { Copy, CheckCircle } from 'lucide-react';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import Header from '../components/Header/Header';
@@ -9,33 +8,18 @@ import ReferralQR from '../components/Referral/ReferralQR';
 import ReferralProgress from '../components/Referral/ReferralProgress';
 import ReferralTree from '../components/Referral/ReferralTree';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigation } from '../hooks/useNavigation';
 import './ReferralPage.css';
 
 function ReferralPage() {
-  const navigate = useNavigate();
+  const { navigateToTab } = useNavigation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('referral');
   const [copied, setCopied] = useState(false);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    switch (tab) {
-      case 'home':
-        navigate('/');
-        break;
-      case 'lotteries':
-        navigate('/lotteries');
-        break;
-      case 'history':
-        navigate('/history');
-        break;
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'referral':
-        navigate('/referral');
-        break;
-    }
+    navigateToTab(tab);
   };
 
   const handleConnect = () => {

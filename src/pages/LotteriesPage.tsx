@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import LotteryCard from '../components/LotteryCard/LotteryCard';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import SkeletonLoader from '../components/Animations/SkeletonLoader';
 import { apiClient } from '../lib/api/client';
+import { useNavigation } from '../hooks/useNavigation';
+import type { Lottery } from '../types/lottery';
 import './LotteriesPage.css';
 
 function LotteriesPage() {
-  const navigate = useNavigate();
+  const { navigateToTab, navigate } = useNavigation();
   const [activeTab, setActiveTab] = useState('lotteries');
-  const [lotteries, setLotteries] = useState<any[]>([]);
+  const [lotteries, setLotteries] = useState<Lottery[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -58,23 +59,7 @@ function LotteriesPage() {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    switch (tab) {
-      case 'home':
-        navigate('/');
-        break;
-      case 'lotteries':
-        navigate('/lotteries');
-        break;
-      case 'history':
-        navigate('/history');
-        break;
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'referral':
-        navigate('/referral');
-        break;
-    }
+    navigateToTab(tab);
   };
 
   const handleConnect = () => {

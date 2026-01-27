@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { Calendar, Ticket, TrendingUp, AlertCircle } from 'lucide-react';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import { useAuth } from '../contexts/AuthContext';
 import { apiClient } from '../lib/api/client';
+import { useNavigation } from '../hooks/useNavigation';
 import './HistoryPage.css';
 
 interface TicketData {
@@ -19,7 +19,7 @@ interface TicketData {
 }
 
 function HistoryPage() {
-  const navigate = useNavigate();
+  const { navigateToTab, navigate } = useNavigation();
   const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState('history');
   const [tickets, setTickets] = useState<TicketData[]>([]);
@@ -53,23 +53,7 @@ function HistoryPage() {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    switch (tab) {
-      case 'home':
-        navigate('/');
-        break;
-      case 'lotteries':
-        navigate('/lotteries');
-        break;
-      case 'history':
-        navigate('/history');
-        break;
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'referral':
-        navigate('/referral');
-        break;
-    }
+    navigateToTab(tab);
   };
 
   const handleConnect = () => {

@@ -8,35 +8,20 @@ import StreakCounter from '../components/Gamification/StreakCounter';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
-import { useNavigate } from 'react-router-dom';
+import { useNavigation } from '../hooks/useNavigation';
+import type { PlayerLevelType } from '../types/lottery';
 import './ProfilePage.css';
 
 function ProfilePage() {
   const { user, isAuthenticated, logout } = useAuth();
   const { user: telegramUser } = useTelegram();
-  const navigate = useNavigate();
+  const { navigateToTab, navigate } = useNavigation();
   const [activeTab, setActiveTab] = useState('profile');
   const [copied, setCopied] = useState(false);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    switch (tab) {
-      case 'home':
-        navigate('/');
-        break;
-      case 'lotteries':
-        navigate('/lotteries');
-        break;
-      case 'history':
-        navigate('/history');
-        break;
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'referral':
-        navigate('/referral');
-        break;
-    }
+    navigateToTab(tab);
   };
 
   const handleConnect = () => {
@@ -62,8 +47,13 @@ function ProfilePage() {
   };
 
   // Mock data for demo
+  const validLevels: PlayerLevelType[] = ['bronze', 'silver', 'gold', 'diamond', 'platinum'];
+  const userLevel = validLevels.includes(user?.level as PlayerLevelType) 
+    ? (user?.level as PlayerLevelType)
+    : 'bronze';
+  
   const playerLevel: PlayerLevelData = {
-    current: (user?.level as any) || 'bronze',
+    current: userLevel,
     xp: user?.experience || 2500,
     xpToNext: 5000,
     benefits: [

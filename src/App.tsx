@@ -15,6 +15,7 @@ import HistoryPage from './pages/HistoryPage';
 import ReferralPage from './pages/ReferralPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { apiClient } from './lib/api/client';
+import type { Lottery } from './types/lottery';
 import './App.css';
 
 declare global {
@@ -53,7 +54,7 @@ function AgeGate({ onConfirm }: { onConfirm: () => void }) {
 
 function MainScreen() {
   const [activeTab, setActiveTab] = useState('home');
-  const [lotteries, setLotteries] = useState<any[]>([]);
+  const [lotteries, setLotteries] = useState<Lottery[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 

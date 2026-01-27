@@ -7,13 +7,11 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      // Включаем Buffer, process и global — обязательно для TON Connect
       globals: {
         Buffer: true,
         process: true,
         global: true,
       },
-      // Для require/import Node.js модулей
       protocolImports: true,
     }),
   ],
@@ -21,7 +19,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      buffer: 'buffer',              // ← правильный алиас
+      buffer: 'buffer',
       stream: 'stream-browserify',
       crypto: 'crypto-browserify',
     },
@@ -30,6 +28,8 @@ export default defineConfig({
   define: {
     global: 'globalThis',
     'process.env': JSON.stringify(process.env || {}),
+    // ← Добавляем для TON Connect
+    'Buffer': 'Buffer',
   },
 
   optimizeDeps: {
@@ -40,11 +40,6 @@ export default defineConfig({
       '@ton/ton',
       'ton-core',
     ],
-    esbuildOptions: {
-      define: {
-        global: 'globalThis',
-      },
-    },
   },
 
   build: {
@@ -53,23 +48,28 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
+        // ← Важно: polyfills грузится ПЕРВЫМ
         manualChunks: (id) => {
+          if (id.includes('buffer') || id.includes('process')) {
+            return 'polyfills'; // ← TON ждёт Buffer из этого чанка
+          }
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor';
             }
             if (id.includes('@ton') || id.includes('tonconnect')) {
-              return 'ton-vendor';
+              return 'ton-vendor'; // ← TON после polyfills
             }
             if (id.includes('framer-motion') || id.includes('recharts') || id.includes('lucide')) {
               return 'ui-vendor';
             }
-            if (id.includes('buffer') || id.includes('process')) {
-              return 'polyfills';
-            }
           }
         },
+        // ← Заставляем polyfills грузиться первым
+        inlineDynamicImports: false,
       },
     },
+    // ← Увеличиваем лимит чанка, чтобы Vercel не ругался
+    chunkSizeWarningLimit: 1600,
   },
 })

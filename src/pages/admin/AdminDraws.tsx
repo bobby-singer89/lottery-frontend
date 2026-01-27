@@ -179,7 +179,6 @@ export default function AdminDraws() {
                 {draws.map((draw, index) => (
                   <React.Fragment key={draw.id}>
                     <motion.tr
-                      key={draw.id}
                       className="draw-row"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}

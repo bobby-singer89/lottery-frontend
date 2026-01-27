@@ -7,13 +7,13 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      // Обязательно включаем Buffer и process
+      // Включаем Buffer, process и global — обязательно для TON Connect
       globals: {
         Buffer: true,
         process: true,
         global: true,
       },
-      // Для импортов вроде require('buffer')
+      // Для require/import Node.js модулей
       protocolImports: true,
     }),
   ],
@@ -21,7 +21,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      buffer: 'buffer',
+      buffer: 'buffer',              // ← правильный алиас
       stream: 'stream-browserify',
       crypto: 'crypto-browserify',
     },

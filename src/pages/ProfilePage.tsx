@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Copy, LogOut, Wallet, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -63,7 +63,7 @@ function ProfilePage() {
 
   // Mock data for demo
   const playerLevel: PlayerLevelData = {
-    current: user?.level || 'bronze',
+    current: (user?.level as any) || 'bronze',
     xp: user?.experience || 2500,
     xpToNext: 5000,
     benefits: [

@@ -12,6 +12,8 @@ interface User {
   level: string;
   experience: number;
   referralCode: string;
+  isAdmin?: boolean;
+  role?: string;
 }
 
 interface AuthContextType {

@@ -1,19 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
-import { nodePolyfills } from 'vite-plugin-node-polyfills' // ← главный плагин
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      // Включаем Buffer, process и global
+      // Обязательно включаем Buffer и process
       globals: {
         Buffer: true,
         process: true,
         global: true,
       },
-      // Для Node.js модулей в браузере
+      // Для импортов вроде require('buffer')
       protocolImports: true,
     }),
   ],
@@ -21,7 +21,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      buffer: 'buffer', // ← правильный импорт
+      buffer: 'buffer',
       stream: 'stream-browserify',
       crypto: 'crypto-browserify',
     },
@@ -29,7 +29,7 @@ export default defineConfig({
 
   define: {
     global: 'globalThis',
-    'process.env': JSON.stringify(process.env || {}), // ← лучше так
+    'process.env': JSON.stringify(process.env || {}),
   },
 
   optimizeDeps: {
@@ -38,6 +38,7 @@ export default defineConfig({
       'process',
       '@tonconnect/ui-react',
       '@ton/ton',
+      'ton-core',
     ],
     esbuildOptions: {
       define: {
@@ -63,7 +64,7 @@ export default defineConfig({
             if (id.includes('framer-motion') || id.includes('recharts') || id.includes('lucide')) {
               return 'ui-vendor';
             }
-            if (id.includes('buffer')) {
+            if (id.includes('buffer') || id.includes('process')) {
               return 'polyfills';
             }
           }

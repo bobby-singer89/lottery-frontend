@@ -2,7 +2,7 @@ import * as buffer from "buffer";
 window.Buffer = buffer.Buffer;
 // or, more simply:
 // window.Buffer = window.Buffer || require("buffer").Buffer;
-#import './polyfills';
+// import './polyfills';
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

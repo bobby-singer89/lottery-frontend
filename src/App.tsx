@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { motion } from 'framer-motion';
 import Header from './components/Header/Header';
@@ -9,7 +9,12 @@ import LotteryCarousel from './components/LotteryCarousel/LotteryCarousel';
 import AnimatedBackground from './components/AnimatedBackground/AnimatedBackground';
 import DemoPage from './pages/DemoPage';
 import WeekendSpecial from './pages/WeekendSpecial';
+import ProfilePage from './pages/ProfilePage';
+import LotteriesPage from './pages/LotteriesPage';
+import HistoryPage from './pages/HistoryPage';
+import ReferralPage from './pages/ReferralPage';
 import { AuthProvider } from './contexts/AuthContext';
+import { apiClient } from './lib/api/client';
 import './App.css';
 
 declare global {
@@ -46,66 +51,71 @@ function AgeGate({ onConfirm }: { onConfirm: () => void }) {
   );
 }
 
-// Sample lottery data
-const sampleLotteries = [
-  {
-    id: '1',
-    title: 'Mega Jackpot',
-    prizePool: '10,000 TON',
-    drawDate: '25 января 2026',
-    ticketPrice: '10 TON',
-    participants: 1234,
-    icon: 'trending' as const,
-  },
-  {
-    id: '2',
-    title: 'Weekend Special',
-    prizePool: '5,000 TON',
-    drawDate: '26 января 2026',
-    ticketPrice: '5 TON',
-    participants: 856,
-    icon: 'ticket' as const,
-  },
-  {
-    id: '3',
-    title: 'Daily Draw',
-    prizePool: '1,000 TON',
-    drawDate: '24 января 2026',
-    ticketPrice: '2 TON',
-    participants: 432,
-    icon: 'calendar' as const,
-  },
-  {
-    id: '4',
-    title: 'Golden Lottery',
-    prizePool: '25,000 TON',
-    drawDate: '31 января 2026',
-    ticketPrice: '20 TON',
-    participants: 2156,
-    icon: 'coins' as const,
-  },
-  {
-    id: '5',
-    title: 'Super Prize',
-    prizePool: '15,000 TON',
-    drawDate: '28 января 2026',
-    ticketPrice: '15 TON',
-    participants: 1567,
-    icon: 'trending' as const,
-  },
-];
-
 function MainScreen() {
   const [activeTab, setActiveTab] = useState('home');
+  const [lotteries, setLotteries] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const handleBuyTicket = (lotteryId: string) => {
-    console.log('Buying ticket for lottery:', lotteryId);
-    // TODO: Implement ticket purchase logic
+  useEffect(() => {
+    const fetchLotteries = async () => {
+      try {
+        setIsLoading(true);
+        const response = await apiClient.getLotteryList();
+        if (response.success && response.lotteries) {
+          setLotteries(response.lotteries);
+        }
+      } catch (error) {
+        console.error('Failed to fetch lotteries:', error);
+        // Fallback to sample data on error
+        setLotteries([
+          {
+            id: '1',
+            slug: 'mega-jackpot',
+            title: 'Mega Jackpot',
+            prizePool: '10,000 TON',
+            drawDate: '25 января 2026',
+            ticketPrice: '10 TON',
+            participants: 1234,
+            icon: 'trending' as const,
+          },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLotteries();
+  }, []);
+
+  const handleBuyTicket = (slug: string) => {
+    navigate(`/lottery/${slug}`);
   };
 
   const handleConnect = () => {
     console.log('Connecting wallet...');
     // TODO: Implement wallet connection logic
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    switch (tab) {
+      case 'home':
+        navigate('/');
+        break;
+      case 'lotteries':
+        navigate('/lotteries');
+        break;
+      case 'history':
+        navigate('/history');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+      case 'referral':
+        navigate('/referral');
+        break;
+    }
   };
 
   return (
@@ -124,14 +134,20 @@ function MainScreen() {
           <Hero />
 
           {/* Lottery Carousel */}
-          <LotteryCarousel
-            lotteries={sampleLotteries}
-            onBuyTicket={handleBuyTicket}
-          />
+          {isLoading ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: 'white' }}>
+              Loading lotteries...
+            </div>
+          ) : (
+            <LotteryCarousel
+              lotteries={lotteries}
+              onBuyTicket={handleBuyTicket}
+            />
+          )}
         </main>
 
         {/* Footer Navigation */}
-        <Footer activeTab={activeTab} onTabChange={setActiveTab} />
+        <Footer activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
     </div>
   );
@@ -156,6 +172,11 @@ function App() {
             <Route path="/" element={<MainScreen />} />
             <Route path="/demo" element={<DemoPage />} />
             <Route path="/weekend-special" element={<WeekendSpecial />} />
+            <Route path="/lottery/:slug" element={<WeekendSpecial />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/lotteries" element={<LotteriesPage />} />
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/referral" element={<ReferralPage />} />
           </Routes>
         )}
       </AuthProvider>

@@ -7,6 +7,7 @@ import './LotteryCarousel.css';
 
 interface Lottery {
   id: string;
+  slug?: string;
   title: string;
   prizePool: string;
   drawDate: string;
@@ -17,7 +18,7 @@ interface Lottery {
 
 interface LotteryCarouselProps {
   lotteries: Lottery[];
-  onBuyTicket?: (lotteryId: string) => void;
+  onBuyTicket?: (slug: string) => void;
 }
 
 function LotteryCarousel({ lotteries, onBuyTicket }: LotteryCarouselProps) {
@@ -77,7 +78,7 @@ function LotteryCarousel({ lotteries, onBuyTicket }: LotteryCarouselProps) {
             >
               <LotteryCard
                 {...lottery}
-                onBuyTicket={() => onBuyTicket?.(lottery.id)}
+                onBuyTicket={() => onBuyTicket?.(lottery.slug || lottery.id)}
               />
             </motion.div>
           ))}

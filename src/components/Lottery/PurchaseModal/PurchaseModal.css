@@ -323,6 +323,64 @@
   font-family: monospace;
 }
 
+/* Multiple Tickets Styles */
+.tickets-list-modal {
+  margin: 12px 0;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.ticket-item-modal {
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ticket-item-modal:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ticket-label-modal {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.more-tickets-indicator {
+  padding: 8px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-style: italic;
+}
+
+.discount-item {
+  color: #ffeb3b !important;
+}
+
+.discount-text {
+  color: #ffeb3b !important;
+  font-weight: 700 !important;
+}
+
+.tickets-list-modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tickets-list-modal::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.tickets-list-modal::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
 /* Mobile responsive */
 @media (max-width: 640px) {
   .purchase-modal {

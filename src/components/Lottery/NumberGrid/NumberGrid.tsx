@@ -137,7 +137,7 @@ export default function NumberGrid({
           className="add-to-cart-btn"
           onClick={handleAddToCart}
         >
-          🛒 {t('addToCart', { defaultValue: 'Добавить в корзину' })}
+          🛒 {t('addToCart', { defaultValue: 'Add to Cart' })}
         </button>
       )}
     </div>

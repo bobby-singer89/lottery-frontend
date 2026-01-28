@@ -98,8 +98,8 @@ export default function PurchaseModal({
           <>
             <h2 className="modal-title">
               {isMultipleTickets 
-                ? t('purchaseTickets', { defaultValue: 'Покупка билетов' })
-                : t('purchaseTicket', { defaultValue: 'Покупка билета' })}
+                ? t('purchaseTickets', { defaultValue: 'Purchase Tickets' })
+                : t('purchaseTicket', { defaultValue: 'Purchase Ticket' })}
             </h2>
 
             <div className="modal-content">
@@ -107,7 +107,7 @@ export default function PurchaseModal({
               <div className="purchase-summary">
                 <div className="summary-item">
                   <span className="summary-label">
-                    {t('lottery', { defaultValue: 'Лотерея' })}
+                    {t('lottery', { defaultValue: 'Lottery' })}
                   </span>
                   <span className="summary-value">{lotteryName}</span>
                 </div>
@@ -116,7 +116,7 @@ export default function PurchaseModal({
                   <>
                     <div className="summary-item">
                       <span className="summary-label">
-                        {t('tickets', { defaultValue: 'Билеты' })}
+                        {t('tickets', { defaultValue: 'Tickets' })}
                       </span>
                       <span className="summary-value">{tickets.length}</span>
                     </div>
@@ -125,7 +125,7 @@ export default function PurchaseModal({
                       {displayTickets.slice(0, 3).map((ticket, index) => (
                         <div key={ticket.id} className="ticket-item-modal">
                           <span className="ticket-label-modal">
-                            {t('ticket', { defaultValue: 'Билет' })} {index + 1}:
+                            {t('ticket', { defaultValue: 'Ticket' })} {index + 1}:
                           </span>
                           <div className="summary-numbers">
                             {ticket.numbers.map((num) => (
@@ -143,7 +143,7 @@ export default function PurchaseModal({
 
                     <div className="summary-item">
                       <span className="summary-label">
-                        {t('subtotal', { defaultValue: 'Сумма' })}
+                        {t('subtotal', { defaultValue: 'Subtotal' })}
                       </span>
                       <span className="summary-value">{(tickets.length * ticketPrice).toFixed(2)} TON</span>
                     </div>
@@ -151,7 +151,7 @@ export default function PurchaseModal({
                     {discount > 0 && (
                       <div className="summary-item discount-item">
                         <span className="summary-label">
-                          {t('discount', { defaultValue: 'Скидка' })} 5%
+                          {t('discount', { defaultValue: 'Discount' })} 5%
                         </span>
                         <span className="summary-value discount-text">
                           -{discount.toFixed(2)} TON 🎁
@@ -162,7 +162,7 @@ export default function PurchaseModal({
                 ) : (
                   <div className="summary-item">
                     <span className="summary-label">
-                      {t('selectedNumbers', { defaultValue: 'Выбранные числа' })}
+                      {t('selectedNumbers', { defaultValue: 'Selected Numbers' })}
                     </span>
                     <div className="summary-numbers">
                       {selectedNumbers?.map((num) => (
@@ -174,7 +174,7 @@ export default function PurchaseModal({
 
                 <div className="summary-item total-item">
                   <span className="summary-label">
-                    {t('total', { defaultValue: 'Итого' })}
+                    {t('total', { defaultValue: 'Total' })}
                   </span>
                   <span className="summary-total">{finalTotal.toFixed(2)} TON</span>
                 </div>
@@ -185,18 +185,18 @@ export default function PurchaseModal({
                 <div className="wallet-section">
                   <p className="wallet-info">
                     {t('connectWalletInfo', { 
-                      defaultValue: 'Подключите кошелёк для покупки билета' 
+                      defaultValue: 'Connect your wallet to purchase ticket' 
                     })}
                   </p>
                   <button className="connect-wallet-btn" onClick={onConnectWallet}>
-                    {t('connectWallet', { defaultValue: 'Подключить кошелёк' })}
+                    {t('connectWallet', { defaultValue: 'Connect Wallet' })}
                   </button>
                 </div>
               ) : (
                 <div className="wallet-section">
                   <div className="wallet-connected">
                     <span className="wallet-label">
-                      {t('wallet', { defaultValue: 'Кошелёк' })}
+                      {t('wallet', { defaultValue: 'Wallet' })}
                     </span>
                     <span className="wallet-address">{truncateAddress(userAddress)}</span>
                   </div>
@@ -234,16 +234,16 @@ export default function PurchaseModal({
             <div className="success-icon">🎉</div>
             <h2 className="success-title">
               {isMultipleTickets
-                ? t('purchaseSuccessMultiple', { defaultValue: 'Билеты успешно куплены!' })
-                : t('purchaseSuccess', { defaultValue: 'Билет успешно куплен!' })}
+                ? t('purchaseSuccessMultiple', { defaultValue: 'Tickets Purchased Successfully!' })
+                : t('purchaseSuccess', { defaultValue: 'Ticket Purchased Successfully!' })}
             </h2>
             <p className="success-message">
               {isMultipleTickets
                 ? t('ticketsInYourAccount', { 
-                    defaultValue: 'Билеты добавлены в ваш аккаунт. Удачи в розыгрыше!' 
+                    defaultValue: 'Tickets added to your account. Good luck!' 
                   })
                 : t('ticketInYourAccount', { 
-                    defaultValue: 'Билет добавлен в ваш аккаунт. Удачи в розыгрыше!' 
+                    defaultValue: 'Ticket added to your account. Good luck!' 
                   })}
             </p>
             {txHash && (

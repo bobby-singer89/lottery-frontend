@@ -115,8 +115,6 @@ export default function WeekendSpecialPage() {
 
   const handleAddToCart = (numbers: number[]) => {
     cart.addTicket(numbers);
-    // Show notification (could be a toast in the future)
-    console.log('Ticket added to cart:', numbers);
   };
 
   const handleBuyTicketClick = () => {

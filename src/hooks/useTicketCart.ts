@@ -61,7 +61,7 @@ export function useTicketCart(pricePerTicket: number): UseTicketCart {
 
   const addTicket = useCallback((numbers: number[]) => {
     const newTicket: CartTicket = {
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
       numbers: [...numbers].sort((a, b) => a - b),
       addedAt: new Date()
     };

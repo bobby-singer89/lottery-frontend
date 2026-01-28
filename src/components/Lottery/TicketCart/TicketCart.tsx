@@ -93,7 +93,7 @@ export default function TicketCart({
               {/* Header */}
               <div className="cart-header">
                 <h2 className="cart-title">
-                  🛒 {t('cart', { defaultValue: 'Корзина' })} ({tickets.length})
+                  🛒 {t('cart', { defaultValue: 'Cart' })} ({tickets.length})
                 </h2>
                 <button className="cart-close-btn" onClick={onToggle}>
                   ✕
@@ -106,11 +106,11 @@ export default function TicketCart({
                   <div className="cart-empty">
                     <div className="empty-icon">🎫</div>
                     <p className="empty-text">
-                      {t('cartEmpty', { defaultValue: 'Корзина пуста' })}
+                      {t('cartEmpty', { defaultValue: 'Cart is empty' })}
                     </p>
                     <p className="empty-subtext">
                       {t('addTicketsToCart', { 
-                        defaultValue: 'Выберите числа и добавьте билеты в корзину' 
+                        defaultValue: 'Select numbers and add tickets to cart' 
                       })}
                     </p>
                   </div>
@@ -130,7 +130,7 @@ export default function TicketCart({
                           >
                             <div className="ticket-info">
                               <span className="ticket-label">
-                                {t('ticket', { defaultValue: 'Билет' })} {index + 1}:
+                                {t('ticket', { defaultValue: 'Ticket' })} {index + 1}:
                               </span>
                               <div className="ticket-numbers">
                                 {ticket.numbers.map((num) => (
@@ -143,7 +143,7 @@ export default function TicketCart({
                             <button
                               className="ticket-remove-btn"
                               onClick={() => handleRemove(ticket.id)}
-                              title={t('remove', { defaultValue: 'Удалить' })}
+                              title={t('remove', { defaultValue: 'Remove' })}
                             >
                               🗑️
                             </button>
@@ -156,7 +156,7 @@ export default function TicketCart({
                     <div className="cart-summary">
                       <div className="summary-row">
                         <span className="summary-label">
-                          {t('subtotal', { defaultValue: 'Сумма' })}:
+                          {t('subtotal', { defaultValue: 'Subtotal' })}:
                         </span>
                         <span className="summary-value">{subtotal.toFixed(2)} TON</span>
                       </div>
@@ -168,7 +168,7 @@ export default function TicketCart({
                           animate={{ opacity: 1, y: 0 }}
                         >
                           <span className="summary-label">
-                            {t('discount', { defaultValue: 'Скидка' })} {discountPercent}%:
+                            {t('discount', { defaultValue: 'Discount' })} {discountPercent}%:
                           </span>
                           <span className="summary-value discount-value">
                             -{discount.toFixed(2)} TON 🎁
@@ -180,7 +180,7 @@ export default function TicketCart({
 
                       <div className="summary-row total-row">
                         <span className="summary-label">
-                          {t('total', { defaultValue: 'Итого' })}:
+                          {t('total', { defaultValue: 'Total' })}:
                         </span>
                         <span className="summary-total">{total.toFixed(2)} TON</span>
                       </div>
@@ -192,7 +192,7 @@ export default function TicketCart({
                         className="clear-cart-btn"
                         onClick={handleClear}
                       >
-                        {t('clearCart', { defaultValue: 'Очистить корзину' })}
+                        {t('clearCart', { defaultValue: 'Clear Cart' })}
                       </button>
                       <motion.button
                         className="purchase-cart-btn"
@@ -200,7 +200,7 @@ export default function TicketCart({
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        🎫 {t('buyTickets', { defaultValue: 'Купить билеты' })}
+                        🎫 {t('buyTickets', { defaultValue: 'Buy Tickets' })}
                       </motion.button>
                     </div>
 
@@ -212,7 +212,7 @@ export default function TicketCart({
                         animate={{ opacity: 1, scale: 1 }}
                       >
                         🎉 {t('discountApplied', { 
-                          defaultValue: 'Скидка 5% применена!' 
+                          defaultValue: '5% discount applied!' 
                         })}
                       </motion.div>
                     )}
@@ -223,7 +223,7 @@ export default function TicketCart({
                         animate={{ opacity: 1 }}
                       >
                         💡 {t('discountHint', { 
-                          defaultValue: 'Добавьте ещё {{count}} билета для скидки 5%',
+                          defaultValue: 'Add {{count}} more ticket(s) for 5% discount',
                           count: 5 - tickets.length
                         })}
                       </motion.div>

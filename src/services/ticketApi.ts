@@ -19,6 +19,11 @@ export interface PurchasedTicket {
   status: 'active' | 'won' | 'lost';
 }
 
+interface GetUserTicketsResponse {
+  tickets: PurchasedTicket[];
+  count: number;
+}
+
 export const ticketApi = {
   // Save single ticket
   async saveTicket(data: TicketPurchaseData): Promise<PurchasedTicket> {
@@ -70,8 +75,8 @@ export const ticketApi = {
       throw new Error(error.message || 'Failed to fetch user tickets');
     }
 
-    const data = await response.json();
+    const data: GetUserTicketsResponse = await response.json();
     // API returns { tickets: [...], count: N }, extract tickets array
-    return data.tickets || [];
+    return Array.isArray(data.tickets) ? data.tickets : [];
   },
 };

@@ -64,8 +64,8 @@ class ApiClient {
         last_name: telegramUser.last_name,
         username: telegramUser.username,
         photo_url: telegramUser.photo_url,
-        auth_date: telegramUser.auth_date || Math.floor(Date.now() / 1000),
-        hash: telegramUser.hash || '',
+        auth_date: telegramUser.auth_date,
+        hash: telegramUser.hash,
       }),
     });
   }

@@ -83,6 +83,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         first_name: telegramUser.first_name,
         last_name: telegramUser.last_name,
         username: telegramUser.username,
+        photo_url: telegramUser.photo_url,
+        auth_date: telegramUser.auth_date,
+        hash: telegramUser.hash,
       });
       
       if (response.success && response.token) {

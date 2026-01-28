@@ -32,7 +32,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { user: telegramUser } = useTelegram();
+  const { user: telegramUser, webApp } = useTelegram();
 
   useEffect(() => {
     // Auto-login if Telegram user available
@@ -50,7 +50,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       setIsLoading(true);
-      const response = await apiClient.loginTelegram(telegramUser);
+      const response = await apiClient.loginTelegram({
+        ...telegramUser,
+        auth_date: webApp?.initDataUnsafe.auth_date,
+        hash: webApp?.initDataUnsafe.hash,
+      });
       apiClient.setToken(response.token);
       setUser(response.user);
     } catch (error) {

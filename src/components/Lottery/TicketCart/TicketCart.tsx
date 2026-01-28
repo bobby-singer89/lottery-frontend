@@ -6,6 +6,7 @@ import { toNano } from '@ton/core';
 import { useSound } from '../../Advanced/SoundManager';
 import { LOTTERY_CONFIG } from '../../../config/lottery';
 import type { CartTicket } from '../../../hooks/useTicketCart';
+import { ticketApi } from '../../../services/ticketApi';
 import './TicketCart.css';
 
 interface TicketCartProps {
@@ -71,6 +72,24 @@ export default function TicketCart({
       const result = await tonConnectUI.sendTransaction(transaction);
       
       console.log('Transaction sent:', result.boc);
+      
+      // Save tickets to database
+      try {
+        const ticketPrice = total / tickets.length; // Calculate individual ticket price
+        const ticketsToSave = tickets.map((ticket) => ({
+          lotterySlug: 'weekend-special',
+          numbers: ticket.numbers,
+          txHash: result.boc,
+          walletAddress: userAddress,
+          price: ticketPrice,
+        }));
+
+        await ticketApi.saveTickets(ticketsToSave);
+        console.log('Tickets saved to database');
+      } catch (saveError) {
+        console.error('Failed to save tickets to DB:', saveError);
+        // Don't fail the purchase - transaction already went through
+      }
       
       // Call onPurchase callback with transaction BOC for backend registration
       // This should be done before clearing cart in case it fails

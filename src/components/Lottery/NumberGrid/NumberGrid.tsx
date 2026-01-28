@@ -8,6 +8,8 @@ interface NumberGridProps {
   selectedNumbers: number[];
   onSelectionChange: (numbers: number[]) => void;
   disabled?: boolean;
+  onAddToCart?: (numbers: number[]) => void;
+  showAddToCart?: boolean;
 }
 
 export default function NumberGrid({
@@ -15,7 +17,9 @@ export default function NumberGrid({
   totalNumbers,
   selectedNumbers,
   onSelectionChange,
-  disabled = false
+  disabled = false,
+  onAddToCart,
+  showAddToCart = false
 }: NumberGridProps) {
   const { t } = useTranslation();
   const { playSound } = useSound();
@@ -60,6 +64,19 @@ export default function NumberGrid({
     }
     onSelectionChange(numbers.sort((a, b) => a - b));
     playSound('purchase');
+  };
+
+  const handleAddToCart = () => {
+    if (selectedNumbers.length === maxNumbers && onAddToCart) {
+      onAddToCart([...selectedNumbers]);
+      onSelectionChange([]);
+      playSound('purchase');
+      
+      // Haptic feedback
+      if (navigator.vibrate) {
+        navigator.vibrate([30, 10, 30]);
+      }
+    }
   };
 
   const isSelected = (num: number) => selectedNumbers.includes(num);
@@ -113,6 +130,15 @@ export default function NumberGrid({
             </div>
           ))}
         </div>
+      )}
+
+      {showAddToCart && selectedNumbers.length === maxNumbers && onAddToCart && (
+        <button
+          className="add-to-cart-btn"
+          onClick={handleAddToCart}
+        >
+          🛒 {t('addToCart', { defaultValue: 'Добавить в корзину' })}
+        </button>
       )}
     </div>
   );

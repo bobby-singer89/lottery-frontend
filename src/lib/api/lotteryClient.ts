@@ -6,6 +6,14 @@ export interface BuyTicketRequest {
   walletAddress: string;
 }
 
+export interface BuyMultipleTicketsRequest {
+  tickets: Array<{ selectedNumbers: number[] }>;
+  txHash: string;
+  walletAddress: string;
+  totalAmount: number;
+  discount: number;
+}
+
 export interface Ticket {
   id: string;
   numbers: number[];
@@ -48,6 +56,26 @@ class LotteryClient {
       request.txHash
     );
     return response.ticket;
+  }
+
+  /**
+   * Buy multiple lottery tickets
+   */
+  async buyTickets(slug: string, request: BuyMultipleTicketsRequest): Promise<{ tickets: Ticket[] }> {
+    // For now, we'll buy tickets one by one since the backend doesn't have a bulk endpoint yet
+    // In the future, this should be replaced with a single bulk API call
+    const tickets: Ticket[] = [];
+    
+    for (const ticketData of request.tickets) {
+      const response = await apiClient.buyTicket(
+        slug,
+        ticketData.selectedNumbers,
+        request.txHash
+      );
+      tickets.push(response.ticket);
+    }
+    
+    return { tickets };
   }
 
   /**

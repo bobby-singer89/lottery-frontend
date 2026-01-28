@@ -6,10 +6,12 @@ import { WEEKEND_SPECIAL_CONFIG } from '../config/lottery';
 import { lotteryClient, type LotteryInfo, type NextDraw } from '../lib/api/lotteryClient';
 import { useTonTransaction } from '../hooks/useTonTransaction';
 import { useAuth } from '../contexts/AuthContext';
+import { useTicketCart } from '../hooks/useTicketCart';
 import CountdownTimer from '../components/Statistics/CountdownTimer';
 import NumberGrid from '../components/Lottery/NumberGrid/NumberGrid';
 import TicketPreview from '../components/Lottery/TicketPreview/TicketPreview';
 import PurchaseModal from '../components/Lottery/PurchaseModal/PurchaseModal';
+import TicketCart from '../components/Lottery/TicketCart/TicketCart';
 import MyTickets from '../components/Lottery/MyTickets/MyTickets';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import './WeekendSpecialPage.css';
@@ -29,6 +31,11 @@ export default function WeekendSpecialPage() {
   const [ticketsRefreshTrigger, setTicketsRefreshTrigger] = useState(0);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [participantsCount] = useState(() => Math.floor(Math.random() * 300 + 200));
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  
+  // Initialize cart with ticket price
+  const ticketPrice = lottery?.ticketPrice || WEEKEND_SPECIAL_CONFIG.ticketPrice;
+  const cart = useTicketCart(ticketPrice);
 
   const loadLotteryInfo = useCallback(async () => {
     setIsLoading(true);
@@ -54,25 +61,49 @@ export default function WeekendSpecialPage() {
     }
 
     try {
-      // Send TON transaction
-      const txHash = await buyLotteryTicket(
-        lottery.lotteryWallet || WEEKEND_SPECIAL_CONFIG.lotteryWallet,
-        lottery.ticketPrice || WEEKEND_SPECIAL_CONFIG.ticketPrice,
-        selectedNumbers
-      );
+      const actualPrice = lottery.ticketPrice || WEEKEND_SPECIAL_CONFIG.ticketPrice;
+      
+      // Check if purchasing from cart or single ticket
+      if (cart.tickets.length > 0) {
+        // Purchase multiple tickets from cart
+        const txHash = await buyLotteryTicket(
+          lottery.lotteryWallet || WEEKEND_SPECIAL_CONFIG.lotteryWallet,
+          cart.total,
+          cart.tickets[0].numbers // First ticket numbers for transaction memo
+        );
 
-      // Register ticket on backend
-      await lotteryClient.buyTicket(WEEKEND_SPECIAL_CONFIG.slug, {
-        selectedNumbers,
-        txHash,
-        walletAddress: tonConnectUI.account.address
-      });
+        // Register all tickets on backend
+        await lotteryClient.buyTickets(WEEKEND_SPECIAL_CONFIG.slug, {
+          tickets: cart.tickets.map(ticket => ({ selectedNumbers: ticket.numbers })),
+          txHash,
+          walletAddress: tonConnectUI.account.address,
+          totalAmount: cart.total,
+          discount: cart.discount
+        });
+
+        // Clear cart
+        cart.clearCart();
+      } else if (selectedNumbers.length > 0) {
+        // Purchase single ticket
+        const txHash = await buyLotteryTicket(
+          lottery.lotteryWallet || WEEKEND_SPECIAL_CONFIG.lotteryWallet,
+          actualPrice,
+          selectedNumbers
+        );
+
+        // Register ticket on backend
+        await lotteryClient.buyTicket(WEEKEND_SPECIAL_CONFIG.slug, {
+          selectedNumbers,
+          txHash,
+          walletAddress: tonConnectUI.account.address
+        });
+
+        // Clear selection
+        setSelectedNumbers([]);
+      }
 
       // Refresh tickets list
       setTicketsRefreshTrigger(prev => prev + 1);
-      
-      // Clear selection
-      setSelectedNumbers([]);
     } catch (error) {
       throw error; // Let modal handle the error
     }
@@ -82,12 +113,23 @@ export default function WeekendSpecialPage() {
     tonConnectUI.openModal();
   };
 
+  const handleAddToCart = (numbers: number[]) => {
+    cart.addTicket(numbers);
+    // Show notification (could be a toast in the future)
+    console.log('Ticket added to cart:', numbers);
+  };
+
   const handleBuyTicketClick = () => {
     if (selectedNumbers.length !== WEEKEND_SPECIAL_CONFIG.numbersToSelect) {
       // Instead of alert, we could show a toast or inline message
       // For now keeping simple validation
       return;
     }
+    setIsPurchaseModalOpen(true);
+  };
+
+  const handlePurchaseFromCart = () => {
+    setIsCartOpen(false);
     setIsPurchaseModalOpen(true);
   };
 
@@ -167,11 +209,13 @@ export default function WeekendSpecialPage() {
             totalNumbers={lotteryData.numbersPool}
             selectedNumbers={selectedNumbers}
             onSelectionChange={setSelectedNumbers}
+            onAddToCart={handleAddToCart}
+            showAddToCart={true}
           />
         </div>
 
-        {/* Ticket Preview */}
-        {selectedNumbers.length > 0 && (
+        {/* Ticket Preview - only show for quick single purchase */}
+        {selectedNumbers.length > 0 && cart.tickets.length === 0 && (
           <div className="preview-section">
             <TicketPreview
               lotteryName={lotteryData.name}
@@ -251,13 +295,30 @@ export default function WeekendSpecialPage() {
         )}
       </div>
 
+      {/* Ticket Cart */}
+      <TicketCart
+        tickets={cart.tickets}
+        onRemoveTicket={cart.removeTicket}
+        onClearCart={cart.clearCart}
+        subtotal={cart.subtotal}
+        discount={cart.discount}
+        discountPercent={cart.discountPercent}
+        total={cart.total}
+        onPurchase={handlePurchaseFromCart}
+        isOpen={isCartOpen}
+        onToggle={() => setIsCartOpen(!isCartOpen)}
+      />
+
       {/* Purchase Modal */}
       <PurchaseModal
         isOpen={isPurchaseModalOpen}
         onClose={() => setIsPurchaseModalOpen(false)}
         lotteryName={lotteryData.name}
-        selectedNumbers={selectedNumbers}
+        selectedNumbers={cart.tickets.length > 0 ? undefined : selectedNumbers}
+        tickets={cart.tickets.length > 0 ? cart.tickets : undefined}
         ticketPrice={lotteryData.ticketPrice}
+        discount={cart.discount}
+        total={cart.tickets.length > 0 ? cart.total : lotteryData.ticketPrice}
         onPurchase={handlePurchase}
         onConnectWallet={handleConnectWallet}
       />

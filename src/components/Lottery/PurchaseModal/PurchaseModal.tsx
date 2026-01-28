@@ -3,14 +3,18 @@ import { useTranslation } from 'react-i18next';
 import { useTonAddress } from '@tonconnect/ui-react';
 import confetti from 'canvas-confetti';
 import { useSound } from '../../Advanced/SoundManager';
+import type { CartTicket } from '../../../hooks/useTicketCart';
 import './PurchaseModal.css';
 
 interface PurchaseModalProps {
   isOpen: boolean;
   onClose: () => void;
   lotteryName: string;
-  selectedNumbers: number[];
+  selectedNumbers?: number[];
+  tickets?: CartTicket[];
   ticketPrice: number;
+  discount?: number;
+  total?: number;
   onPurchase: () => Promise<void>;
   onConnectWallet: () => void;
 }
@@ -20,7 +24,10 @@ export default function PurchaseModal({
   onClose,
   lotteryName,
   selectedNumbers,
+  tickets,
   ticketPrice,
+  discount = 0,
+  total,
   onPurchase,
   onConnectWallet
 }: PurchaseModalProps) {
@@ -76,6 +83,10 @@ export default function PurchaseModal({
     return `${address.slice(0, 6)}...${address.slice(-6)}`;
   };
 
+  const isMultipleTickets = tickets && tickets.length > 0;
+  const displayTickets = isMultipleTickets ? tickets : (selectedNumbers ? [{ id: 'single', numbers: selectedNumbers, addedAt: new Date() }] : []);
+  const finalTotal = total || ticketPrice;
+
   return (
     <div className="purchase-modal-overlay" onClick={onClose}>
       <div className="purchase-modal" onClick={(e) => e.stopPropagation()}>
@@ -86,7 +97,9 @@ export default function PurchaseModal({
         {!success ? (
           <>
             <h2 className="modal-title">
-              {t('purchaseTicket', { defaultValue: 'Покупка билета' })}
+              {isMultipleTickets 
+                ? t('purchaseTickets', { defaultValue: 'Покупка билетов' })
+                : t('purchaseTicket', { defaultValue: 'Покупка билета' })}
             </h2>
 
             <div className="modal-content">
@@ -99,22 +112,71 @@ export default function PurchaseModal({
                   <span className="summary-value">{lotteryName}</span>
                 </div>
 
-                <div className="summary-item">
-                  <span className="summary-label">
-                    {t('selectedNumbers', { defaultValue: 'Выбранные числа' })}
-                  </span>
-                  <div className="summary-numbers">
-                    {selectedNumbers.map((num) => (
-                      <span key={num} className="summary-ball">{num}</span>
-                    ))}
+                {isMultipleTickets ? (
+                  <>
+                    <div className="summary-item">
+                      <span className="summary-label">
+                        {t('tickets', { defaultValue: 'Билеты' })}
+                      </span>
+                      <span className="summary-value">{tickets.length}</span>
+                    </div>
+
+                    <div className="tickets-list-modal">
+                      {displayTickets.slice(0, 3).map((ticket, index) => (
+                        <div key={ticket.id} className="ticket-item-modal">
+                          <span className="ticket-label-modal">
+                            {t('ticket', { defaultValue: 'Билет' })} {index + 1}:
+                          </span>
+                          <div className="summary-numbers">
+                            {ticket.numbers.map((num) => (
+                              <span key={num} className="summary-ball">{num}</span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                      {tickets.length > 3 && (
+                        <div className="more-tickets-indicator">
+                          +{tickets.length - 3} {t('moreTickets', { defaultValue: 'ещё' })}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="summary-item">
+                      <span className="summary-label">
+                        {t('subtotal', { defaultValue: 'Сумма' })}
+                      </span>
+                      <span className="summary-value">{(tickets.length * ticketPrice).toFixed(2)} TON</span>
+                    </div>
+
+                    {discount > 0 && (
+                      <div className="summary-item discount-item">
+                        <span className="summary-label">
+                          {t('discount', { defaultValue: 'Скидка' })} 5%
+                        </span>
+                        <span className="summary-value discount-text">
+                          -{discount.toFixed(2)} TON 🎁
+                        </span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="summary-item">
+                    <span className="summary-label">
+                      {t('selectedNumbers', { defaultValue: 'Выбранные числа' })}
+                    </span>
+                    <div className="summary-numbers">
+                      {selectedNumbers?.map((num) => (
+                        <span key={num} className="summary-ball">{num}</span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="summary-item total-item">
                   <span className="summary-label">
                     {t('total', { defaultValue: 'Итого' })}
                   </span>
-                  <span className="summary-total">{ticketPrice} TON</span>
+                  <span className="summary-total">{finalTotal.toFixed(2)} TON</span>
                 </div>
               </div>
 
@@ -157,7 +219,9 @@ export default function PurchaseModal({
                       </>
                     ) : (
                       <>
-                        🎫 {t('buyTicketFor', { defaultValue: 'Купить билет за' })} {ticketPrice} TON
+                        🎫 {isMultipleTickets 
+                          ? `${t('buyTickets', { defaultValue: 'Купить билеты' })} — ${finalTotal.toFixed(2)} TON`
+                          : `${t('buyTicketFor', { defaultValue: 'Купить билет за' })} ${finalTotal.toFixed(2)} TON`}
                       </>
                     )}
                   </button>
@@ -169,12 +233,18 @@ export default function PurchaseModal({
           <div className="success-state">
             <div className="success-icon">🎉</div>
             <h2 className="success-title">
-              {t('purchaseSuccess', { defaultValue: 'Билет успешно куплен!' })}
+              {isMultipleTickets
+                ? t('purchaseSuccessMultiple', { defaultValue: 'Билеты успешно куплены!' })
+                : t('purchaseSuccess', { defaultValue: 'Билет успешно куплен!' })}
             </h2>
             <p className="success-message">
-              {t('ticketInYourAccount', { 
-                defaultValue: 'Билет добавлен в ваш аккаунт. Удачи в розыгрыше!' 
-              })}
+              {isMultipleTickets
+                ? t('ticketsInYourAccount', { 
+                    defaultValue: 'Билеты добавлены в ваш аккаунт. Удачи в розыгрыше!' 
+                  })
+                : t('ticketInYourAccount', { 
+                    defaultValue: 'Билет добавлен в ваш аккаунт. Удачи в розыгрыше!' 
+                  })}
             </p>
             {txHash && (
               <div className="tx-hash">

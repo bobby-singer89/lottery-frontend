@@ -1,0 +1,75 @@
+const API_URL = import.meta.env.VITE_API_URL || 'https://lottery-backend-jlec.onrender.com';
+
+export interface TicketPurchaseData {
+  lotterySlug: string;
+  numbers: number[];
+  txHash: string;
+  walletAddress: string;
+  price: number;
+}
+
+export interface PurchasedTicket {
+  id: string;
+  lotterySlug: string;
+  numbers: number[];
+  txHash: string;
+  walletAddress: string;
+  price: number;
+  purchasedAt: string;
+  status: 'active' | 'won' | 'lost';
+}
+
+export const ticketApi = {
+  // Save single ticket
+  async saveTicket(data: TicketPurchaseData): Promise<PurchasedTicket> {
+    const response = await fetch(`${API_URL}/api/tickets/purchase`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Failed to save ticket');
+    }
+
+    return response.json();
+  },
+
+  // Save multiple tickets (cart)
+  async saveTickets(tickets: TicketPurchaseData[]): Promise<PurchasedTicket[]> {
+    const response = await fetch(`${API_URL}/api/tickets/purchase-bulk`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ tickets }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Failed to save tickets');
+    }
+
+    return response.json();
+  },
+
+  // Get user's tickets
+  async getUserTickets(walletAddress: string): Promise<PurchasedTicket[]> {
+    const response = await fetch(`${API_URL}/api/tickets/user/${walletAddress}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Failed to fetch user tickets');
+    }
+
+    return response.json();
+  },
+};

@@ -6,12 +6,14 @@ import confetti from 'canvas-confetti';
 import { useSound } from '../../Advanced/SoundManager';
 import { LOTTERY_CONFIG } from '../../../config/lottery';
 import type { CartTicket } from '../../../hooks/useTicketCart';
+import { ticketApi } from '../../../services/ticketApi';
 import './PurchaseModal.css';
 
 interface PurchaseModalProps {
   isOpen: boolean;
   onClose: () => void;
   lotteryName: string;
+  lotterySlug?: string;
   selectedNumbers?: number[];
   tickets?: CartTicket[];
   ticketPrice: number;
@@ -25,6 +27,7 @@ export default function PurchaseModal({
   isOpen,
   onClose,
   lotteryName,
+  lotterySlug = 'weekend-special',
   selectedNumbers,
   tickets,
   ticketPrice,
@@ -75,6 +78,37 @@ export default function PurchaseModal({
       
       console.log('Transaction sent:', result.boc);
       setTxHash(result.boc);
+      
+      // Save ticket(s) to database
+      try {
+        if (isMultipleTickets && tickets && tickets.length > 0) {
+          // Save multiple tickets
+          const individualPrice = finalTotal / tickets.length;
+          const ticketsToSave = tickets.map((ticket) => ({
+            lotterySlug,
+            numbers: ticket.numbers,
+            txHash: result.boc,
+            walletAddress: userAddress,
+            price: individualPrice,
+          }));
+
+          await ticketApi.saveTickets(ticketsToSave);
+          console.log('Tickets saved to database');
+        } else if (selectedNumbers) {
+          // Save single ticket
+          await ticketApi.saveTicket({
+            lotterySlug,
+            numbers: selectedNumbers,
+            txHash: result.boc,
+            walletAddress: userAddress,
+            price: ticketPrice,
+          });
+          console.log('Ticket saved to database');
+        }
+      } catch (saveError) {
+        console.error('Failed to save ticket(s) to DB:', saveError);
+        // Don't fail the purchase - transaction already went through
+      }
       
       // Call onPurchase callback with transaction BOC for backend registration
       if (onPurchase) {

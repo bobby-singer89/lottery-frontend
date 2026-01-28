@@ -17,11 +17,5 @@
         }
       ]
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/tonconnect-manifest.json",
-      "destination": "/tonconnect-manifest.json"
-    }
   ]
 }

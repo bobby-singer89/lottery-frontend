@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { lotteryClient, type Ticket } from '../../../lib/api/lotteryClient';
 import './MyTickets.css';
@@ -9,16 +9,12 @@ interface MyTicketsProps {
 }
 
 export default function MyTickets({ lotterySlug, refreshTrigger }: MyTicketsProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadTickets();
-  }, [lotterySlug, refreshTrigger]);
-
-  const loadTickets = async () => {
+  const loadTickets = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
@@ -26,11 +22,15 @@ export default function MyTickets({ lotterySlug, refreshTrigger }: MyTicketsProp
       const response = await lotteryClient.getMyTickets(lotterySlug);
       setTickets(response.tickets);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка загрузки билетов');
+      setError(err instanceof Error ? err.message : t('ticketsLoadError', { defaultValue: 'Ошибка загрузки билетов' }));
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [lotterySlug, t]);
+
+  useEffect(() => {
+    loadTickets();
+  }, [loadTickets, refreshTrigger]);
 
   if (isLoading) {
     return (
@@ -121,7 +121,7 @@ export default function MyTickets({ lotterySlug, refreshTrigger }: MyTicketsProp
                     {t('purchased', { defaultValue: 'Куплен' })}
                   </span>
                   <span className="detail-value">
-                    {new Date(ticket.purchasedAt).toLocaleDateString('ru-RU', {
+                    {new Date(ticket.purchasedAt).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ru-RU', {
                       day: 'numeric',
                       month: 'short',
                       hour: '2-digit',
@@ -136,7 +136,7 @@ export default function MyTickets({ lotterySlug, refreshTrigger }: MyTicketsProp
                       {t('draw', { defaultValue: 'Розыгрыш' })}
                     </span>
                     <span className="detail-value">
-                      {new Date(ticket.drawDate).toLocaleDateString('ru-RU', {
+                      {new Date(ticket.drawDate).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ru-RU', {
                         day: 'numeric',
                         month: 'short',
                         hour: '2-digit',

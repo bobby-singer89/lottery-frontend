@@ -7,7 +7,7 @@ export const WEEKEND_SPECIAL_CONFIG = {
   numbersPool: 36,
   ticketPrice: 1, // TON
   ticketPriceNano: '1000000000', // nanotons
-  lotteryWallet: '0QDAy6M4QQRcIy8jLl4n4acb7IxmDnPZiBqz7A_6xvY90GeY',
+  lotteryWallet: import.meta.env.VITE_LOTTERY_WALLET || '0QDAy6M4QQRcIy8jLl4n4acb7IxmDnPZiBqz7A_6xvY90GeY',
   prizes: {
     5: 500,    // TON
     4: 50,

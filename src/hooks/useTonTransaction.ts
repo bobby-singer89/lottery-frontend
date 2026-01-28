@@ -28,7 +28,7 @@ export function useTonTransaction() {
 
     try {
       const transaction = {
-        validUntil: Math.floor(Date.now() / 1000) + 360, // 6 minutes
+        validUntil: Math.floor(Date.now() / 1000) + 180, // 3 minutes
         messages: [
           {
             address: params.to,
@@ -62,10 +62,20 @@ export function useTonTransaction() {
     ticketPriceInTON: number,
     selectedNumbers: number[]
   ): Promise<string> => {
-    // Create payload with selected numbers
+    // Create payload with selected numbers stored as uints
     const payload = beginCell()
       .storeUint(0, 32) // op code
-      .storeBuffer(Buffer.from(selectedNumbers.join(',')))
+      .storeUint(selectedNumbers.length, 8) // number count
+      // Store each number as uint8
+      .storeRef(
+        beginCell()
+          .storeUint(selectedNumbers[0] || 0, 8)
+          .storeUint(selectedNumbers[1] || 0, 8)
+          .storeUint(selectedNumbers[2] || 0, 8)
+          .storeUint(selectedNumbers[3] || 0, 8)
+          .storeUint(selectedNumbers[4] || 0, 8)
+          .endCell()
+      )
       .endCell();
 
     return sendTransaction({

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTonConnectUI } from '@tonconnect/ui-react';
@@ -28,12 +28,9 @@ export default function WeekendSpecialPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [ticketsRefreshTrigger, setTicketsRefreshTrigger] = useState(0);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [participantsCount] = useState(() => Math.floor(Math.random() * 300 + 200));
 
-  useEffect(() => {
-    loadLotteryInfo();
-  }, []);
-
-  const loadLotteryInfo = async () => {
+  const loadLotteryInfo = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await lotteryClient.getLotteryInfo(WEEKEND_SPECIAL_CONFIG.slug);
@@ -44,10 +41,17 @@ export default function WeekendSpecialPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadLotteryInfo();
+  }, [loadLotteryInfo]);
 
   const handlePurchase = async () => {
     if (!lottery) return;
+    if (!tonConnectUI.account?.address) {
+      throw new Error(t('walletNotConnected', { defaultValue: 'Кошелёк не подключен' }));
+    }
 
     try {
       // Send TON transaction
@@ -61,7 +65,7 @@ export default function WeekendSpecialPage() {
       await lotteryClient.buyTicket(WEEKEND_SPECIAL_CONFIG.slug, {
         selectedNumbers,
         txHash,
-        walletAddress: tonConnectUI.account?.address || ''
+        walletAddress: tonConnectUI.account.address
       });
 
       // Refresh tickets list
@@ -80,9 +84,8 @@ export default function WeekendSpecialPage() {
 
   const handleBuyTicketClick = () => {
     if (selectedNumbers.length !== WEEKEND_SPECIAL_CONFIG.numbersToSelect) {
-      alert(t('selectAllNumbers', { 
-        defaultValue: `Выберите ${WEEKEND_SPECIAL_CONFIG.numbersToSelect} чисел` 
-      }));
+      // Instead of alert, we could show a toast or inline message
+      // For now keeping simple validation
       return;
     }
     setIsPurchaseModalOpen(true);
@@ -150,7 +153,7 @@ export default function WeekendSpecialPage() {
           )}
 
           <div className="participants-count">
-            👥 {t('participants', { defaultValue: 'Участников' })}: {Math.floor(Math.random() * 500 + 200)}
+            👥 {t('participants', { defaultValue: 'Участников' })}: {participantsCount}
           </div>
         </div>
 

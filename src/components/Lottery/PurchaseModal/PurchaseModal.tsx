@@ -62,7 +62,7 @@ export default function PurchaseModal({
         onClose();
       }, 3000);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Ошибка покупки билета';
+      const errorMessage = err instanceof Error ? err.message : t('purchaseError', { defaultValue: 'Ошибка покупки билета' });
       setError(errorMessage);
       playSound('lose');
     } finally {

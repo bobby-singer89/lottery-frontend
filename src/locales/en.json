@@ -62,5 +62,8 @@
   "step3": "Buy ticket for 1 TON",
   "step4": "Wait for the draw",
   "step5": "Winnings will be automatically transferred to your wallet!",
-  "selectAllNumbers": "Select all numbers"
+  "selectAllNumbers": "Select {{count}} numbers",
+  "ticketsLoadError": "Error loading tickets",
+  "purchaseError": "Error purchasing ticket",
+  "walletNotConnected": "Wallet not connected"
 }

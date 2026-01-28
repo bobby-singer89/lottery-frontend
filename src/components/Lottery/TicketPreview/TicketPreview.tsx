@@ -16,7 +16,7 @@ export default function TicketPreview({
   drawDate,
   onEdit
 }: TicketPreviewProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   if (selectedNumbers.length === 0) {
     return null;
@@ -61,7 +61,7 @@ export default function TicketPreview({
                 {t('drawDate', { defaultValue: 'Дата розыгрыша' })}
               </span>
               <span className="detail-value">
-                {new Date(drawDate).toLocaleDateString('ru-RU', {
+                {new Date(drawDate).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ru-RU', {
                   day: 'numeric',
                   month: 'long',
                   hour: '2-digit',

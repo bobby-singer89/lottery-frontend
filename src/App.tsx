@@ -8,7 +8,7 @@ import Hero from './components/Hero/Hero';
 import LotteryCarousel from './components/LotteryCarousel/LotteryCarousel';
 import AnimatedBackground from './components/AnimatedBackground/AnimatedBackground';
 import DemoPage from './pages/DemoPage';
-import WeekendSpecial from './pages/WeekendSpecial';
+import WeekendSpecialPage from './pages/WeekendSpecialPage';
 import ProfilePage from './pages/ProfilePage';
 import LotteriesPage from './pages/LotteriesPage';
 import HistoryPage from './pages/HistoryPage';
@@ -194,7 +194,8 @@ function App() {
           <Routes>
             <Route path="/" element={<MainScreen />} />
             <Route path="/demo" element={<DemoPage />} />
-            <Route path="/weekend-special" element={<WeekendSpecial />} />
+            <Route path="/weekend-special" element={<WeekendSpecialPage />} />
+            <Route path="/lottery/:slug" element={<WeekendSpecialPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/lotteries" element={<LotteriesPage />} />
             <Route path="/history" element={<HistoryPage />} />

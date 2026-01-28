@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { apiClient } from '../lib/api/client';
 import { useTelegram } from '../lib/telegram/useTelegram';
+import type { TelegramUser } from '../components/TelegramLoginWidget/TelegramLoginWidget';
 
 interface User {
   id: number;
@@ -23,6 +24,7 @@ interface AuthContextType {
   login: () => Promise<void>;
   logout: () => void;
   connectWallet: (address: string) => Promise<void>;
+  loginWithTelegram: (telegramUser: TelegramUser) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -74,6 +76,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loginWithTelegram = async (telegramUser: TelegramUser): Promise<boolean> => {
+    try {
+      const response = await apiClient.loginTelegram({
+        id: telegramUser.id,
+        first_name: telegramUser.first_name,
+        last_name: telegramUser.last_name,
+        username: telegramUser.username,
+      });
+      
+      if (response.success && response.token) {
+        apiClient.setToken(response.token);
+        setUser(response.user);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Telegram auth failed:', error);
+      return false;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -83,6 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         connectWallet,
+        loginWithTelegram,
       }}
     >
       {children}

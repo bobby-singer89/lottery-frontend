@@ -20,6 +20,7 @@ import AdminLotteries from './pages/admin/AdminLotteries';
 import AdminDraws from './pages/admin/AdminDraws';
 import AdminTickets from './pages/admin/AdminTickets';
 import AdminNotifications from './pages/admin/AdminNotifications';
+import MyTicketsPage from './pages/MyTicketsPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import './App.css';
@@ -202,6 +203,7 @@ function App() {
               <Route path="/lotteries" element={<LotteriesPage />} />
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/referral" element={<ReferralPage />} />
+              <Route path="/my-tickets" element={<MyTicketsPage />} />
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               <Route path="/admin/users" element={<AdminGuard><AdminUsers /></AdminGuard>} />

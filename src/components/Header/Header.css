@@ -96,6 +96,27 @@
   transform: translateY(-2px);
 }
 
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(76, 195, 247, 0.1);
+  border: 1px solid rgba(76, 195, 247, 0.3);
+  border-radius: 12px;
+  color: #4fc3f7;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background: rgba(76, 195, 247, 0.2);
+  border-color: rgba(76, 195, 247, 0.5);
+  transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
   .header-content {
     padding: 16px 16px;
@@ -115,6 +136,14 @@
   }
   
   .demo-nav-link {
+    padding: 8px 12px;
+  }
+
+  .nav-link span {
+    display: none;
+  }
+  
+  .nav-link {
     padding: 8px 12px;
   }
 }

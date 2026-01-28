@@ -70,6 +70,8 @@ export const ticketApi = {
       throw new Error(error.message || 'Failed to fetch user tickets');
     }
 
-    return response.json();
+    const data = await response.json();
+    // API returns { tickets: [...], count: N }, extract tickets array
+    return data.tickets || [];
   },
 };

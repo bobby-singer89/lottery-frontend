@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTonConnectUI, useTonAddress } from '@tonconnect/ui-react';
 import { useSound } from '../../Advanced/SoundManager';
 import type { CartTicket } from '../../../hooks/useTicketCart';
 import './TicketCart.css';
@@ -31,6 +32,8 @@ export default function TicketCart({
 }: TicketCartProps) {
   const { t } = useTranslation();
   const { playSound } = useSound();
+  const [tonConnectUI] = useTonConnectUI();
+  const userAddress = useTonAddress();
 
   const handleRemove = (id: string) => {
     onRemoveTicket(id);
@@ -44,6 +47,11 @@ export default function TicketCart({
 
   const handlePurchase = () => {
     onPurchase();
+    playSound('click');
+  };
+
+  const handleConnectWallet = () => {
+    tonConnectUI.openModal();
     playSound('click');
   };
 
@@ -194,14 +202,25 @@ export default function TicketCart({
                       >
                         {t('clearCart', { defaultValue: 'Clear Cart' })}
                       </button>
-                      <motion.button
-                        className="purchase-cart-btn"
-                        onClick={handlePurchase}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        🎫 {t('buyTickets', { defaultValue: 'Buy Tickets' })}
-                      </motion.button>
+                      {!userAddress ? (
+                        <motion.button
+                          className="connect-wallet-cart-btn"
+                          onClick={handleConnectWallet}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          🔗 {t('connectWalletToBuy', { defaultValue: 'Подключить кошелёк для покупки' })}
+                        </motion.button>
+                      ) : (
+                        <motion.button
+                          className="purchase-cart-btn"
+                          onClick={handlePurchase}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          🎫 {t('buyTickets', { defaultValue: 'Buy Tickets' })}
+                        </motion.button>
+                      )}
                     </div>
 
                     {/* Discount Info */}

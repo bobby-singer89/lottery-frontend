@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet, Copy, Check, Trophy, Star, Flame } from 'lucide-react';
+import { useTonConnectUI, useTonAddress } from '@tonconnect/ui-react';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
@@ -11,6 +12,8 @@ import './ProfilePage.css';
 function ProfilePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [tonConnectUI] = useTonConnectUI();
+  const userAddress = useTonAddress();
   const [activeTab, setActiveTab] = useState('profile');
   const [copied, setCopied] = useState(false);
 
@@ -18,8 +21,8 @@ function ProfilePage() {
   const profileData = {
     name: user?.username || 'Player',
     avatar: user?.username?.charAt(0).toUpperCase() || 'P',
-    walletConnected: !!user?.tonWallet,
-    walletAddress: user?.tonWallet || null,
+    walletConnected: !!userAddress,
+    walletAddress: userAddress || null,
     balance: '125.5 TON',
     level: 12,
     xp: 2450,
@@ -31,8 +34,12 @@ function ProfilePage() {
     wonTickets: 3,
   };
 
-  const handleConnect = () => {
-    console.log('Connecting wallet...');
+  const handleConnectWallet = () => {
+    tonConnectUI.openModal();
+  };
+
+  const handleDisconnectWallet = () => {
+    tonConnectUI.disconnect();
   };
 
   const handleTabChange = (tab: string) => {
@@ -71,7 +78,7 @@ function ProfilePage() {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={handleConnect} walletAddress={profileData.walletAddress || undefined} />
+        <Header onConnect={handleConnectWallet} walletAddress={profileData.walletAddress || undefined} />
         
         <main className="profile-page">
           <motion.div
@@ -99,10 +106,18 @@ function ProfilePage() {
               
               <div className="profile-info">
                 <h1 className="profile-name">{profileData.name}</h1>
-                <div className="profile-wallet-status">
-                  <Wallet size={16} />
-                  <span>{profileData.walletConnected ? 'Кошелёк подключен' : 'Подключите кошелёк'}</span>
-                </div>
+                {!userAddress ? (
+                  <button onClick={handleConnectWallet} className="profile-wallet-status connect-wallet-btn">
+                    <Wallet size={16} />
+                    <span>Подключите кошелёк</span>
+                  </button>
+                ) : (
+                  <div className="profile-wallet-status wallet-connected">
+                    <Wallet size={16} />
+                    <span className="wallet-address-text">{userAddress.slice(0, 6)}...{userAddress.slice(-4)}</span>
+                    <button onClick={handleDisconnectWallet} className="disconnect-btn">Отключить</button>
+                  </div>
+                )}
               </div>
             </motion.div>
 

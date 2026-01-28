@@ -48,7 +48,9 @@ class ApiClient {
     first_name?: string;
     last_name?: string;
     username?: string;
-    language_code?: string;
+    photo_url?: string;
+    auth_date?: number;
+    hash?: string;
   }) {
     return this.request<{
       success: boolean;
@@ -57,11 +59,13 @@ class ApiClient {
     }>('/api/auth/telegram', {   
       method: 'POST',
       body: JSON.stringify({
-        telegramId: telegramUser.id,
-        firstName: telegramUser.first_name,
-        lastName: telegramUser.last_name,
+        id: telegramUser.id.toString(),
+        first_name: telegramUser.first_name,
+        last_name: telegramUser.last_name,
         username: telegramUser.username,
-        languageCode: telegramUser.language_code || 'ru',
+        photo_url: telegramUser.photo_url,
+        auth_date: telegramUser.auth_date,
+        hash: telegramUser.hash,
       }),
     });
   }

@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'https://lottery-backend-gm4j.onrender.com';
+const API_URL = import.meta.env.VITE_API_URL || 'https://lottery-backend-gm4j.onrender.com/api';
 
 export interface TicketPurchaseData {
   lotterySlug: string;
@@ -27,7 +27,7 @@ interface GetUserTicketsResponse {
 export const ticketApi = {
   // Save single ticket
   async saveTicket(data: TicketPurchaseData): Promise<PurchasedTicket> {
-    const response = await fetch(`${API_URL}/api/tickets/purchase`, {
+    const response = await fetch(`${API_URL}/tickets/purchase`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export const ticketApi = {
 
   // Save multiple tickets (cart)
   async saveTickets(tickets: TicketPurchaseData[]): Promise<PurchasedTicket[]> {
-    const response = await fetch(`${API_URL}/api/tickets/purchase-bulk`, {
+    const response = await fetch(`${API_URL}/tickets/purchase-bulk`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export const ticketApi = {
 
   // Get user's tickets
   async getUserTickets(walletAddress: string): Promise<PurchasedTicket[]> {
-    const response = await fetch(`${API_URL}/api/tickets/user/${walletAddress}`, {
+    const response = await fetch(`${API_URL}/tickets/user/${walletAddress}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

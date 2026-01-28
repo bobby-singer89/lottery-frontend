@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'https://lottery-backend-jlec.onrender.com';
+const API_URL = import.meta.env.VITE_API_URL || 'https://lottery-backend-gm4j.onrender.com';
 
 export interface TicketPurchaseData {
   lotterySlug: string;

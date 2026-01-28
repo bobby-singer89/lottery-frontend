@@ -20,6 +20,7 @@ interface TicketCartProps {
   onPurchase: (txBoc?: string) => Promise<void> | void;
   isOpen: boolean;
   onToggle: () => void;
+  lotterySlug?: string;
 }
 
 export default function TicketCart({
@@ -32,7 +33,8 @@ export default function TicketCart({
   total,
   onPurchase,
   isOpen,
-  onToggle
+  onToggle,
+  lotterySlug = 'weekend-special'
 }: TicketCartProps) {
   const { t } = useTranslation();
   const { playSound } = useSound();
@@ -77,7 +79,7 @@ export default function TicketCart({
       try {
         const ticketPrice = total / tickets.length; // Calculate individual ticket price
         const ticketsToSave = tickets.map((ticket) => ({
-          lotterySlug: 'weekend-special',
+          lotterySlug,
           numbers: ticket.numbers,
           txHash: result.boc,
           walletAddress: userAddress,

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Wallet, Sparkles } from 'lucide-react';
+import { Wallet, Sparkles, Ticket } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './Header.css';
 
@@ -33,6 +33,12 @@ function Header({ onConnect, walletAddress }: HeaderProps) {
             <Sparkles size={16} />
             <span>Демо</span>
           </Link>
+          {walletAddress && (
+            <Link to="/my-tickets" className="nav-link">
+              <Ticket size={16} />
+              <span>Мои билеты</span>
+            </Link>
+          )}
         </div>
 
         <motion.button

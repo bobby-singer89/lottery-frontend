@@ -1,0 +1,87 @@
+.my-tickets-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.my-tickets-page h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.tickets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ticket-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.lottery-name {
+  color: #ffd700;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.ticket-date {
+  color: #888;
+  font-size: 14px;
+}
+
+.ticket-numbers {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.number-ball {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.ticket-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.status {
+  font-size: 14px;
+}
+
+.status-active { color: #4ade80; }
+.status-won { color: #ffd700; }
+.status-lost { color: #888; }
+
+.price {
+  color: #4fc3f7;
+  font-weight: bold;
+}
+
+.ticket-tx {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #666;
+  font-family: monospace;
+}

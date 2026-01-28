@@ -54,7 +54,7 @@ export default function WeekendSpecialPage() {
     loadLotteryInfo();
   }, [loadLotteryInfo]);
 
-  const handlePurchase = async () => {
+  const handlePurchase = async (txBoc?: string) => {
     if (!lottery) return;
     if (!tonConnectUI.account?.address) {
       throw new Error(t('walletNotConnected', { defaultValue: 'Кошелёк не подключен' }));
@@ -65,12 +65,16 @@ export default function WeekendSpecialPage() {
       
       // Check if purchasing from cart or single ticket
       if (cart.tickets.length > 0) {
-        // Purchase multiple tickets from cart
-        const txHash = await buyLotteryTicket(
-          lottery.lotteryWallet || WEEKEND_SPECIAL_CONFIG.lotteryWallet,
-          cart.total,
-          cart.tickets[0].numbers // First ticket numbers for transaction memo
-        );
+        // For cart purchases, txBoc should be provided by TicketCart
+        // If not provided, send transaction using existing method
+        let txHash = txBoc;
+        if (!txHash) {
+          txHash = await buyLotteryTicket(
+            lottery.lotteryWallet || WEEKEND_SPECIAL_CONFIG.lotteryWallet,
+            cart.total,
+            cart.tickets[0].numbers // First ticket numbers for transaction memo
+          );
+        }
 
         // Register all tickets on backend
         await lotteryClient.buyTickets(WEEKEND_SPECIAL_CONFIG.slug, {
@@ -81,15 +85,20 @@ export default function WeekendSpecialPage() {
           discount: cart.discount
         });
 
-        // Clear cart
-        cart.clearCart();
+        // Note: cart.clearCart() is now called by TicketCart component if txBoc was provided
+        if (!txBoc) {
+          cart.clearCart();
+        }
       } else if (selectedNumbers.length > 0) {
-        // Purchase single ticket
-        const txHash = await buyLotteryTicket(
-          lottery.lotteryWallet || WEEKEND_SPECIAL_CONFIG.lotteryWallet,
-          actualPrice,
-          selectedNumbers
-        );
+        // For single ticket purchase from modal
+        let txHash = txBoc;
+        if (!txHash) {
+          txHash = await buyLotteryTicket(
+            lottery.lotteryWallet || WEEKEND_SPECIAL_CONFIG.lotteryWallet,
+            actualPrice,
+            selectedNumbers
+          );
+        }
 
         // Register ticket on backend
         await lotteryClient.buyTicket(WEEKEND_SPECIAL_CONFIG.slug, {
@@ -130,9 +139,26 @@ export default function WeekendSpecialPage() {
     setIsPurchaseModalOpen(true);
   };
 
-  const handlePurchaseFromCart = () => {
-    setIsCartOpen(false);
-    setIsPurchaseModalOpen(true);
+  const handlePurchaseFromCart = async (txBoc?: string) => {
+    // Backend registration is handled when txBoc is provided from TicketCart
+    if (txBoc && cart.tickets.length > 0 && tonConnectUI.account?.address && lottery) {
+      try {
+        await lotteryClient.buyTickets(WEEKEND_SPECIAL_CONFIG.slug, {
+          tickets: cart.tickets.map(ticket => ({ selectedNumbers: ticket.numbers })),
+          txHash: txBoc,
+          walletAddress: tonConnectUI.account.address,
+          totalAmount: cart.total,
+          discount: cart.discount
+        });
+        
+        // Refresh tickets list
+        setTicketsRefreshTrigger(prev => prev + 1);
+      } catch (error) {
+        console.error('Failed to register tickets on backend:', error);
+        // Re-throw to let TicketCart show error
+        throw error;
+      }
+    }
   };
 
   if (isLoading) {

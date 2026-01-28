@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTonConnectUI, useTonAddress } from '@tonconnect/ui-react';
+import { toNano } from '@ton/core';
 import { useSound } from '../../Advanced/SoundManager';
+import { LOTTERY_CONFIG } from '../../../config/lottery';
 import type { CartTicket } from '../../../hooks/useTicketCart';
 import './TicketCart.css';
 
@@ -13,7 +16,7 @@ interface TicketCartProps {
   discount: number;
   discountPercent: number;
   total: number;
-  onPurchase: () => void;
+  onPurchase: (txBoc?: string) => Promise<void> | void;
   isOpen: boolean;
   onToggle: () => void;
 }
@@ -34,6 +37,8 @@ export default function TicketCart({
   const { playSound } = useSound();
   const [tonConnectUI] = useTonConnectUI();
   const userAddress = useTonAddress();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleRemove = (id: string) => {
     onRemoveTicket(id);
@@ -45,9 +50,52 @@ export default function TicketCart({
     playSound('click');
   };
 
-  const handlePurchase = () => {
-    onPurchase();
-    playSound('click');
+  const handlePurchase = async () => {
+    if (!userAddress || tickets.length === 0) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes
+        messages: [
+          {
+            address: LOTTERY_CONFIG.WALLET_ADDRESS,
+            amount: toNano(total).toString(),
+            // Optional: add payload with ticket numbers
+          },
+        ],
+      };
+
+      const result = await tonConnectUI.sendTransaction(transaction);
+      
+      console.log('Transaction sent:', result.boc);
+      
+      // Call onPurchase callback with transaction BOC for backend registration
+      // This should be done before clearing cart in case it fails
+      if (onPurchase) {
+        await onPurchase(result.boc);
+      }
+      
+      // Clear cart after successful backend registration
+      onClearCart();
+      
+      // Show success message
+      playSound('win');
+      alert('✅ ' + t('ticketsPurchasedSuccess', { defaultValue: 'Билеты успешно куплены!' }));
+      
+      // Close cart after successful purchase
+      onToggle();
+      
+    } catch (err) {
+      console.error('Transaction failed:', err);
+      const errorMessage = err instanceof Error ? err.message : t('transactionFailed', { defaultValue: 'Transaction failed' });
+      setError(errorMessage);
+      playSound('lose');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleConnectWallet = async () => {
@@ -203,6 +251,7 @@ export default function TicketCart({
                       <button
                         className="clear-cart-btn"
                         onClick={handleClear}
+                        disabled={isLoading}
                       >
                         {t('clearCart', { defaultValue: 'Clear Cart' })}
                       </button>
@@ -216,14 +265,33 @@ export default function TicketCart({
                           🔗 {t('connectWalletToBuy', { defaultValue: 'Подключить кошелёк для покупки' })}
                         </motion.button>
                       ) : (
-                        <motion.button
-                          className="purchase-cart-btn"
-                          onClick={handlePurchase}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          🎫 {t('buyTickets', { defaultValue: 'Buy Tickets' })}
-                        </motion.button>
+                        <>
+                          {error && (
+                            <div className="cart-error-message" style={{ 
+                              color: '#ff4444', 
+                              padding: '8px', 
+                              marginBottom: '8px',
+                              borderRadius: '4px',
+                              backgroundColor: 'rgba(255, 68, 68, 0.1)',
+                              fontSize: '0.875rem'
+                            }}>
+                              ⚠️ {error}
+                            </div>
+                          )}
+                          <motion.button
+                            className="purchase-cart-btn"
+                            onClick={handlePurchase}
+                            disabled={isLoading || tickets.length === 0}
+                            whileHover={!isLoading ? { scale: 1.02 } : {}}
+                            whileTap={!isLoading ? { scale: 0.98 } : {}}
+                          >
+                            {isLoading ? (
+                              <>⏳ {t('processing', { defaultValue: 'Обработка...' })}</>
+                            ) : (
+                              <>💎 {t('buyTickets', { defaultValue: 'Купить билеты' })} — {total.toFixed(2)} TON</>
+                            )}
+                          </motion.button>
+                        </>
                       )}
                     </div>
 

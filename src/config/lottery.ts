@@ -1,3 +1,16 @@
+// Lottery Configuration Constants
+export const LOTTERY_CONFIG = {
+  // Testnet wallet address for receiving payments
+  WALLET_ADDRESS: '0QDAy6M4QQRcIy8jLl4n4acb7IxmDnPZiBqz7A_6xvY90GeY',
+  
+  // Ticket price in TON
+  TICKET_PRICE: 1,
+  
+  // Discount threshold (5+ tickets = 5% off)
+  DISCOUNT_THRESHOLD: 5,
+  DISCOUNT_PERCENT: 0.05,
+};
+
 // Weekend Special Lottery Configuration
 export const WEEKEND_SPECIAL_CONFIG = {
   slug: 'weekend-special',
@@ -5,9 +18,9 @@ export const WEEKEND_SPECIAL_CONFIG = {
   format: '5/36',
   numbersToSelect: 5,
   numbersPool: 36,
-  ticketPrice: 1, // TON
+  ticketPrice: LOTTERY_CONFIG.TICKET_PRICE, // TON
   ticketPriceNano: '1000000000', // nanotons
-  lotteryWallet: import.meta.env.VITE_LOTTERY_WALLET || '0QDAy6M4QQRcIy8jLl4n4acb7IxmDnPZiBqz7A_6xvY90GeY',
+  lotteryWallet: import.meta.env.VITE_LOTTERY_WALLET || LOTTERY_CONFIG.WALLET_ADDRESS,
   prizes: {
     5: 500,    // TON
     4: 50,

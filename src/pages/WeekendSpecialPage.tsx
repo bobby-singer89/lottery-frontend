@@ -109,8 +109,12 @@ export default function WeekendSpecialPage() {
     }
   };
 
-  const handleConnectWallet = () => {
-    tonConnectUI.openModal();
+  const handleConnectWallet = async () => {
+    try {
+      await tonConnectUI.openModal();
+    } catch (error) {
+      console.error('Failed to open wallet modal:', error);
+    }
   };
 
   const handleAddToCart = (numbers: number[]) => {

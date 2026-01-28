@@ -319,6 +319,25 @@
   transform: translateY(-2px);
 }
 
+.connect-wallet-cart-btn {
+  flex: 2;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: all 0.2s ease;
+}
+
+.connect-wallet-cart-btn:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  transform: translateY(-2px);
+}
+
 /* Discount Info */
 .discount-info {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);

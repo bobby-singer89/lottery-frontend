@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { apiClient } from '../lib/api/client';
 import { useTelegram } from '../lib/telegram/useTelegram';
+import type { TelegramUser } from '../components/TelegramLoginWidget/TelegramLoginWidget';
 
 interface User {
   id: number;
@@ -23,6 +24,7 @@ interface AuthContextType {
   login: () => Promise<void>;
   logout: () => void;
   connectWallet: (address: string) => Promise<void>;
+  loginWithTelegram: (telegramUser: TelegramUser) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -74,6 +76,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loginWithTelegram = async (telegramUser: TelegramUser): Promise<boolean> => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    try {
+      const response = await fetch(`${API_URL}/auth/telegram`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(telegramUser),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success && data.token) {
+        localStorage.setItem('auth_token', data.token);
+        apiClient.setToken(data.token);
+        setUser(data.user);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Telegram auth failed:', error);
+      return false;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -83,6 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         connectWallet,
+        loginWithTelegram,
       }}
     >
       {children}

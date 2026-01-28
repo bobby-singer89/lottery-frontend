@@ -50,9 +50,13 @@ export default function TicketCart({
     playSound('click');
   };
 
-  const handleConnectWallet = () => {
-    tonConnectUI.openModal();
-    playSound('click');
+  const handleConnectWallet = async () => {
+    try {
+      await tonConnectUI.openModal();
+      playSound('click');
+    } catch (error) {
+      console.error('Failed to open wallet modal:', error);
+    }
   };
 
   return (

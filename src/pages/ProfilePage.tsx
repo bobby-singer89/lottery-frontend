@@ -34,12 +34,20 @@ function ProfilePage() {
     wonTickets: 3,
   };
 
-  const handleConnectWallet = () => {
-    tonConnectUI.openModal();
+  const handleConnectWallet = async () => {
+    try {
+      await tonConnectUI.openModal();
+    } catch (error) {
+      console.error('Failed to open wallet modal:', error);
+    }
   };
 
-  const handleDisconnectWallet = () => {
-    tonConnectUI.disconnect();
+  const handleDisconnectWallet = async () => {
+    try {
+      await tonConnectUI.disconnect();
+    } catch (error) {
+      console.error('Failed to disconnect wallet:', error);
+    }
   };
 
   const handleTabChange = (tab: string) => {

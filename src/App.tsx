@@ -188,7 +188,7 @@ function App() {
   };
 
   return (
-    <TonConnectUIProvider manifestUrl="https://lottery-frontend-alpha.vercel.app/tonconnect-manifest.json">
+    <TonConnectUIProvider manifestUrl="https://raw.githubusercontent.com/bobby-singer89/lottery-frontend/main/public/tonconnect-manifest.json">
       <AuthProvider>
         <SoundProvider>
           {!ageConfirmed && <AgeGate onConfirm={handleAgeConfirm} />}

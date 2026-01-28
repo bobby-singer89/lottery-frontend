@@ -77,20 +77,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loginWithTelegram = async (telegramUser: TelegramUser): Promise<boolean> => {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
     try {
-      const response = await fetch(`${API_URL}/auth/telegram`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(telegramUser),
+      const response = await apiClient.loginTelegram({
+        id: telegramUser.id,
+        first_name: telegramUser.first_name,
+        last_name: telegramUser.last_name,
+        username: telegramUser.username,
       });
       
-      const data = await response.json();
-      
-      if (data.success && data.token) {
-        localStorage.setItem('auth_token', data.token);
-        apiClient.setToken(data.token);
-        setUser(data.user);
+      if (response.success && response.token) {
+        apiClient.setToken(response.token);
+        setUser(response.user);
         return true;
       }
       return false;

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, Sparkles, Ticket, ShieldCheck, LogIn, LogOut, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { adminApiClient } from '../../lib/api/adminClient';
 import TelegramLoginWidget from '../TelegramLoginWidget/TelegramLoginWidget';
@@ -37,17 +37,17 @@ function Header({ onConnect, walletAddress }: HeaderProps) {
     checkAdminStatus();
   }, [isAuthenticated, user]);
 
-  const handleTelegramAuth = async (telegramUser: TelegramUser) => {
+  const handleTelegramAuth = useCallback(async (telegramUser: TelegramUser) => {
     const success = await loginWithTelegram(telegramUser);
     if (success) {
       setShowLoginModal(false);
     }
-  };
+  }, [loginWithTelegram]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     setIsAdmin(false);
-  };
+  }, [logout]);
 
   return (
     <>

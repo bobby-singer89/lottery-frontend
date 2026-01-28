@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTonAddress } from '@tonconnect/ui-react';
+import { useTonConnectUI, useTonAddress } from '@tonconnect/ui-react';
+import { toNano } from '@ton/core';
 import confetti from 'canvas-confetti';
 import { useSound } from '../../Advanced/SoundManager';
+import { LOTTERY_CONFIG } from '../../../config/lottery';
 import type { CartTicket } from '../../../hooks/useTicketCart';
 import './PurchaseModal.css';
 
@@ -15,7 +17,7 @@ interface PurchaseModalProps {
   ticketPrice: number;
   discount?: number;
   total?: number;
-  onPurchase: () => Promise<void>;
+  onPurchase: (txBoc?: string) => Promise<void>;
   onConnectWallet: () => void;
 }
 
@@ -33,6 +35,7 @@ export default function PurchaseModal({
 }: PurchaseModalProps) {
   const { t } = useTranslation();
   const { playSound } = useSound();
+  const [tonConnectUI] = useTonConnectUI();
   const userAddress = useTonAddress();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,11 +52,35 @@ export default function PurchaseModal({
   }, [isOpen]);
 
   const handlePurchase = async () => {
+    if (!userAddress) return;
+    
     setIsLoading(true);
     setError(null);
 
     try {
-      await onPurchase();
+      const finalTotal = total || ticketPrice;
+      
+      const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes
+        messages: [
+          {
+            address: LOTTERY_CONFIG.WALLET_ADDRESS,
+            amount: toNano(finalTotal).toString(),
+            // Optional: add payload with ticket numbers
+          },
+        ],
+      };
+
+      const result = await tonConnectUI.sendTransaction(transaction);
+      
+      console.log('Transaction sent:', result.boc);
+      setTxHash(result.boc);
+      
+      // Call onPurchase callback with transaction BOC for backend registration
+      if (onPurchase) {
+        await onPurchase(result.boc);
+      }
+      
       setSuccess(true);
       playSound('win');
       
@@ -69,6 +96,7 @@ export default function PurchaseModal({
         onClose();
       }, 3000);
     } catch (err) {
+      console.error('Transaction failed:', err);
       const errorMessage = err instanceof Error ? err.message : t('purchaseError', { defaultValue: 'Ошибка покупки билета' });
       setError(errorMessage);
       playSound('lose');

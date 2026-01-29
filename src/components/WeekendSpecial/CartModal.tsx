@@ -16,7 +16,7 @@ interface CartModalProps {
   total: number;
   discount?: number;
   discountPercent?: number;
-  subtotal?: number;
+  subtotal: number;
 }
 
 export default function CartModal({
@@ -40,7 +40,6 @@ export default function CartModal({
   };
 
   const hasDiscount = discount > 0;
-  const actualSubtotal = subtotal || (tickets.length * (tickets[0]?.price || 1));
 
   return (
     <div className="ws-cart-modal-overlay" onClick={onClose}>
@@ -90,7 +89,7 @@ export default function CartModal({
               <div className="ws-cart-summary">
                 <div className="ws-cart-summary-row">
                   <span>Итого: {tickets.length} билет{pluralize(tickets.length)}</span>
-                  <span>{actualSubtotal.toFixed(1)} TON</span>
+                  <span>{subtotal.toFixed(1)} TON</span>
                 </div>
                 
                 {hasDiscount && (

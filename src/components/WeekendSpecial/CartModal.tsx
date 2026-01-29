@@ -14,6 +14,9 @@ interface CartModalProps {
   onClear: () => void;
   onCheckout: () => void;
   total: number;
+  discount?: number;
+  discountPercent?: number;
+  subtotal: number;
 }
 
 export default function CartModal({
@@ -23,7 +26,10 @@ export default function CartModal({
   onRemove,
   onClear,
   onCheckout,
-  total
+  total,
+  discount = 0,
+  discountPercent = 0,
+  subtotal
 }: CartModalProps) {
   if (!isOpen) return null;
 
@@ -32,6 +38,8 @@ export default function CartModal({
     if (count >= 2 && count <= 4) return 'а';
     return 'ов';
   };
+
+  const hasDiscount = discount > 0;
 
   return (
     <div className="ws-cart-modal-overlay" onClick={onClose}>
@@ -81,10 +89,23 @@ export default function CartModal({
               <div className="ws-cart-summary">
                 <div className="ws-cart-summary-row">
                   <span>Итого: {tickets.length} билет{pluralize(tickets.length)}</span>
+                  <span>{subtotal.toFixed(1)} TON</span>
                 </div>
+                
+                {hasDiscount && (
+                  <div className="ws-cart-summary-row ws-discount-row">
+                    <span className="ws-discount-label">
+                      Скидка {discountPercent}% (от 5 билетов)
+                    </span>
+                    <span className="ws-discount-amount">
+                      -{discount.toFixed(2)} TON
+                    </span>
+                  </div>
+                )}
+                
                 <div className="ws-cart-summary-row ws-cart-total-row">
                   <span>Сумма:</span>
-                  <strong>{total.toFixed(1)} TON</strong>
+                  <strong className="ws-final-cost">{total.toFixed(1)} TON</strong>
                 </div>
               </div>
             </>

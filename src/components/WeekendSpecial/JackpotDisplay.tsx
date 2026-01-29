@@ -35,7 +35,9 @@ export default function JackpotDisplay({
     }
 
     const interval = setInterval(() => {
-      setJackpot(prev => prev + Math.floor(Math.random() * 10));
+      // Always increment (1-5 TON)
+      const increment = Math.floor(Math.random() * 5) + 1;
+      setJackpot(prev => prev + increment);
     }, 3000);
 
     return () => clearInterval(interval);

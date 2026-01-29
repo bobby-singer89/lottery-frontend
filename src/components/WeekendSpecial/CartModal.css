@@ -198,6 +198,25 @@
   font-size: 20px;
 }
 
+/* Discount styles */
+.ws-discount-row {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.ws-discount-label {
+  color: #4ade80;
+}
+
+.ws-discount-amount {
+  color: #4ade80;
+}
+
+.ws-final-cost {
+  color: #FFD700;
+  font-size: 1.3em;
+}
+
 .ws-cart-modal-footer {
   display: flex;
   gap: 12px;

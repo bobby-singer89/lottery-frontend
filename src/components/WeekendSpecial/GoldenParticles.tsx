@@ -13,7 +13,7 @@ export default function GoldenParticles({ count = 20, enabled = true }: GoldenPa
     delay: Math.random() * 5,
     duration: 4 + Math.random() * 3,
     x: Math.random() * 100,
-    size: 8 + Math.random() * 8,
+    size: 10 + Math.random() * 2, // Reduced from 8-16px to 10-12px
   }));
 
   return (

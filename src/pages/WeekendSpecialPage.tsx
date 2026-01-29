@@ -5,9 +5,7 @@ import { useTonConnectUI } from '@tonconnect/ui-react';
 import { WEEKEND_SPECIAL_CONFIG } from '../config/lottery';
 import { lotteryClient, type LotteryInfo, type NextDraw } from '../lib/api/lotteryClient';
 import { useTonTransaction } from '../hooks/useTonTransaction';
-import { useAuth } from '../contexts/AuthContext';
 import { useTicketCart } from '../hooks/useTicketCart';
-import MyTickets from '../components/Lottery/MyTickets/MyTickets';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import PurchaseModal from '../components/Lottery/PurchaseModal/PurchaseModal';
 import {
@@ -25,7 +23,6 @@ import './WeekendSpecialPage.css';
 export default function WeekendSpecialPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
   const [tonConnectUI] = useTonConnectUI();
   const { buyLotteryTicket } = useTonTransaction();
 
@@ -34,7 +31,6 @@ export default function WeekendSpecialPage() {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [ticketsRefreshTrigger, setTicketsRefreshTrigger] = useState(0);
   const [participantsCount] = useState(() => Math.floor(Math.random() * 300 + 200));
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   
@@ -115,9 +111,6 @@ export default function WeekendSpecialPage() {
         // Clear selection
         setSelectedNumbers([]);
       }
-
-      // Refresh tickets list
-      setTicketsRefreshTrigger(prev => prev + 1);
     } catch (error) {
       throw error; // Let modal handle the error
     }
@@ -209,7 +202,7 @@ export default function WeekendSpecialPage() {
 
         {/* Header */}
         <div className="ws-header">
-          <h1 className="ws-page-title">Weekend Millions</h1>
+          <h1 className="ws-page-title">Weekend Special</h1>
         </div>
 
         {/* Jackpot Display with Steampunk Glitch */}
@@ -279,14 +272,6 @@ export default function WeekendSpecialPage() {
             onAddToCart={selectedNumbers.length === WEEKEND_SPECIAL_CONFIG.numbersToSelect ? () => handleAddToCart(selectedNumbers) : undefined}
           />
         </div>
-
-        {/* My Tickets */}
-        {isAuthenticated && (
-          <MyTickets 
-            lotterySlug={WEEKEND_SPECIAL_CONFIG.slug}
-            refreshTrigger={ticketsRefreshTrigger}
-          />
-        )}
       </div>
 
       {/* Cart Preview (Floating) */}
@@ -305,6 +290,9 @@ export default function WeekendSpecialPage() {
         onClear={cart.clearCart}
         onCheckout={handleCartCheckout}
         total={cart.total}
+        discount={cart.discount}
+        discountPercent={cart.discountPercent}
+        subtotal={cart.subtotal}
       />
 
       {/* Purchase Modal */}

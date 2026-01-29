@@ -70,10 +70,15 @@ class ApiClient {
     });
   }
 
-  async connectWallet(tonWallet: string) {
+  async connectWallet(tonWallet: string, telegramData?: {
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    photoUrl?: string;
+  }) {
     return this.request<{ success: boolean; user: any }>('/auth/connect-wallet', {
       method: 'POST',
-      body: JSON.stringify({ tonWallet }),
+      body: JSON.stringify({ tonWallet, ...telegramData }),
     });
   }
 

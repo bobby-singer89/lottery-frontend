@@ -9,6 +9,7 @@ interface User {
   username?: string;
   firstName?: string;
   lastName?: string;
+  photoUrl?: string;
   tonWallet?: string;
   level: string;
   experience: number;
@@ -32,7 +33,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { user: telegramUser, webApp } = useTelegram();
+  const { user: telegramUser, webApp, isReady } = useTelegram();
 
   useEffect(() => {
     // Auto-login if Telegram user available
@@ -72,7 +73,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const connectWallet = async (address: string) => {
     try {
-      const response = await apiClient.connectWallet(address);
+      // Include Telegram profile data when connecting wallet
+      const telegramData = telegramUser ? {
+        username: telegramUser.username,
+        firstName: telegramUser.first_name,
+        lastName: telegramUser.last_name,
+        photoUrl: telegramUser.photo_url,
+      } : undefined;
+      
+      const response = await apiClient.connectWallet(address, telegramData);
       setUser(response.user);
     } catch (error) {
       console.error('Connect wallet failed:', error);

@@ -1,8 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wallet, Sparkles, Ticket, ShieldCheck, LogIn, LogOut, User } from 'lucide-react';
+import { Wallet, Sparkles, Ticket, ShieldCheck, LogOut, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTelegram } from '../../lib/telegram/useTelegram';
 import { adminApiClient } from '../../lib/api/adminClient';
 import TelegramLoginWidget from '../TelegramLoginWidget/TelegramLoginWidget';
 import type { TelegramUser } from '../TelegramLoginWidget/TelegramLoginWidget';
@@ -15,6 +16,7 @@ interface HeaderProps {
 
 function Header({ onConnect, walletAddress }: HeaderProps) {
   const { user, isAuthenticated, loginWithTelegram, logout } = useAuth();
+  const { user: telegramUser, isReady } = useTelegram();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -89,7 +91,8 @@ function Header({ onConnect, walletAddress }: HeaderProps) {
         </div>
 
         <div className="header-actions">
-          {!isAuthenticated ? (
+          {!isAuthenticated && !isReady ? (
+            // Show login button only if not in Telegram WebApp
             <motion.button
               className="login-btn"
               onClick={() => setShowLoginModal(true)}
@@ -99,10 +102,10 @@ function Header({ onConnect, walletAddress }: HeaderProps) {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
             >
-              <LogIn size={18} />
+              <User size={18} />
               <span>Войти</span>
             </motion.button>
-          ) : (
+          ) : isAuthenticated ? (
             <motion.div
               className="user-menu"
               initial={{ x: 100, opacity: 0 }}
@@ -110,14 +113,25 @@ function Header({ onConnect, walletAddress }: HeaderProps) {
               transition={{ delay: 0.3, duration: 0.5 }}
             >
               <div className="user-info">
-                <User size={18} />
-                <span>{user?.firstName || user?.username || 'User'}</span>
+                {(user?.photoUrl || telegramUser?.photo_url) ? (
+                  <img 
+                    src={user?.photoUrl || telegramUser?.photo_url} 
+                    alt="Profile" 
+                    className="user-avatar"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <User size={18} />
+                )}
+                <span>{user?.firstName || user?.username || telegramUser?.first_name || telegramUser?.username || 'User'}</span>
               </div>
               <button className="logout-btn" onClick={handleLogout}>
                 <LogOut size={16} />
               </button>
             </motion.div>
-          )}
+          ) : null}
 
           <motion.button
             className="wallet-btn"

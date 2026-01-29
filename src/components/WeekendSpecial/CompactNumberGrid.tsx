@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHeatmap } from '../../hooks/useHeatmap';
 import HeatmapToggle from './HeatmapToggle';
@@ -25,7 +26,7 @@ export default function CompactNumberGrid({
   disabled = false
 }: CompactNumberGridProps) {
   const { t } = useTranslation();
-  const [showHeatmap, setShowHeatmap] = React.useState(false);
+  const [showHeatmap, setShowHeatmap] = useState(false);
   const { getHeatLevel, getHeatColor } = useHeatmap(totalNumbers);
 
   const handleNumberClick = (num: number) => {
@@ -107,19 +108,6 @@ export default function CompactNumberGrid({
           🛒 В корзину
         </button>
       )}
-
-      {onAddToCart && selected.length === maxSelection && (
-        <button
-          className="ws-clear-selection-btn"
-          onClick={onClear}
-          disabled={disabled}
-        >
-          🗑️ Очистить
-        </button>
-      )}
     </div>
   );
 }
-
-// Add React import
-import React from 'react';

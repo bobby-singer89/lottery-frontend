@@ -21,41 +21,59 @@
 }
 
 .ws-grid-actions {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
   margin-bottom: 12px;
 }
 
 .ws-action-btn {
-  flex: 1;
-  padding: 10px 16px;
-  border-radius: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
   border: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .ws-quickpick-btn {
-  background: linear-gradient(135deg, #FFD700, #FF6B35);
+  background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #1a1a2e;
 }
 
 .ws-quickpick-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.ws-add-ticket-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.ws-add-ticket-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.ws-add-ticket-btn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .ws-clear-btn {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #ef4444;
 }
 
 .ws-clear-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.6);
 }
 
 .ws-action-btn:disabled {

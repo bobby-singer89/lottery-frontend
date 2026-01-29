@@ -36,25 +36,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { user: telegramUser, webApp } = useTelegram();
 
   useEffect(() => {
-    // Auto-login if Telegram user available
-    if (telegramUser && !user) {
+    // Auto-login if Telegram user and webApp are available
+    if (telegramUser && webApp && !user) {
       login();
     } else {
       setIsLoading(false);
     }
-  }, [telegramUser, user]);
+  }, [telegramUser, webApp, user]);
 
   const login = async () => {
-    if (!telegramUser) {
-      throw new Error('Telegram user not available');
+    if (!telegramUser || !webApp) {
+      setIsLoading(false);
+      return;
     }
 
     try {
       setIsLoading(true);
       const response = await apiClient.loginTelegram({
-        ...telegramUser,
-        auth_date: webApp?.initDataUnsafe.auth_date,
-        hash: webApp?.initDataUnsafe.hash,
+        id: telegramUser.id,
+        first_name: telegramUser.first_name,
+        last_name: telegramUser.last_name,
+        username: telegramUser.username,
+        photo_url: telegramUser.photo_url,
+        auth_date: webApp.initDataUnsafe?.auth_date,
+        hash: webApp.initDataUnsafe?.hash,
       });
       apiClient.setToken(response.token);
       setUser(response.user);

@@ -44,7 +44,7 @@ class ApiClient {
 
   // Auth endpoints
   async loginTelegram(telegramUser: {
-    id: number;
+    id: string | number;
     first_name?: string;
     last_name?: string;
     username?: string;
@@ -56,10 +56,10 @@ class ApiClient {
       success: boolean;
       token: string;
       user: any;
-    }>('/api/auth/telegram', {   
+    }>('/api/auth/telegram', {
       method: 'POST',
       body: JSON.stringify({
-        id: telegramUser.id.toString(),
+        id: telegramUser.id?.toString(),
         first_name: telegramUser.first_name,
         last_name: telegramUser.last_name,
         username: telegramUser.username,

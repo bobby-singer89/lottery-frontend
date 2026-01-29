@@ -13,16 +13,16 @@
  * @returns API base URL with /api suffix
  * 
  * @example
- * // With /api suffix
- * getApiBaseUrl('https://example.com/api') // 'https://example.com/api'
+ * // When VITE_API_URL='https://example.com/api'
+ * getApiBaseUrl() // returns 'https://example.com/api'
  * 
  * @example
- * // Without /api suffix
- * getApiBaseUrl('https://example.com') // 'https://example.com/api'
+ * // When VITE_API_URL='https://example.com'
+ * getApiBaseUrl() // returns 'https://example.com/api'
  * 
  * @example
- * // With trailing slashes
- * getApiBaseUrl('https://example.com//') // 'https://example.com/api'
+ * // When VITE_API_URL='https://example.com//'
+ * getApiBaseUrl() // returns 'https://example.com/api'
  */
 export function getApiBaseUrl(): string {
   const baseUrl = import.meta.env.VITE_API_URL || 'https://lottery-backend-gm4j.onrender.com';

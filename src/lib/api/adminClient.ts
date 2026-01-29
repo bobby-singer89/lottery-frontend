@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://lottery-backend-gm4j.onrender.com/api';
+import { getApiBaseUrl } from '../utils/env';
+
+const API_BASE_URL = getApiBaseUrl();
 
 interface AdminStats {
   totalUsers: number;

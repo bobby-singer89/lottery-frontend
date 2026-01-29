@@ -35,16 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const { user: telegramUser, webApp } = useTelegram();
 
-  useEffect(() => {
-    // Auto-login if Telegram user and webApp are available
-    if (telegramUser && webApp && !user) {
-      login();
-    } else {
-      setIsLoading(false);
-    }
-  }, [telegramUser, webApp, user]);
-
-  const login = async () => {
+  const login = useCallback(async () => {
     if (!telegramUser || !webApp) {
       setIsLoading(false);
       return;
@@ -65,11 +56,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(response.user);
     } catch (error) {
       console.error('Login failed:', error);
-      throw error;
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [telegramUser, webApp]);
+
+  useEffect(() => {
+    // Auto-login if Telegram user and webApp are available
+    if (telegramUser && webApp && !user) {
+      login();
+    } else {
+      setIsLoading(false);
+    }
+  }, [telegramUser, webApp, user, login]);
 
   const logout = () => {
     apiClient.clearToken();

@@ -22,9 +22,9 @@ export default function AdminGuard({ children }: AdminGuardProps) {
         return;
       }
 
-      // Redirect if not authenticated
+      // Redirect to admin login if not authenticated
       if (!isAuthenticated || !user) {
-        navigate('/');
+        navigate('/admin/login');
         return;
       }
 

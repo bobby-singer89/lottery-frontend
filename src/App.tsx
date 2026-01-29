@@ -14,6 +14,7 @@ import LotteriesPage from './pages/LotteriesPage';
 import HistoryPage from './pages/HistoryPage';
 import ReferralPage from './pages/ReferralPage';
 import AdminGuard from './components/Admin/AdminGuard';
+import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminLotteries from './pages/admin/AdminLotteries';
@@ -207,6 +208,7 @@ function App() {
               <Route path="/referral" element={<ReferralPage />} />
               <Route path="/my-tickets" element={<MyTicketsPage />} />
               {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               <Route path="/admin/users" element={<AdminGuard><AdminUsers /></AdminGuard>} />
               <Route path="/admin/lotteries" element={<AdminGuard><AdminLotteries /></AdminGuard>} />

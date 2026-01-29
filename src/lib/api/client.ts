@@ -1,15 +1,4 @@
-/**
- * Get API base URL and ensure it ends with /api
- */
-const getApiBaseUrl = (): string => {
-  const baseUrl = import.meta.env.VITE_API_URL || 'https://lottery-backend-gm4j.onrender.com';
-  
-  // Remove trailing slash if present
-  const cleanUrl = baseUrl.replace(/\/$/, '');
-  
-  // Ensure /api suffix
-  return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
-};
+import { getApiBaseUrl } from '../utils/env';
 
 const API_BASE_URL = getApiBaseUrl();
 

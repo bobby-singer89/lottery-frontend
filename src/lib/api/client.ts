@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://lottery-backend-gm4j.onrender.com/api';
 
 class ApiClient {
   private baseURL: string;
@@ -56,7 +56,7 @@ class ApiClient {
       success: boolean;
       token: string;
       user: any;
-    }>('/api/auth/telegram', {
+    }>('/auth/telegram', {
       method: 'POST',
       body: JSON.stringify({
         id: telegramUser.id.toString(),

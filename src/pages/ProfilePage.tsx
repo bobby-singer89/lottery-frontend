@@ -60,9 +60,12 @@ function ProfilePage() {
   const [copied, setCopied] = useState(false);
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [hasProfileError, setHasProfileError] = useState(false);
 
   // Fetch user profile data
   useEffect(() => {
+    let isCancelled = false;
+
     const loadProfile = async () => {
       if (!user) {
         setIsLoadingProfile(false);
@@ -71,23 +74,34 @@ function ProfilePage() {
 
       try {
         setIsLoadingProfile(true);
+        setHasProfileError(false);
         const response = await apiClient.getProfile();
         
-        if (response.success) {
-          setProfileData(response as any);
+        if (!isCancelled && response.success) {
+          setProfileData(response as any); // TODO: Type the API response properly
         }
       } catch (error) {
         console.error('Failed to load profile:', error);
+        if (!isCancelled) {
+          setHasProfileError(true);
+        }
       } finally {
-        setIsLoadingProfile(false);
+        if (!isCancelled) {
+          setIsLoadingProfile(false);
+        }
       }
     };
 
     loadProfile();
+
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      isCancelled = true;
+    };
   }, [user]);
 
   // Profile display data (fallback to Telegram data if API data not available)
-  const displayData = {
+  const userProfileDisplay = {
     name: profileData?.user?.firstName || user?.firstName || user?.username || telegramUser?.first_name || telegramUser?.username || 'Player',
     avatar: profileData?.user?.photoUrl || user?.photoUrl || telegramUser?.photo_url,
     avatarLetter: (profileData?.user?.firstName || user?.firstName || user?.username || telegramUser?.first_name || telegramUser?.username || 'P').charAt(0).toUpperCase(),
@@ -147,7 +161,7 @@ function ProfilePage() {
 
   const handleCopyReferral = async () => {
     try {
-      await navigator.clipboard.writeText(displayData.referralCode);
+      await navigator.clipboard.writeText(userProfileDisplay.referralCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -160,7 +174,7 @@ function ProfilePage() {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={handleConnectWallet} walletAddress={displayData.walletAddress || undefined} />
+        <Header onConnect={handleConnectWallet} walletAddress={userProfileDisplay.walletAddress || undefined} />
         
         <main className="profile-page">
           {!isReady ? (
@@ -177,6 +191,28 @@ function ProfilePage() {
                 <p>Пожалуйста, откройте это приложение через Telegram Mini App для доступа к полному функционалу.</p>
               </div>
             </motion.div>
+          ) : hasProfileError ? (
+            // Error state
+            <motion.div
+              className="profile-container"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="profile-error">
+                <AlertCircle size={64} className="error-icon" />
+                <h2>Не удалось загрузить профиль</h2>
+                <p>Произошла ошибка при загрузке данных профиля. Пожалуйста, попробуйте позже.</p>
+                <motion.button
+                  className="retry-button"
+                  onClick={() => window.location.reload()}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Попробовать снова
+                </motion.button>
+              </div>
+            </motion.div>
           ) : isLoadingProfile ? (
             // Loading state
             <motion.div
@@ -190,10 +226,11 @@ function ProfilePage() {
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   style={{ fontSize: '2rem' }}
+                  aria-hidden="true"
                 >
                   ⟳
                 </motion.div>
-                <p>Загрузка профиля...</p>
+                <p aria-live="polite">Загрузка профиля...</p>
               </div>
             </motion.div>
           ) : (
@@ -212,9 +249,9 @@ function ProfilePage() {
             >
               <div className="profile-avatar">
                 <div className="avatar-circle">
-                  {displayData.avatar ? (
+                  {userProfileDisplay.avatar ? (
                     <img 
-                      src={displayData.avatar} 
+                      src={userProfileDisplay.avatar} 
                       alt="Profile" 
                       className="avatar-image"
                       onError={(e) => {
@@ -230,19 +267,19 @@ function ProfilePage() {
                   ) : null}
                   <span 
                     className="avatar-letter" 
-                    style={{ display: displayData.avatar ? 'none' : 'flex' }}
+                    style={{ display: userProfileDisplay.avatar ? 'none' : 'flex' }}
                   >
-                    {displayData.avatarLetter}
+                    {userProfileDisplay.avatarLetter}
                   </span>
                 </div>
                 <div className="avatar-level">
                   <Star size={12} />
-                  <span>{displayData.level}</span>
+                  <span>{userProfileDisplay.level}</span>
                 </div>
               </div>
               
               <div className="profile-info">
-                <h1 className="profile-name">{displayData.name}</h1>
+                <h1 className="profile-name">{userProfileDisplay.name}</h1>
                 {!userAddress ? (
                   <button onClick={handleConnectWallet} className="profile-wallet-status connect-wallet-btn">
                     <Wallet size={16} />
@@ -271,7 +308,7 @@ function ProfilePage() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-label">Потрачено</div>
-                  <div className="stat-value">{displayData.totalSpent} TON</div>
+                  <div className="stat-value">{userProfileDisplay.totalSpent} TON</div>
                 </div>
               </motion.div>
 
@@ -286,7 +323,7 @@ function ProfilePage() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-label">Выиграно</div>
-                  <div className="stat-value">{displayData.totalWon} TON</div>
+                  <div className="stat-value">{userProfileDisplay.totalWon} TON</div>
                 </div>
               </motion.div>
 
@@ -301,7 +338,7 @@ function ProfilePage() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-label">Уровень</div>
-                  <div className="stat-value">{displayData.level}</div>
+                  <div className="stat-value">{userProfileDisplay.level}</div>
                 </div>
               </motion.div>
 
@@ -316,7 +353,7 @@ function ProfilePage() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-label">Серия</div>
-                  <div className="stat-value">{displayData.streak} дней</div>
+                  <div className="stat-value">{userProfileDisplay.streak} дней</div>
                 </div>
               </motion.div>
             </div>
@@ -330,13 +367,13 @@ function ProfilePage() {
             >
               <div className="xp-header">
                 <span className="xp-label">Опыт</span>
-                <span className="xp-value">{displayData.xp} / {displayData.maxXp} XP</span>
+                <span className="xp-value">{userProfileDisplay.xp} / {userProfileDisplay.maxXp} XP</span>
               </div>
               <div className="xp-bar-bg">
                 <motion.div
                   className="xp-bar-fill"
                   initial={{ width: 0 }}
-                  animate={{ width: `${(displayData.xp / displayData.maxXp) * 100}%` }}
+                  animate={{ width: `${(userProfileDisplay.xp / userProfileDisplay.maxXp) * 100}%` }}
                   transition={{ duration: 1, delay: 0.5 }}
                 />
               </div>
@@ -353,15 +390,15 @@ function ProfilePage() {
               <div className="tickets-summary">
                 <div className="ticket-stat">
                   <span className="ticket-stat-label">Всего</span>
-                  <span className="ticket-stat-value">{displayData.totalTickets}</span>
+                  <span className="ticket-stat-value">{userProfileDisplay.totalTickets}</span>
                 </div>
                 <div className="ticket-stat">
                   <span className="ticket-stat-label">Активных</span>
-                  <span className="ticket-stat-value active">{displayData.activeTickets}</span>
+                  <span className="ticket-stat-value active">{userProfileDisplay.activeTickets}</span>
                 </div>
                 <div className="ticket-stat">
                   <span className="ticket-stat-label">Выигрышей</span>
-                  <span className="ticket-stat-value won">{displayData.wonTickets}</span>
+                  <span className="ticket-stat-value won">{userProfileDisplay.wonTickets}</span>
                 </div>
               </div>
               
@@ -369,13 +406,12 @@ function ProfilePage() {
               {profileData?.activeTickets && profileData.activeTickets.length > 0 && (
                 <div className="active-tickets-list">
                   <h3 className="tickets-subtitle">Активные билеты</h3>
-                  {profileData.activeTickets.map((ticket) => (
+                  {profileData.activeTickets.slice(0, 5).map((ticket) => (
                     <motion.div
                       key={ticket.id}
                       className="ticket-item"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      whileHover={{ scale: 1.02 }}
                     >
                       <div className="ticket-icon">
                         <Ticket size={20} />
@@ -393,6 +429,11 @@ function ProfilePage() {
                       </div>
                     </motion.div>
                   ))}
+                  {profileData.activeTickets.length > 5 && (
+                    <div className="tickets-more">
+                      +{profileData.activeTickets.length - 5} больше билетов
+                    </div>
+                  )}
                 </div>
               )}
             </motion.div>
@@ -408,11 +449,11 @@ function ProfilePage() {
               <div className="referral-stats">
                 <div className="referral-stat">
                   <span className="referral-stat-label">Приглашено</span>
-                  <span className="referral-stat-value">{displayData.referredUsers}</span>
+                  <span className="referral-stat-value">{userProfileDisplay.referredUsers}</span>
                 </div>
                 <div className="referral-stat">
                   <span className="referral-stat-label">Заработано</span>
-                  <span className="referral-stat-value">{displayData.referralEarnings} TON</span>
+                  <span className="referral-stat-value">{userProfileDisplay.referralEarnings} TON</span>
                 </div>
               </div>
             </motion.div>
@@ -426,7 +467,7 @@ function ProfilePage() {
             >
               <h2 className="section-title">Реферальный код</h2>
               <div className="referral-code-card">
-                <div className="referral-code-text">{displayData.referralCode}</div>
+                <div className="referral-code-text">{userProfileDisplay.referralCode}</div>
                 <motion.button
                   className="copy-button"
                   onClick={handleCopyReferral}

@@ -86,10 +86,12 @@ export default function AdminLogin() {
               <input
                 id="telegramId"
                 type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 className="admin-login-input"
                 placeholder="Enter your Telegram ID (e.g., 432735601)"
                 value={telegramId}
-                onChange={(e) => setTelegramId(e.target.value)}
+                onChange={(e) => setTelegramId(e.target.value.replace(/\D/g, ''))}
                 disabled={isLoading}
                 autoComplete="username"
               />
@@ -118,6 +120,7 @@ export default function AdminLogin() {
               disabled={isLoading}
               whileHover={{ scale: isLoading ? 1 : 1.02 }}
               whileTap={{ scale: isLoading ? 1 : 0.98 }}
+              aria-label={isLoading ? 'Logging in, please wait' : 'Login to admin panel'}
             >
               {isLoading ? (
                 <span className="admin-login-loading">
@@ -125,10 +128,11 @@ export default function AdminLogin() {
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                     style={{ display: 'inline-block' }}
+                    aria-hidden="true"
                   >
                     ⟳
                   </motion.span>
-                  Logging in...
+                  <span aria-live="polite">Logging in...</span>
                 </span>
               ) : (
                 'Login to Admin Panel'

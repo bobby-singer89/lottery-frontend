@@ -448,6 +448,50 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* Profile Error State */
+.profile-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.profile-error .error-icon {
+  color: #ef4444;
+  margin-bottom: 0.5rem;
+}
+
+.profile-error h2 {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.retry-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #df600c, #f45da6, #9e0ac7);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tickets-more {
+  padding: 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+
 /* Active Tickets List */
 .active-tickets-list {
   margin-top: 1.5rem;
@@ -472,7 +516,6 @@
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  cursor: pointer;
   transition: all 0.3s ease;
 }
 

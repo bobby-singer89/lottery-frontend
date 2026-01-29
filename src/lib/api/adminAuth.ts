@@ -22,11 +22,20 @@ export interface AdminLoginResponse {
 
 /**
  * Admin login function
- * For now, accepts any password and calls the Telegram auth endpoint
- * followed by admin check
+ * 
+ * SECURITY NOTE: This is a temporary implementation that accepts any password.
+ * The actual authentication is based on the Telegram ID being in the AdminUser table.
+ * 
+ * TODO: Implement proper password validation in the backend and frontend.
+ * For production use, this should be replaced with proper password hashing and verification.
  */
 export async function adminLogin(telegramId: string, _password: string): Promise<AdminLoginResponse> {
   try {
+    // Validate telegramId format (must be numeric)
+    if (!/^\d+$/.test(telegramId)) {
+      throw new Error('Telegram ID must be a numeric value');
+    }
+
     // Step 1: Call Telegram auth endpoint with admin's telegramId
     const authResponse = await fetch(`${API_BASE_URL}/auth/telegram`, {
       method: 'POST',
@@ -35,14 +44,14 @@ export async function adminLogin(telegramId: string, _password: string): Promise
       },
       body: JSON.stringify({
         id: telegramId,
-        // For now, we're accepting any password
-        // The backend will authenticate based on telegramId being in AdminUser table
+        // NOTE: Password is not currently validated by the backend
+        // Authentication is based on telegramId being in AdminUser table
       }),
     });
 
     if (!authResponse.ok) {
-      const error = await authResponse.json().catch(() => ({ error: 'Login failed' }));
-      throw new Error(error.error || 'Authentication failed');
+      const error = await authResponse.json().catch(() => ({ error: 'Authentication failed' }));
+      throw new Error(error.error || 'Invalid Telegram ID or authentication failed');
     }
 
     const authData = await authResponse.json();
@@ -63,11 +72,10 @@ export async function adminLogin(telegramId: string, _password: string): Promise
     const adminCheckData = await adminCheckResponse.json();
 
     if (!adminCheckData.success || !adminCheckData.isAdmin) {
-      throw new Error('User is not an admin');
+      throw new Error('Access denied: User is not an administrator');
     }
 
-    // Step 3: Store admin token separately
-    localStorage.setItem('admin_token', authData.token);
+    // Step 3: Store token (using auth_token for consistency with regular auth)
     localStorage.setItem('auth_token', authData.token);
 
     return {
@@ -89,7 +97,6 @@ export async function adminLogin(telegramId: string, _password: string): Promise
  * Admin logout function
  */
 export function adminLogout(): void {
-  localStorage.removeItem('admin_token');
   localStorage.removeItem('auth_token');
 }
 
@@ -97,5 +104,5 @@ export function adminLogout(): void {
  * Check if user is currently logged in as admin
  */
 export function isAdminLoggedIn(): boolean {
-  return !!localStorage.getItem('admin_token');
+  return !!localStorage.getItem('auth_token');
 }

@@ -1,25 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import type { PurchasedTicket } from '../../services/ticketApi';
 import './TicketCard.css';
 
-interface Ticket {
-  id: string;
-  numbers: number[];
-  price: number;
-  currency?: string;
-  txHash: string;
-  status: 'pending' | 'active' | 'won' | 'lost';
-  matchedNumbers?: number;
-  prizeAmount?: number;
-  createdAt?: string;
-  purchasedAt?: string;
-  walletAddress?: string;
-  blockNumber?: number;
-  blockTimestamp?: string;
-}
-
 interface TicketCardProps {
-  ticket: Ticket;
+  ticket: PurchasedTicket;
 }
 
 export default function TicketCard({ ticket }: TicketCardProps) {
@@ -45,6 +30,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
   };
 
   const displayDate = ticket.createdAt || ticket.purchasedAt;
+  const totalNumbers = ticket.numbers.length;
 
   return (
     <motion.div
@@ -65,7 +51,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
       <div className="ticket-numbers">
         {ticket.numbers.map((num, i) => (
           <motion.span
-            key={i}
+            key={`${ticket.id}-num-${i}`}
             className="number-ball"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -86,7 +72,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
         <div className="ticket-prize">
           🏆 Выигрыш: {ticket.prizeAmount} {ticket.currency || 'TON'}
           <br />
-          Совпадений: {ticket.matchedNumbers}/5
+          Совпадений: {ticket.matchedNumbers}/{totalNumbers}
         </div>
       )}
 
@@ -100,6 +86,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
               className="copy-btn"
               onClick={copyTxHash}
               title="Скопировать полный hash"
+              aria-label="Скопировать хэш транзакции"
             >
               {copied ? '✅' : '📋'}
             </button>

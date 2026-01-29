@@ -7,13 +7,19 @@ import { lotteryClient, type LotteryInfo, type NextDraw } from '../lib/api/lotte
 import { useTonTransaction } from '../hooks/useTonTransaction';
 import { useAuth } from '../contexts/AuthContext';
 import { useTicketCart } from '../hooks/useTicketCart';
-import CountdownTimer from '../components/Statistics/CountdownTimer';
-import NumberGrid from '../components/Lottery/NumberGrid/NumberGrid';
-import TicketPreview from '../components/Lottery/TicketPreview/TicketPreview';
-import PurchaseModal from '../components/Lottery/PurchaseModal/PurchaseModal';
-import TicketCart from '../components/Lottery/TicketCart/TicketCart';
 import MyTickets from '../components/Lottery/MyTickets/MyTickets';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
+import PurchaseModal from '../components/Lottery/PurchaseModal/PurchaseModal';
+import {
+  JackpotDisplay,
+  DrawCountdown,
+  TicketsSoldCounter,
+  AccordionSection,
+  GoldenParticles,
+  CartPreview,
+  CartModal,
+  CompactNumberGrid,
+} from '../components/WeekendSpecial';
 import './WeekendSpecialPage.css';
 
 export default function WeekendSpecialPage() {
@@ -29,9 +35,8 @@ export default function WeekendSpecialPage() {
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [ticketsRefreshTrigger, setTicketsRefreshTrigger] = useState(0);
-  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [participantsCount] = useState(() => Math.floor(Math.random() * 300 + 200));
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   
   // Initialize cart with ticket price
   const ticketPrice = lottery?.ticketPrice || WEEKEND_SPECIAL_CONFIG.ticketPrice;
@@ -128,37 +133,42 @@ export default function WeekendSpecialPage() {
 
   const handleAddToCart = (numbers: number[]) => {
     cart.addTicket(numbers);
-  };
-
-  const handleBuyTicketClick = () => {
-    if (selectedNumbers.length !== WEEKEND_SPECIAL_CONFIG.numbersToSelect) {
-      // Instead of alert, we could show a toast or inline message
-      // For now keeping simple validation
-      return;
+    setSelectedNumbers([]);
+    
+    // Haptic feedback
+    if (navigator.vibrate) {
+      navigator.vibrate([30, 10, 30]);
     }
-    setIsPurchaseModalOpen(true);
   };
 
-  const handlePurchaseFromCart = async (txBoc?: string) => {
-    // Backend registration is handled when txBoc is provided from TicketCart
-    if (txBoc && cart.tickets.length > 0 && tonConnectUI.account?.address && lottery) {
-      try {
-        await lotteryClient.buyTickets(WEEKEND_SPECIAL_CONFIG.slug, {
-          tickets: cart.tickets.map(ticket => ({ selectedNumbers: ticket.numbers })),
-          txHash: txBoc,
-          walletAddress: tonConnectUI.account.address,
-          totalAmount: cart.total,
-          discount: cart.discount
-        });
-        
-        // Refresh tickets list
-        setTicketsRefreshTrigger(prev => prev + 1);
-      } catch (error) {
-        console.error('Failed to register tickets on backend:', error);
-        // Re-throw to let TicketCart show error
-        throw error;
+  const handleQuickPick = () => {
+    const numbers: number[] = [];
+    while (numbers.length < WEEKEND_SPECIAL_CONFIG.numbersToSelect) {
+      const num = Math.floor(Math.random() * WEEKEND_SPECIAL_CONFIG.numbersPool) + 1;
+      if (!numbers.includes(num)) {
+        numbers.push(num);
       }
     }
+    setSelectedNumbers(numbers.sort((a, b) => a - b));
+  };
+
+  const handleClear = () => {
+    setSelectedNumbers([]);
+  };
+
+  const handleNumberToggle = (num: number) => {
+    if (selectedNumbers.includes(num)) {
+      setSelectedNumbers(selectedNumbers.filter(n => n !== num));
+    } else if (selectedNumbers.length < WEEKEND_SPECIAL_CONFIG.numbersToSelect) {
+      setSelectedNumbers([...selectedNumbers, num].sort((a, b) => a - b));
+    }
+  };
+
+  const handleCartCheckout = async () => {
+    if (cart.tickets.length === 0) return;
+    
+    setIsCartModalOpen(false);
+    setIsPurchaseModalOpen(true);
   };
 
   if (isLoading) {
@@ -189,6 +199,7 @@ export default function WeekendSpecialPage() {
   return (
     <div className="weekend-special-page">
       <AnimatedBackground />
+      <GoldenParticles count={15} enabled={true} />
       
       <div className="page-content">
         {/* Back Button */}
@@ -196,122 +207,77 @@ export default function WeekendSpecialPage() {
           ← {t('back', { defaultValue: 'Назад' })}
         </button>
 
-        {/* Hero Section */}
-        <div className="hero-section">
-          <div className="hero-logo">🎰</div>
-          <h1 className="hero-title">{lotteryData.name}</h1>
-          <p className="hero-subtitle">
-            {t('selectNumbers', { defaultValue: 'Выберите 5 чисел из 36 и выиграйте джекпот!' })}
-          </p>
-          
-          <div className="jackpot-display">
-            <span className="jackpot-label">
-              {t('jackpot', { defaultValue: 'Джекпот' })}
-            </span>
-            <span className="jackpot-amount">
-              💎 {lotteryData.currentJackpot?.toLocaleString() || '5,000'} TON
-            </span>
-          </div>
-
-          {nextDraw && (
-            <div className="countdown-section">
-              <CountdownTimer
-                targetDate={new Date(nextDraw.scheduledAt)}
-                onComplete={() => loadLotteryInfo()}
-              />
-            </div>
-          )}
-
-          <div className="participants-count">
-            👥 {t('participants', { defaultValue: 'Участников' })}: {participantsCount}
-          </div>
+        {/* Header */}
+        <div className="ws-header">
+          <h1 className="ws-page-title">Weekend Millions</h1>
         </div>
 
-        {/* Number Selection */}
-        <div className="selection-section">
-          <h2 className="section-title">
-            {t('selectYourNumbers', { defaultValue: 'Выберите ваши числа' })}
-          </h2>
-          <NumberGrid
-            maxNumbers={lotteryData.numbersToSelect}
-            totalNumbers={lotteryData.numbersPool}
-            selectedNumbers={selectedNumbers}
-            onSelectionChange={setSelectedNumbers}
-            onAddToCart={handleAddToCart}
-            showAddToCart={true}
+        {/* Jackpot Display with Steampunk Glitch */}
+        <JackpotDisplay 
+          initialJackpot={lotteryData.currentJackpot || 5000}
+          enableRealTimeUpdates={true}
+        />
+
+        {/* Draw Countdown */}
+        {nextDraw && (
+          <DrawCountdown 
+            targetDate={new Date(nextDraw.scheduledAt)}
+            drawNumber={1}
           />
-        </div>
-
-        {/* Ticket Preview - only show for quick single purchase */}
-        {selectedNumbers.length > 0 && cart.tickets.length === 0 && (
-          <div className="preview-section">
-            <TicketPreview
-              lotteryName={lotteryData.name}
-              selectedNumbers={selectedNumbers}
-              ticketPrice={lotteryData.ticketPrice}
-              drawDate={nextDraw?.scheduledAt}
-              onEdit={() => setSelectedNumbers([])}
-            />
-            <button
-              className="buy-ticket-btn"
-              onClick={handleBuyTicketClick}
-              disabled={selectedNumbers.length !== WEEKEND_SPECIAL_CONFIG.numbersToSelect}
-            >
-              🎫 {t('buyTicket', { defaultValue: 'Купить билет' })} — {lotteryData.ticketPrice} TON
-            </button>
-          </div>
         )}
 
-        {/* Prize Structure */}
-        <div className="prizes-section">
-          <h2 className="section-title">
-            💎 {t('prizeStructure', { defaultValue: 'Структура призов' })}
-          </h2>
-          <div className="prize-table">
+        {/* Tickets Sold Counter */}
+        <TicketsSoldCounter count={participantsCount} />
+
+        {/* How to Play Accordion */}
+        <AccordionSection icon="❓" title="Как играть" defaultOpen={false}>
+          <ol className="ws-rules">
+            <li>Выберите 5 чисел от 1 до 36</li>
+            <li>Добавьте билет в корзину</li>
+            <li>Выберите столько билетов, сколько хотите</li>
+            <li>Оплатите билеты (1 TON за билет)</li>
+            <li>Дождитесь розыгрыша</li>
+            <li>Выиграйте до 500 TON!</li>
+          </ol>
+        </AccordionSection>
+
+        {/* Prizes Accordion */}
+        <AccordionSection icon="🎁" title="Призы" defaultOpen={false}>
+          <div className="ws-prizes-grid">
             {Object.entries(lotteryData.prizeStructure || WEEKEND_SPECIAL_CONFIG.prizes)
               .sort(([a], [b]) => Number(b) - Number(a))
               .map(([matches, prize]) => (
-                <div key={matches} className="prize-row">
-                  <div className="prize-match">
+                <div key={matches} className="ws-prize-item">
+                  <span className="ws-prize-match">
                     {matches === '5' && '💎'}
                     {matches === '4' && '🥇'}
                     {matches === '3' && '🥈'}
                     {matches === '2' && '🥉'}
                     {matches === '1' && '🎫'}
                     {' '}
-                    {matches} {t('of', { defaultValue: 'из' })} 5
-                  </div>
-                  <div className="prize-amount">
+                    {matches} из 5
+                  </span>
+                  <span className="ws-prize-amount">
                     {typeof prize === 'number' 
                       ? `${prize} TON` 
                       : t('freeTicket', { defaultValue: 'Бесплатный билет' })}
-                  </div>
+                  </span>
                 </div>
               ))}
           </div>
-        </div>
+        </AccordionSection>
 
-        {/* How to Play */}
-        <div className="how-to-play-section">
-          <button 
-            className="how-to-play-btn"
-            onClick={() => setShowHowToPlay(!showHowToPlay)}
-          >
-            ❓ {t('howToPlay', { defaultValue: 'Как играть' })}
-            <span className={`expand-icon ${showHowToPlay ? 'expanded' : ''}`}>▼</span>
-          </button>
-          
-          {showHowToPlay && (
-            <div className="how-to-play-content">
-              <ol className="how-to-play-list">
-                <li>{t('step1', { defaultValue: 'Выберите 5 чисел из 36' })}</li>
-                <li>{t('step2', { defaultValue: 'Подключите TON кошелёк' })}</li>
-                <li>{t('step3', { defaultValue: 'Купите билет за 1 TON' })}</li>
-                <li>{t('step4', { defaultValue: 'Дождитесь розыгрыша' })}</li>
-                <li>{t('step5', { defaultValue: 'Выигрыш автоматически зачислится на ваш кошелёк!' })}</li>
-              </ol>
-            </div>
-          )}
+        {/* Number Selection Section */}
+        <div className="ws-selection-section">
+          <CompactNumberGrid
+            selected={selectedNumbers}
+            onToggle={handleNumberToggle}
+            maxSelection={WEEKEND_SPECIAL_CONFIG.numbersToSelect}
+            totalNumbers={WEEKEND_SPECIAL_CONFIG.numbersPool}
+            onQuickPick={handleQuickPick}
+            onClear={handleClear}
+            onAddToCart={selectedNumbers.length === WEEKEND_SPECIAL_CONFIG.numbersToSelect ? () => handleAddToCart(selectedNumbers) : undefined}
+          />
         </div>
 
         {/* My Tickets */}
@@ -323,18 +289,22 @@ export default function WeekendSpecialPage() {
         )}
       </div>
 
-      {/* Ticket Cart */}
-      <TicketCart
+      {/* Cart Preview (Floating) */}
+      <CartPreview
+        ticketCount={cart.tickets.length}
+        totalCost={cart.total}
+        onOpenCart={() => setIsCartModalOpen(true)}
+      />
+
+      {/* Cart Modal */}
+      <CartModal
+        isOpen={isCartModalOpen}
+        onClose={() => setIsCartModalOpen(false)}
         tickets={cart.tickets}
-        onRemoveTicket={cart.removeTicket}
-        onClearCart={cart.clearCart}
-        subtotal={cart.subtotal}
-        discount={cart.discount}
-        discountPercent={cart.discountPercent}
+        onRemove={cart.removeTicket}
+        onClear={cart.clearCart}
+        onCheckout={handleCartCheckout}
         total={cart.total}
-        onPurchase={handlePurchaseFromCart}
-        isOpen={isCartOpen}
-        onToggle={() => setIsCartOpen(!isCartOpen)}
       />
 
       {/* Purchase Modal */}

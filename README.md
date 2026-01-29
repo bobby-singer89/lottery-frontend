@@ -60,6 +60,38 @@ Backend API будет доступен на `http://localhost:3001`
 
 ---
 
+## 🌐 Vercel Deployment with Mock Auth (for testing)
+
+To enable mock authentication on Vercel (for testing without Telegram):
+
+### Setup Instructions:
+
+1. Go to Vercel dashboard → Your project → Settings → Environment Variables
+2. Add new variable:
+   - **Name:** `VITE_ENABLE_MOCK_AUTH`
+   - **Value:** `true`
+   - **Environments:** Check "Production" and "Preview"
+3. Redeploy the app
+
+### How It Works:
+
+With `VITE_ENABLE_MOCK_AUTH=true`:
+- ✅ Mock authentication is enabled on production
+- ✅ DevTools panel is visible (orange button in bottom-right corner)
+- ✅ Can login as test users without Telegram
+- ✅ Full app functionality available for testing
+
+### To Disable Mock Auth:
+
+For real production deployment:
+- Delete the `VITE_ENABLE_MOCK_AUTH` variable from Vercel
+- Or set it to `false`
+- Redeploy the app
+
+**⚠️ WARNING**: Remove mock auth in production! This is ONLY for testing.
+
+---
+
 ## 🎯 Weekend Special Lottery
 
 ### Конфигурация лотереи:

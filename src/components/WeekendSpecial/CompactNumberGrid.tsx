@@ -70,11 +70,18 @@ export default function CompactNumberGrid({
           💎 Quick Pick
         </button>
         <button
+          className="ws-action-btn ws-add-ticket-btn"
+          onClick={onAddToCart}
+          disabled={disabled || selected.length !== maxSelection}
+        >
+          ➕ Add Ticket
+        </button>
+        <button
           className="ws-action-btn ws-clear-btn"
           onClick={onClear}
           disabled={disabled || selected.length === 0}
         >
-          Clear
+          🗑️ Clear
         </button>
       </div>
 
@@ -99,15 +106,6 @@ export default function CompactNumberGrid({
         ))}
       </div>
 
-      {onAddToCart && selected.length === maxSelection && (
-        <button
-          className="ws-add-to-cart-btn"
-          onClick={onAddToCart}
-          disabled={disabled}
-        >
-          🛒 В корзину
-        </button>
-      )}
     </div>
   );
 }

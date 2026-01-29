@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTonConnectUI } from '@tonconnect/ui-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { WEEKEND_SPECIAL_CONFIG } from '../config/lottery';
 import { lotteryClient, type LotteryInfo, type NextDraw } from '../lib/api/lotteryClient';
 import { useTonTransaction } from '../hooks/useTonTransaction';
@@ -12,10 +13,8 @@ import {
   JackpotDisplay,
   DrawCountdown,
   TicketsSoldCounter,
-  AccordionSection,
   GoldenParticles,
-  CartPreview,
-  CartModal,
+  FloatingCart,
   CompactNumberGrid,
 } from '../components/WeekendSpecial';
 import './WeekendSpecialPage.css';
@@ -32,7 +31,8 @@ export default function WeekendSpecialPage() {
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [participantsCount] = useState(() => Math.floor(Math.random() * 300 + 200));
-  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [howToPlayOpen, setHowToPlayOpen] = useState(false);
+  const [prizesOpen, setPrizesOpen] = useState(false);
   
   // Initialize cart with ticket price
   const ticketPrice = lottery?.ticketPrice || WEEKEND_SPECIAL_CONFIG.ticketPrice;
@@ -61,11 +61,18 @@ export default function WeekendSpecialPage() {
       throw new Error(t('walletNotConnected', { defaultValue: 'Кошелёк не подключен' }));
     }
 
+    console.group('🛒 Checkout Process');
+    console.log('Tickets:', cart.tickets);
+    console.log('Total Cost:', cart.total);
+    console.log('Discount:', cart.discount);
+
     try {
       const actualPrice = lottery.ticketPrice || WEEKEND_SPECIAL_CONFIG.ticketPrice;
       
       // Check if purchasing from cart or single ticket
       if (cart.tickets.length > 0) {
+        console.log('API Endpoint:', `${import.meta.env.VITE_API_URL}/api/lotteries/${WEEKEND_SPECIAL_CONFIG.slug}/tickets/bulk`);
+        
         // For cart purchases, txBoc should be provided by TicketCart
         // If not provided, send transaction using existing method
         let txHash = txBoc;
@@ -77,14 +84,21 @@ export default function WeekendSpecialPage() {
           );
         }
 
-        // Register all tickets on backend
-        await lotteryClient.buyTickets(WEEKEND_SPECIAL_CONFIG.slug, {
+        const requestBody = {
           tickets: cart.tickets.map(ticket => ({ selectedNumbers: ticket.numbers })),
           txHash,
           walletAddress: tonConnectUI.account.address,
           totalAmount: cart.total,
           discount: cart.discount
-        });
+        };
+
+        console.log('Request Body:', requestBody);
+
+        // Register all tickets on backend
+        await lotteryClient.buyTickets(WEEKEND_SPECIAL_CONFIG.slug, requestBody);
+
+        console.log('✅ Success: All tickets purchased');
+        console.groupEnd();
 
         // Note: cart.clearCart() is now called by TicketCart component if txBoc was provided
         if (!txBoc) {
@@ -108,10 +122,15 @@ export default function WeekendSpecialPage() {
           walletAddress: tonConnectUI.account.address
         });
 
+        console.log('✅ Success: Single ticket purchased');
+        console.groupEnd();
+
         // Clear selection
         setSelectedNumbers([]);
       }
     } catch (error) {
+      console.error('💥 Checkout Error:', error);
+      console.groupEnd();
       throw error; // Let modal handle the error
     }
   };
@@ -160,7 +179,6 @@ export default function WeekendSpecialPage() {
   const handleCartCheckout = async () => {
     if (cart.tickets.length === 0) return;
     
-    setIsCartModalOpen(false);
     setIsPurchaseModalOpen(true);
   };
 
@@ -222,43 +240,77 @@ export default function WeekendSpecialPage() {
         {/* Tickets Sold Counter */}
         <TicketsSoldCounter count={participantsCount} />
 
-        {/* How to Play Accordion */}
-        <AccordionSection icon="❓" title="Как играть" defaultOpen={false}>
-          <ol className="ws-rules">
-            <li>Выберите 5 чисел от 1 до 36</li>
-            <li>Добавьте билет в корзину</li>
-            <li>Выберите столько билетов, сколько хотите</li>
-            <li>Оплатите билеты (1 TON за билет)</li>
-            <li>Дождитесь розыгрыша</li>
-            <li>Выиграйте до 500 TON!</li>
-          </ol>
-        </AccordionSection>
+        {/* Info Buttons Row */}
+        <div className="info-buttons-row">
+          <button
+            className="info-btn"
+            onClick={() => setHowToPlayOpen(!howToPlayOpen)}
+          >
+            ❓ Как играть {howToPlayOpen ? '▲' : '▼'}
+          </button>
 
-        {/* Prizes Accordion */}
-        <AccordionSection icon="🎁" title="Призы" defaultOpen={false}>
-          <div className="ws-prizes-grid">
-            {Object.entries(lotteryData.prizeStructure || WEEKEND_SPECIAL_CONFIG.prizes)
-              .sort(([a], [b]) => Number(b) - Number(a))
-              .map(([matches, prize]) => (
-                <div key={matches} className="ws-prize-item">
-                  <span className="ws-prize-match">
-                    {matches === '5' && '💎'}
-                    {matches === '4' && '🥇'}
-                    {matches === '3' && '🥈'}
-                    {matches === '2' && '🥉'}
-                    {matches === '1' && '🎫'}
-                    {' '}
-                    {matches} из 5
-                  </span>
-                  <span className="ws-prize-amount">
-                    {typeof prize === 'number' 
-                      ? `${prize} TON` 
-                      : t('freeTicket', { defaultValue: 'Бесплатный билет' })}
-                  </span>
-                </div>
-              ))}
-          </div>
-        </AccordionSection>
+          <button
+            className="info-btn"
+            onClick={() => setPrizesOpen(!prizesOpen)}
+          >
+            🎁 Призы {prizesOpen ? '▲' : '▼'}
+          </button>
+        </div>
+
+        {/* Accordion contents */}
+        <AnimatePresence>
+          {howToPlayOpen && (
+            <motion.div
+              className="accordion-content"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+            >
+              <ol className="ws-rules">
+                <li>Выберите 5 чисел от 1 до 36</li>
+                <li>Добавьте билет в корзину</li>
+                <li>Выберите столько билетов, сколько хотите</li>
+                <li>Оплатите билеты (1 TON за билет)</li>
+                <li>Дождитесь розыгрыша</li>
+                <li>Выиграйте до 500 TON!</li>
+              </ol>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {prizesOpen && (
+            <motion.div
+              className="accordion-content"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+            >
+              <div className="ws-prizes-grid">
+                {Object.entries(lotteryData.prizeStructure || WEEKEND_SPECIAL_CONFIG.prizes)
+                  .sort(([a], [b]) => Number(b) - Number(a))
+                  .map(([matches, prize]) => (
+                    <div key={matches} className="ws-prize-item">
+                      <span className="ws-prize-match">
+                        {matches === '5' && '💎'}
+                        {matches === '4' && '🥇'}
+                        {matches === '3' && '🥈'}
+                        {matches === '2' && '🥉'}
+                        {matches === '1' && '🎫'}
+                        {' '}
+                        {matches} из 5
+                      </span>
+                      <span className="ws-prize-amount">
+                        {typeof prize === 'number' 
+                          ? `${prize} TON` 
+                          : t('freeTicket', { defaultValue: 'Бесплатный билет' })}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Number Selection Section */}
         <div className="ws-selection-section">
@@ -274,25 +326,13 @@ export default function WeekendSpecialPage() {
         </div>
       </div>
 
-      {/* Cart Preview (Floating) */}
-      <CartPreview
+      {/* Floating Cart */}
+      <FloatingCart
         ticketCount={cart.tickets.length}
-        totalCost={cart.total}
-        onOpenCart={() => setIsCartModalOpen(true)}
-      />
-
-      {/* Cart Modal */}
-      <CartModal
-        isOpen={isCartModalOpen}
-        onClose={() => setIsCartModalOpen(false)}
         tickets={cart.tickets}
         onRemove={cart.removeTicket}
         onClear={cart.clearCart}
         onCheckout={handleCartCheckout}
-        total={cart.total}
-        discount={cart.discount}
-        discountPercent={cart.discountPercent}
-        subtotal={cart.subtotal}
       />
 
       {/* Purchase Modal */}

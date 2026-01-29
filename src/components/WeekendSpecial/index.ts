@@ -7,3 +7,5 @@ export { default as CartPreview } from './CartPreview';
 export { default as CartModal } from './CartModal';
 export { default as HeatmapToggle } from './HeatmapToggle';
 export { default as CompactNumberGrid } from './CompactNumberGrid';
+export { default as FloatingCart } from './FloatingCart';
+export { default as PurchaseTicketsCompact } from './PurchaseTicketsCompact';

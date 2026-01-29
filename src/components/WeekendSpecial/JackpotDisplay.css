@@ -60,17 +60,39 @@
   margin-bottom: 4px;
 }
 
+/* Subtle, elegant glitch - triggers less frequently */
+@keyframes subtle-glitch {
+  0%, 92%, 100% {
+    text-shadow: 
+      -0.5px 0 rgba(255, 0, 255, 0.4),
+      0.5px 0 rgba(0, 255, 255, 0.4),
+      0 0 20px rgba(255, 215, 0, 0.6);
+  }
+  94% {
+    text-shadow: 
+      0.5px 0 rgba(255, 0, 255, 0.4),
+      -0.5px 0 rgba(0, 255, 255, 0.4),
+      0 0 25px rgba(255, 215, 0, 0.8);
+  }
+  96% {
+    text-shadow: 
+      -0.5px 0 rgba(255, 0, 255, 0.4),
+      0.5px 0 rgba(0, 255, 255, 0.4),
+      0 0 20px rgba(255, 215, 0, 0.6);
+  }
+}
+
 .ws-jackpot-amount {
   font-family: 'Courier New', monospace;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
   background: linear-gradient(135deg, #FFD700, #FFA500);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: 3px;
-  animation: rgb-glitch 0.3s infinite;
-  filter: contrast(1.2) saturate(1.5);
+  letter-spacing: 2px;
+  animation: subtle-glitch 4s infinite; /* Slower: 4 seconds */
+  filter: contrast(1.1) saturate(1.2); /* Less intense */
 }
 
 /* RGB Glitch Effect */
@@ -133,10 +155,27 @@
   }
 }
 
+/* More subtle scanlines */
+.ws-jackpot-steampunk::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.03) 0px,  /* Very subtle */
+    transparent 1px,
+    transparent 4px,
+    rgba(0, 0, 0, 0.03) 5px
+  );
+  pointer-events: none;
+  border-radius: 12px;
+  opacity: 0.4; /* Semi-transparent */
+}
+
 /* Mobile responsive */
 @media (max-width: 640px) {
   .ws-jackpot-amount {
-    font-size: 24px;
+    font-size: 28px;
   }
   
   .ws-jackpot-steampunk {
@@ -146,7 +185,7 @@
 
 @media (max-width: 480px) {
   .ws-jackpot-amount {
-    font-size: 20px;
+    font-size: 24px;
     letter-spacing: 1px;
   }
   

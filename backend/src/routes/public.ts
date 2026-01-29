@@ -24,7 +24,7 @@ router.get('/draw/:drawId/verify', async (req, res) => {
     }
 
     // Verify seed hash
-    const seedHashMatches = draw.seed 
+    const seedHashMatches = draw.seed && draw.seedHash
       ? provablyFair.verifySeedHash(draw.seed, draw.seedHash)
       : null;
 
@@ -56,11 +56,13 @@ router.get('/draw/:drawId/verify', async (req, res) => {
       winningNumbers: draw.winningNumbers,
       
       // Verification results
-      verified: seedHashMatches && numbersValid,
+      verified: seedHashMatches === true && numbersValid === true,
       proof: {
         seedHashMatches,
         numbersValid,
-        seedHashPublishedBefore: draw.seedHashPublishedAt < draw.executedAt,
+        seedHashPublishedBefore: draw.seedHashPublishedAt && draw.executedAt 
+          ? draw.seedHashPublishedAt < draw.executedAt 
+          : null,
       },
       
       // Stats

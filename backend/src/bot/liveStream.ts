@@ -1,8 +1,19 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { supabase } from '../lib/supabase';
 
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!, { polling: false });
-const LIVE_CHANNEL_ID = process.env.TELEGRAM_LIVE_CHANNEL_ID!; // -1003861546574
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const LIVE_CHANNEL_ID = process.env.TELEGRAM_LIVE_CHANNEL_ID;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+if (!TELEGRAM_BOT_TOKEN) {
+  throw new Error('Missing required environment variable: TELEGRAM_BOT_TOKEN must be set');
+}
+
+if (!LIVE_CHANNEL_ID) {
+  throw new Error('Missing required environment variable: TELEGRAM_LIVE_CHANNEL_ID must be set');
+}
+
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
 
 export async function sendLiveDrawUpdate(
   drawId: string,
@@ -28,7 +39,7 @@ export async function sendLiveDrawUpdate(
 Вы сможете проверить, что результаты честные.
 
 🔗 Проверка честности:
-https://lottery-frontend-chi.vercel.app/verify/${drawId}
+https://${FRONTEND_URL}/verify/${drawId}
         `.trim();
         break;
 
@@ -84,7 +95,7 @@ https://lottery-frontend-chi.vercel.app/verify/${drawId}
 💰 Выплачено призов: <b>${data.totalPaid} TON</b>
 
 🔗 Проверить честность:
-https://lottery-frontend-chi.vercel.app/verify/${drawId}
+https://${FRONTEND_URL}/verify/${drawId}
 
 Поздравляем победителей! 🎉
         `.trim();

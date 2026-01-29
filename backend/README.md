@@ -30,11 +30,12 @@ SUPABASE_ANON_KEY=your-anon-key
 
 # Telegram Bot
 TELEGRAM_BOT_TOKEN=your-bot-token
-TELEGRAM_LIVE_CHANNEL_ID=-1003861546574
+TELEGRAM_LIVE_CHANNEL_ID=-100XXXXXXXXXXXX
 
 # Server
 PORT=3001
 NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
 ```
 
 ## Running
@@ -156,7 +157,7 @@ During each draw, the bot sends updates to the Telegram channel:
 4. Winning numbers generated
 5. Final results announced
 
-Channel ID: `-1003861546574`
+Channel ID: Set via `TELEGRAM_LIVE_CHANNEL_ID` environment variable
 
 ## Security
 

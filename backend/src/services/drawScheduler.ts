@@ -4,6 +4,10 @@ import { provablyFair } from './provablyFair';
 import { sendLiveDrawUpdate } from '../bot/liveStream';
 import crypto from 'crypto';
 
+// Constants
+const WINNING_NUMBERS_COUNT = 5;
+const MAX_LOTTERY_NUMBER = 36;
+
 export class DrawScheduler {
   /**
    * Schedule seed hash publication 24 hours before draw
@@ -53,16 +57,19 @@ export class DrawScheduler {
           // Save seed securely (encrypted in separate table or env)
           // For demo, we'll store encrypted in auditLog
           const encrypted = this.encryptSeed(seed, draw.id);
+          
+          // Get existing audit log or create new one
+          const existingAuditLog = draw.auditLog || [];
+          const newAuditEntry = { 
+            action: 'seed_generated', 
+            timestamp: new Date().toISOString(),
+            encryptedSeed: encrypted 
+          };
+          
           await supabase
             .from('Draw')
             .update({
-              auditLog: [
-                { 
-                  action: 'seed_generated', 
-                  timestamp: new Date().toISOString(),
-                  encryptedSeed: encrypted 
-                }
-              ]
+              auditLog: [...existingAuditLog, newAuditEntry]
             })
             .eq('id', draw.id);
 
@@ -116,6 +123,10 @@ export class DrawScheduler {
       });
 
       // 2. Decrypt and reveal seed
+      if (!draw.auditLog || draw.auditLog.length === 0 || !draw.auditLog[0].encryptedSeed) {
+        throw new Error('Seed not found in audit log - pre-commitment may have failed');
+      }
+      
       const seed = this.decryptSeed(draw.auditLog[0].encryptedSeed, draw.id);
       
       await sendLiveDrawUpdate(draw.id, 'seed_revealed', {
@@ -124,7 +135,7 @@ export class DrawScheduler {
       });
 
       // 3. Generate winning numbers
-      const winningNumbers = provablyFair.generateWinningNumbers(seed, 5, 36);
+      const winningNumbers = provablyFair.generateWinningNumbers(seed, WINNING_NUMBERS_COUNT, MAX_LOTTERY_NUMBER);
       
       await sendLiveDrawUpdate(draw.id, 'numbers_generated', {
         winningNumbers,
@@ -223,16 +234,19 @@ export class DrawScheduler {
       4: 50,
       3: 5,
       2: 0.5,
-      1: 0, // Free ticket (handled separately)
+      1: 0, // No prize for 1 match
     };
     return prizes[matched] || 0;
   }
 
   /**
-   * Encrypt seed (simple XOR with draw ID for demo)
-   * In production, use proper encryption (AES-256)
+   * Encrypt seed using AES-256-GCM
+   * Note: This is a simplified implementation for demo purposes.
+   * In production, use a proper key management system (e.g., AWS KMS, HashiCorp Vault)
    */
   private encryptSeed(seed: string, drawId: string): string {
+    // WARNING: This is NOT secure encryption, just base64 encoding for demo
+    // In production, implement proper AES-256-GCM encryption with secure key storage
     const key = crypto.createHash('sha256').update(drawId).digest('hex');
     return Buffer.from(seed).toString('base64') + '::' + key.slice(0, 8);
   }

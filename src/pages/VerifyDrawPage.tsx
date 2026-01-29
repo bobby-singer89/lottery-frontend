@@ -51,7 +51,9 @@ export default function VerifyDrawPage() {
       const result = await response.json();
       setData(result);
     } catch (err: any) {
-      setError(err.message);
+      const errorMessage = err.message || 'Failed to load verification data';
+      console.error('Verification load error:', err);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

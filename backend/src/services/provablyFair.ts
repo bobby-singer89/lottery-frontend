@@ -50,7 +50,11 @@ export class ProvablyFairService {
    */
   verifyNumbers(seed: string, numbers: number[], count: number, max: number): boolean {
     const generatedNumbers = this.generateWinningNumbers(seed, count, max);
-    return JSON.stringify(generatedNumbers) === JSON.stringify(numbers);
+    
+    // Check if arrays have same length and same elements
+    if (generatedNumbers.length !== numbers.length) return false;
+    
+    return generatedNumbers.every((num, idx) => num === numbers[idx]);
   }
 }
 

@@ -7,6 +7,9 @@ const router = Router();
 /**
  * GET /api/public/draw/:drawId/verify
  * Public endpoint to verify draw fairness
+ * 
+ * NOTE: In production, add rate limiting to prevent abuse
+ * Example: Use express-rate-limit middleware
  */
 router.get('/draw/:drawId/verify', async (req, res) => {
   const { drawId } = req.params;
@@ -82,6 +85,9 @@ router.get('/draw/:drawId/verify', async (req, res) => {
 /**
  * GET /api/public/ticket/:ticketId/verify
  * Public endpoint to verify individual ticket
+ * 
+ * NOTE: In production, add rate limiting to prevent abuse
+ * Example: Use express-rate-limit middleware
  */
 router.get('/ticket/:ticketId/verify', async (req, res) => {
   const { ticketId } = req.params;

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, Copy, Check, Trophy, Star, Flame } from 'lucide-react';
+import { Wallet, Copy, Check, Trophy, Star, Flame, AlertCircle } from 'lucide-react';
 import { useTonConnectUI, useTonAddress } from '@tonconnect/ui-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTelegram } from '../lib/telegram/useTelegram';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
@@ -11,32 +12,35 @@ import './ProfilePage.css';
 
 function ProfilePage() {
   const { user } = useAuth();
+  const { user: telegramUser, isReady } = useTelegram();
   const navigate = useNavigate();
   const [tonConnectUI] = useTonConnectUI();
   const userAddress = useTonAddress();
   const [activeTab, setActiveTab] = useState('profile');
   const [copied, setCopied] = useState(false);
 
-  // Placeholder data
+  // Profile data from context (Telegram + backend)
   const profileData = {
-    name: user?.username || 'Player',
-    avatar: user?.username?.charAt(0).toUpperCase() || 'P',
+    name: user?.firstName || user?.username || telegramUser?.first_name || telegramUser?.username || 'Player',
+    avatar: user?.photoUrl || telegramUser?.photo_url,
+    avatarLetter: (user?.firstName || user?.username || telegramUser?.first_name || telegramUser?.username || 'P').charAt(0).toUpperCase(),
     walletConnected: !!userAddress,
     walletAddress: userAddress || null,
-    balance: '125.5 TON',
-    level: 12,
-    xp: 2450,
-    maxXp: 3000,
-    streak: 7,
-    referralCode: 'REF123ABC',
-    totalTickets: 24,
-    activeTickets: 8,
-    wonTickets: 3,
+    balance: '125.5 TON', // TODO: Get from blockchain
+    level: user?.level ? parseInt(user.level, 10) : 12, // Mock if not available
+    xp: user?.experience || 2450, // Mock if not available
+    maxXp: 3000, // Mock
+    streak: 7, // Mock - will be from backend later
+    referralCode: user?.referralCode || 'REF123ABC',
+    totalTickets: 24, // Mock
+    activeTickets: 8, // Mock
+    wonTickets: 3, // Mock
   };
 
   const handleConnectWallet = async () => {
     try {
       await tonConnectUI.openModal();
+      // Wallet connection will automatically trigger binding via WalletConnectionHandler
     } catch (error) {
       console.error('Failed to open wallet modal:', error);
     }
@@ -89,6 +93,21 @@ function ProfilePage() {
         <Header onConnect={handleConnectWallet} walletAddress={profileData.walletAddress || undefined} />
         
         <main className="profile-page">
+          {!isReady ? (
+            // Fallback for non-Telegram access
+            <motion.div
+              className="profile-container"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="telegram-only-message">
+                <AlertCircle size={64} className="alert-icon" />
+                <h2>Авторизация доступна только через Telegram</h2>
+                <p>Пожалуйста, откройте это приложение через Telegram Mini App для доступа к полному функционалу.</p>
+              </div>
+            </motion.div>
+          ) : (
           <motion.div
             className="profile-container"
             initial={{ opacity: 0, y: 20 }}
@@ -104,7 +123,28 @@ function ProfilePage() {
             >
               <div className="profile-avatar">
                 <div className="avatar-circle">
-                  <span className="avatar-letter">{profileData.avatar}</span>
+                  {profileData.avatar ? (
+                    <img 
+                      src={profileData.avatar} 
+                      alt="Profile" 
+                      className="avatar-image"
+                      onError={(e) => {
+                        // Fallback to letter if image fails to load
+                        const target = e.currentTarget;
+                        target.style.display = 'none';
+                        const sibling = target.nextElementSibling as HTMLSpanElement | null;
+                        if (sibling) {
+                          sibling.style.display = 'flex';
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <span 
+                    className="avatar-letter" 
+                    style={{ display: profileData.avatar ? 'none' : 'flex' }}
+                  >
+                    {profileData.avatarLetter}
+                  </span>
                 </div>
                 <div className="avatar-level">
                   <Star size={12} />
@@ -252,7 +292,8 @@ function ProfilePage() {
                 </motion.div>
               )}
             </motion.div>
-          </motion.div>
+            </motion.div>
+          )}
         </main>
 
         <Footer activeTab={activeTab} onTabChange={handleTabChange} />

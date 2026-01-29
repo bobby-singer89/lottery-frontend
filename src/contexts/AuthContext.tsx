@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { apiClient } from '../lib/api/client';
 import { useTelegram } from '../lib/telegram/useTelegram';
 import type { TelegramUser } from '../components/TelegramLoginWidget/TelegramLoginWidget';
@@ -9,6 +9,7 @@ interface User {
   username?: string;
   firstName?: string;
   lastName?: string;
+  photoUrl?: string;
   tonWallet?: string;
   level: string;
   experience: number;
@@ -41,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setIsLoading(false);
     }
-  }, [telegramUser]);
+  }, [telegramUser, user]);
 
   const login = async () => {
     if (!telegramUser) {
@@ -70,15 +71,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
-  const connectWallet = async (address: string) => {
+  const connectWallet = useCallback(async (address: string) => {
     try {
-      const response = await apiClient.connectWallet(address);
+      // Include Telegram profile data when connecting wallet
+      const telegramData = telegramUser ? {
+        username: telegramUser.username,
+        first_name: telegramUser.first_name,
+        last_name: telegramUser.last_name,
+        photo_url: telegramUser.photo_url,
+      } : undefined;
+      
+      const response = await apiClient.connectWallet(address, telegramData);
       setUser(response.user);
     } catch (error) {
       console.error('Connect wallet failed:', error);
       throw error;
     }
-  };
+  }, [telegramUser]);
 
   const loginWithTelegram = async (telegramUser: TelegramUser): Promise<boolean> => {
     try {

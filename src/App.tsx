@@ -23,6 +23,7 @@ import AdminNotifications from './pages/admin/AdminNotifications';
 import MyTicketsPage from './pages/MyTicketsPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
+import { WalletConnectionHandler } from './components/WalletConnectionHandler';
 import './App.css';
 
 declare global {
@@ -191,6 +192,7 @@ function App() {
   return (
     <TonConnectUIProvider manifestUrl="https://raw.githubusercontent.com/bobby-singer89/lottery-frontend/main/public/tonconnect-manifest.json">
       <AuthProvider>
+        <WalletConnectionHandler />
         <SoundProvider>
           {!ageConfirmed && <AgeGate onConfirm={handleAgeConfirm} />}
           {ageConfirmed && (

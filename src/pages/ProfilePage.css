@@ -43,10 +43,24 @@
   font-weight: 700;
   color: #fff;
   box-shadow: 0 4px 20px rgba(223, 96, 12, 0.4);
+  overflow: hidden;
+  position: relative;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .avatar-letter {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .avatar-level {
@@ -346,6 +360,42 @@
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
+}
+
+/* Telegram Only Message */
+.telegram-only-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 20px;
+}
+
+.telegram-only-message .alert-icon {
+  color: #ffa500;
+  opacity: 0.8;
+}
+
+.telegram-only-message h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.telegram-only-message p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  max-width: 400px;
+  line-height: 1.6;
 }
 
 /* Responsive */

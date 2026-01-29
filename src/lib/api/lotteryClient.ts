@@ -23,6 +23,12 @@ export interface Ticket {
   drawDate?: string;
   prizeAmount?: number;
   ticketNumber?: string;
+  txHash?: string;
+  walletAddress?: string;
+  blockNumber?: number;
+  blockTimestamp?: string;
+  price?: number;
+  currency?: string;
 }
 
 export interface LotteryInfo {

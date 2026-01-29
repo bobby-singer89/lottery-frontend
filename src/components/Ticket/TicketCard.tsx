@@ -1,0 +1,129 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import './TicketCard.css';
+
+interface Ticket {
+  id: string;
+  numbers: number[];
+  price: number;
+  currency?: string;
+  txHash: string;
+  status: 'pending' | 'active' | 'won' | 'lost';
+  matchedNumbers?: number;
+  prizeAmount?: number;
+  createdAt?: string;
+  purchasedAt?: string;
+  walletAddress?: string;
+  blockNumber?: number;
+  blockTimestamp?: string;
+}
+
+interface TicketCardProps {
+  ticket: Ticket;
+}
+
+export default function TicketCard({ ticket }: TicketCardProps) {
+  const [copied, setCopied] = useState(false);
+
+  const copyTxHash = () => {
+    if (ticket.txHash) {
+      navigator.clipboard.writeText(ticket.txHash);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const shortHash = ticket.txHash 
+    ? `${ticket.txHash.slice(0, 6)}...${ticket.txHash.slice(-4)}`
+    : 'N/A';
+
+  const statusLabels = {
+    pending: '⏳ Ожидание розыгрыша',
+    active: '✅ Активен',
+    won: '🎉 Выигрыш!',
+    lost: '❌ Не выиграл'
+  };
+
+  const displayDate = ticket.createdAt || ticket.purchasedAt;
+
+  return (
+    <motion.div
+      className="ticket-card"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.02 }}
+    >
+      {/* Header */}
+      <div className="ticket-header">
+        <h3>🎫 {ticket.id}</h3>
+        <span className={`ticket-status status-${ticket.status}`}>
+          {statusLabels[ticket.status]}
+        </span>
+      </div>
+
+      {/* Numbers */}
+      <div className="ticket-numbers">
+        {ticket.numbers.map((num, i) => (
+          <motion.span
+            key={i}
+            className="number-ball"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: i * 0.1 }}
+          >
+            {num}
+          </motion.span>
+        ))}
+      </div>
+
+      {/* Price */}
+      <div className="ticket-price">
+        💎 {ticket.price} {ticket.currency || 'TON'}
+      </div>
+
+      {/* Prize (if won) */}
+      {ticket.status === 'won' && ticket.prizeAmount && ticket.prizeAmount > 0 && (
+        <div className="ticket-prize">
+          🏆 Выигрыш: {ticket.prizeAmount} {ticket.currency || 'TON'}
+          <br />
+          Совпадений: {ticket.matchedNumbers}/5
+        </div>
+      )}
+
+      {/* TX Hash Section */}
+      {ticket.txHash && (
+        <div className="ticket-blockchain">
+          <div className="blockchain-label">📜 Transaction Hash:</div>
+          <div className="blockchain-hash">
+            <code>{shortHash}</code>
+            <button 
+              className="copy-btn"
+              onClick={copyTxHash}
+              title="Скопировать полный hash"
+            >
+              {copied ? '✅' : '📋'}
+            </button>
+            <a
+              href={`https://testnet.tonscan.org/tx/${ticket.txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="tonscan-btn"
+            >
+              🔗 TonScan
+            </a>
+          </div>
+          <div className="blockchain-status">
+            ✅ Подтверждено в блокчейне
+          </div>
+        </div>
+      )}
+
+      {/* Purchase Date */}
+      {displayDate && (
+        <div className="ticket-date">
+          Куплен: {new Date(displayDate).toLocaleString('ru-RU')}
+        </div>
+      )}
+    </motion.div>
+  );
+}

@@ -1,5 +1,5 @@
 .my-tickets-page {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -7,25 +7,92 @@
 .my-tickets-page h1 {
   text-align: center;
   margin-bottom: 30px;
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #FFD700, #FF6B35);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
+.my-tickets-page .loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.my-tickets-page .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 215, 0, 0.2);
+  border-top-color: #FFD700;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.my-tickets-page .error {
+  text-align: center;
+  color: #ff6b6b;
+  background: rgba(255, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(26, 26, 46, 0.4);
+  border-radius: 16px;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+}
+
+.empty-state p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.buy-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #1a1a2e;
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.buy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.tickets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .tickets-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Legacy styles for backward compatibility */
 .tickets-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.ticket-card {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border-radius: 16px;
-  padding: 20px;
-  border: 1px solid rgba(255, 215, 0, 0.2);
-}
-
-.ticket-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
 }
 
 .lottery-name {
@@ -37,26 +104,6 @@
 .ticket-date {
   color: #888;
   font-size: 14px;
-}
-
-.ticket-numbers {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin: 20px 0;
-}
-
-.number-ball {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
-  color: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 16px;
 }
 
 .ticket-footer {

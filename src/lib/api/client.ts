@@ -118,6 +118,15 @@ class ApiClient {
     }>(`/lottery/${slug}/my-tickets?page=${page}&limit=${limit}`);
   }
 
+  async getAllMyTickets(lotterySlug?: string, page = 1, limit = 20) {
+    const params = lotterySlug ? `?lotterySlug=${lotterySlug}&page=${page}&limit=${limit}` : `?page=${page}&limit=${limit}`;
+    return this.request<{
+      success: boolean;
+      tickets: any[];
+      pagination: any;
+    }>(`/tickets/my-tickets${params}`);
+  }
+
   // Draws endpoints
   async getCurrentDraw() {
     return this.request<{

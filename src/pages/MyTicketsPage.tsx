@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { ticketApi } from '../services/ticketApi';
 import type { PurchasedTicket } from '../services/ticketApi';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
+import TicketCard from '../components/Ticket/TicketCard';
 import './MyTicketsPage.css';
 
 const MyTicketsPage: React.FC = () => {
@@ -94,40 +96,35 @@ const MyTicketsPage: React.FC = () => {
             </>
           ) : (
             <>
-              <h1>🎫 Мои билеты</h1>
+              <motion.h1
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                🎫 Мои билеты
+              </motion.h1>
               
               {tickets.length === 0 ? (
-                <p>У вас пока нет билетов</p>
+                <motion.div
+                  className="empty-state"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <p>У вас пока нет билетов</p>
+                  <a href="/lottery/weekend-special" className="buy-btn">
+                    💎 Купить билет
+                  </a>
+                </motion.div>
               ) : (
-                <div className="tickets-list">
-                  {tickets.map((ticket) => (
-                    <div key={ticket.id} className="ticket-card">
-                      <div className="ticket-header">
-                        <span className="lottery-name">{ticket.lotterySlug}</span>
-                        <span className="ticket-date">
-                          {new Date(ticket.purchasedAt).toLocaleDateString('ru-RU')}
-                        </span>
-                      </div>
-                      
-                      <div className="ticket-numbers">
-                        {ticket.numbers.map((num, idx) => (
-                          <span key={idx} className="number-ball">{num}</span>
-                        ))}
-                      </div>
-                      
-                      <div className="ticket-footer">
-                        <span className={`status status-${ticket.status}`}>
-                          {ticket.status === 'active' && '🟢 Активный'}
-                          {ticket.status === 'won' && '🏆 Выиграл'}
-                          {ticket.status === 'lost' && '⚫ Не выиграл'}
-                        </span>
-                        <span className="price">{ticket.price} TON</span>
-                      </div>
-                      
-                      <div className="ticket-tx">
-                        TX: {ticket.txHash.slice(0, 10)}...{ticket.txHash.slice(-6)}
-                      </div>
-                    </div>
+                <div className="tickets-grid">
+                  {tickets.map((ticket, index) => (
+                    <motion.div
+                      key={ticket.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <TicketCard ticket={ticket} />
+                    </motion.div>
                   ))}
                 </div>
               )}

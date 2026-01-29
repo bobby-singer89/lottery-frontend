@@ -28,6 +28,7 @@ export default function FloatingCart({
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
+        aria-label="Открыть корзину"
       >
         🛒
         {ticketCount > 0 && (

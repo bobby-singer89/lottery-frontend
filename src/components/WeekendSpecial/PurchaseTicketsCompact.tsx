@@ -34,7 +34,7 @@ export default function PurchaseTicketsCompact({
       {/* Header */}
       <div className="purchase-header">
         <h3>🛒 Корзина ({ticketCount})</h3>
-        <button className="close-btn" onClick={onClose}>✕</button>
+        <button className="close-btn" onClick={onClose} aria-label="Закрыть корзину">✕</button>
       </div>
 
       {/* Tickets List */}
@@ -65,6 +65,7 @@ export default function PurchaseTicketsCompact({
                 className="remove-btn"
                 onClick={() => onRemove(ticket.id)}
                 title="Удалить"
+                aria-label="Удалить билет"
               >
                 🗑️
               </button>
@@ -112,7 +113,7 @@ export default function PurchaseTicketsCompact({
       {tickets.length > 0 && (
         <div className="purchase-actions">
           <button className="delete-all-btn" onClick={onClear}>
-            🗑️ Delete All
+            🗑️ Удалить всё
           </button>
           <button
             className="pay-btn"

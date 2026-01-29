@@ -245,6 +245,8 @@ export default function WeekendSpecialPage() {
           <button
             className="info-btn"
             onClick={() => setHowToPlayOpen(!howToPlayOpen)}
+            aria-expanded={howToPlayOpen}
+            aria-controls="how-to-play-content"
           >
             ❓ Как играть {howToPlayOpen ? '▲' : '▼'}
           </button>
@@ -252,6 +254,8 @@ export default function WeekendSpecialPage() {
           <button
             className="info-btn"
             onClick={() => setPrizesOpen(!prizesOpen)}
+            aria-expanded={prizesOpen}
+            aria-controls="prizes-content"
           >
             🎁 Призы {prizesOpen ? '▲' : '▼'}
           </button>
@@ -261,6 +265,7 @@ export default function WeekendSpecialPage() {
         <AnimatePresence>
           {howToPlayOpen && (
             <motion.div
+              id="how-to-play-content"
               className="accordion-content"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
@@ -281,6 +286,7 @@ export default function WeekendSpecialPage() {
         <AnimatePresence>
           {prizesOpen && (
             <motion.div
+              id="prizes-content"
               className="accordion-content"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}

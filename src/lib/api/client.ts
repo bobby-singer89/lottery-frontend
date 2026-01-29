@@ -56,7 +56,7 @@ class ApiClient {
       success: boolean;
       token: string;
       user: any;
-    }>('/api/auth/telegram', {   
+    }>('/api/auth/telegram', {
       method: 'POST',
       body: JSON.stringify({
         id: telegramUser.id.toString(),

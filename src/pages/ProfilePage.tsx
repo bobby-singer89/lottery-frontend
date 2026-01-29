@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import './ProfilePage.css';
 
 function ProfilePage() {
-  const { user, connectWallet } = useAuth();
+  const { user } = useAuth();
   const { user: telegramUser, isReady } = useTelegram();
   const navigate = useNavigate();
   const [tonConnectUI] = useTonConnectUI();
@@ -27,7 +27,7 @@ function ProfilePage() {
     walletConnected: !!userAddress,
     walletAddress: userAddress || null,
     balance: '125.5 TON', // TODO: Get from blockchain
-    level: user?.level ? parseInt(user.level) : 12, // Mock if not available
+    level: user?.level ? parseInt(user.level, 10) : 12, // Mock if not available
     xp: user?.experience || 2450, // Mock if not available
     maxXp: 3000, // Mock
     streak: 7, // Mock - will be from backend later
@@ -130,8 +130,12 @@ function ProfilePage() {
                       className="avatar-image"
                       onError={(e) => {
                         // Fallback to letter if image fails to load
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling!.style.display = 'flex';
+                        const target = e.currentTarget;
+                        target.style.display = 'none';
+                        const sibling = target.nextElementSibling as HTMLSpanElement | null;
+                        if (sibling) {
+                          sibling.style.display = 'flex';
+                        }
                       }}
                     />
                   ) : null}

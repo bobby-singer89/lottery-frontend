@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { apiClient } from '../lib/api/client';
 import { useTelegram } from '../lib/telegram/useTelegram';
 import type { TelegramUser } from '../components/TelegramLoginWidget/TelegramLoginWidget';
@@ -33,7 +33,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { user: telegramUser, webApp, isReady } = useTelegram();
+  const { user: telegramUser, webApp } = useTelegram();
 
   useEffect(() => {
     // Auto-login if Telegram user available
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setIsLoading(false);
     }
-  }, [telegramUser]);
+  }, [telegramUser, user]);
 
   const login = async () => {
     if (!telegramUser) {
@@ -71,14 +71,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
-  const connectWallet = async (address: string) => {
+  const connectWallet = useCallback(async (address: string) => {
     try {
       // Include Telegram profile data when connecting wallet
       const telegramData = telegramUser ? {
         username: telegramUser.username,
-        firstName: telegramUser.first_name,
-        lastName: telegramUser.last_name,
-        photoUrl: telegramUser.photo_url,
+        first_name: telegramUser.first_name,
+        last_name: telegramUser.last_name,
+        photo_url: telegramUser.photo_url,
       } : undefined;
       
       const response = await apiClient.connectWallet(address, telegramData);
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Connect wallet failed:', error);
       throw error;
     }
-  };
+  }, [telegramUser]);
 
   const loginWithTelegram = async (telegramUser: TelegramUser): Promise<boolean> => {
     try {

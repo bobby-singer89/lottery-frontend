@@ -25,6 +25,7 @@ import MyTicketsPage from './pages/MyTicketsPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
+import DevToolsPanel from './components/DevTools/DevToolsPanel';
 import './App.css';
 
 declare global {
@@ -217,6 +218,8 @@ function App() {
               <Route path="/admin/notifications" element={<AdminGuard><AdminNotifications /></AdminGuard>} />
             </Routes>
           )}
+          {/* DevTools Panel - Only in Development */}
+          <DevToolsPanel />
         </SoundProvider>
       </AuthProvider>
     </TonConnectUIProvider>

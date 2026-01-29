@@ -22,6 +22,7 @@ import AdminDraws from './pages/admin/AdminDraws';
 import AdminTickets from './pages/admin/AdminTickets';
 import AdminNotifications from './pages/admin/AdminNotifications';
 import MyTicketsPage from './pages/MyTicketsPage';
+import VerifyDrawPage from './pages/VerifyDrawPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
@@ -208,6 +209,7 @@ function App() {
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/referral" element={<ReferralPage />} />
               <Route path="/my-tickets" element={<MyTicketsPage />} />
+              <Route path="/verify/:drawId" element={<VerifyDrawPage />} />
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />

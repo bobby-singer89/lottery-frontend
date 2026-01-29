@@ -1,6 +1,14 @@
 import { getApiBaseUrl } from '../utils/env';
+import type { PurchasedTicket } from '../../services/ticketApi';
 
 const API_BASE_URL = getApiBaseUrl();
+
+interface PaginationResponse {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages?: number;
+}
 
 class ApiClient {
   private baseURL: string;
@@ -113,9 +121,18 @@ class ApiClient {
   async getMyTickets(slug: string, page = 1, limit = 20) {
     return this.request<{
       success: boolean;
-      tickets: any[];
-      pagination: any;
+      tickets: PurchasedTicket[];
+      pagination: PaginationResponse;
     }>(`/lottery/${slug}/my-tickets?page=${page}&limit=${limit}`);
+  }
+
+  async getAllMyTickets(lotterySlug?: string, page = 1, limit = 20) {
+    const params = lotterySlug ? `?lotterySlug=${lotterySlug}&page=${page}&limit=${limit}` : `?page=${page}&limit=${limit}`;
+    return this.request<{
+      success: boolean;
+      tickets: PurchasedTicket[];
+      pagination: PaginationResponse;
+    }>(`/tickets/my-tickets${params}`);
   }
 
   // Draws endpoints

@@ -16,7 +16,13 @@ export interface PurchasedTicket {
   walletAddress: string;
   price: number;
   purchasedAt: string;
-  status: 'active' | 'won' | 'lost';
+  status: 'active' | 'won' | 'lost' | 'pending';
+  currency?: string;
+  blockNumber?: number;
+  blockTimestamp?: string;
+  prizeAmount?: number;
+  matchedNumbers?: number;
+  createdAt?: string;
 }
 
 interface GetUserTicketsResponse {

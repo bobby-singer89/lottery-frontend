@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { isMockAuthEnabled } from '../utils/env';
 
 interface TelegramUser {
   id: number;
@@ -69,9 +70,9 @@ export function useTelegram() {
       tg.expand();
       setWebApp(tg);
       setUser(tg.initDataUnsafe.user || null);
-    } else if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
-      // DEV MODE: Mock Telegram data
-      console.log('🔧 DEV MODE: Using mock Telegram user');
+    } else if (isMockAuthEnabled()) {
+      // DEV MODE OR MOCK ENABLED: Mock Telegram data
+      console.log('🔧 MOCK MODE: Using mock Telegram user');
       
       const mockUser: TelegramUser = {
         id: 432735601,

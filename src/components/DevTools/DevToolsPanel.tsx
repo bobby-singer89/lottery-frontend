@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Wrench, X, User, Smartphone, Code } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { isDevToolsEnabled } from '../../lib/utils/env';
 import './DevToolsPanel.css';
 
 export default function DevToolsPanel() {
@@ -8,7 +9,8 @@ export default function DevToolsPanel() {
   const { user, isAuthenticated, loginWithTelegram, logout } = useAuth();
   const [viewport, setViewport] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
 
-  if (import.meta.env.PROD) return null;
+  // Don't show DevTools if mock auth is not enabled
+  if (!isDevToolsEnabled()) return null;
 
   const mockUsers = [
     {

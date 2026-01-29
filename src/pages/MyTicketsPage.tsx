@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ticketApi } from '../services/ticketApi';
 import type { PurchasedTicket } from '../services/ticketApi';
@@ -110,21 +110,16 @@ const MyTicketsPage: React.FC = () => {
                   animate={{ opacity: 1 }}
                 >
                   <p>У вас пока нет билетов</p>
-                  <a href="/lottery/weekend-special" className="buy-btn">
+                  <Link to="/lottery/weekend-special" className="buy-btn">
                     💎 Купить билет
-                  </a>
+                  </Link>
                 </motion.div>
               ) : (
                 <div className="tickets-grid">
-                  {tickets.map((ticket, index) => (
-                    <motion.div
-                      key={ticket.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: Math.min(index * 0.1, 1) }}
-                    >
+                  {tickets.map((ticket) => (
+                    <div key={ticket.id}>
                       <TicketCard ticket={ticket} />
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               )}

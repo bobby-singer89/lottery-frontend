@@ -10,11 +10,16 @@ interface TicketCardProps {
 export default function TicketCard({ ticket }: TicketCardProps) {
   const [copied, setCopied] = useState(false);
 
-  const copyTxHash = () => {
+  const copyTxHash = async () => {
     if (ticket.txHash) {
-      navigator.clipboard.writeText(ticket.txHash);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(ticket.txHash);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (error) {
+        console.error('Failed to copy to clipboard:', error);
+        // Fallback: Could show an error message to user
+      }
     }
   };
 
@@ -22,7 +27,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
     ? `${ticket.txHash.slice(0, 6)}...${ticket.txHash.slice(-4)}`
     : 'N/A';
 
-  const statusLabels = {
+  const statusLabels: Record<PurchasedTicket['status'], string> = {
     pending: '⏳ Ожидание розыгрыша',
     active: '✅ Активен',
     won: '🎉 Выигрыш!',
@@ -55,7 +60,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
             className="number-ball"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ delay: i * 0.1 }}
+            transition={{ delay: Math.min(i * 0.05, 0.5) }}
           >
             {num}
           </motion.span>
@@ -95,13 +100,16 @@ export default function TicketCard({ ticket }: TicketCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="tonscan-btn"
+              aria-label="Посмотреть транзакцию в TonScan"
             >
               🔗 TonScan
             </a>
           </div>
-          <div className="blockchain-status">
-            ✅ Подтверждено в блокчейне
-          </div>
+          {ticket.txHash && ticket.blockNumber && (
+            <div className="blockchain-status">
+              ✅ Подтверждено в блокчейне
+            </div>
+          )}
         </div>
       )}
 

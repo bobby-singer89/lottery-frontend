@@ -6,6 +6,7 @@ import { payoutService } from './services/payoutService';
 import publicRoutes from './routes/public';
 import adminRoutes from './routes/admin';
 import swapRoutes from './routes/swap';
+import userRoutes from './routes/user';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -27,6 +28,9 @@ app.use('/api/admin', adminRoutes);
 
 // Swap routes
 app.use('/api/swap', swapRoutes);
+
+// User routes
+app.use('/api/user', userRoutes);
 
 // Initialize services
 async function initializeServices() {

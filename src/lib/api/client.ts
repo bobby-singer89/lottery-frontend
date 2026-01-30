@@ -243,6 +243,21 @@ class ApiClient {
       draw: Draw | null
     }>(`/public/lottery/${lotterySlug}/current-draw`);
   }
+
+  async getAllLotteries() {
+    return this.request<{ 
+      success: boolean; 
+      lotteries: any[]; 
+      exchangeRate: number;
+    }>('/public/lotteries/all');
+  }
+
+  async getUserBalance(walletAddress: string) {
+    return this.request<{ 
+      success: boolean; 
+      balances: { TON: number; USDT: number }; 
+    }>(`/user/balance/${walletAddress}`);
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

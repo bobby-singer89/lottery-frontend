@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { supabase } from '../lib/supabase';
 import { provablyFair } from '../services/provablyFair';
+import { exchangeRateService } from '../services/exchangeRates';
 
 const router = Router();
 
@@ -144,6 +145,33 @@ router.get('/lotteries', async (req, res) => {
     res.json({
       success: true,
       lotteries: lotteries || [],
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/public/lotteries/all
+ * Get all lotteries with current exchange rate
+ */
+router.get('/lotteries/all', async (req, res) => {
+  try {
+    const { data: lotteries, error } = await supabase
+      .from('Lottery')
+      .select('*')
+      .eq('active', true)
+      .order('featured', { ascending: false });
+
+    if (error) throw error;
+
+    // Get current exchange rate
+    const exchangeRate = await exchangeRateService.getRate('TON', 'USDT');
+
+    res.json({
+      success: true,
+      lotteries: lotteries || [],
+      exchangeRate,
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

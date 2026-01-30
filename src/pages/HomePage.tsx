@@ -5,7 +5,6 @@ import { apiClient, type Lottery } from '../lib/api/client';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
-import CurrencySwitcher from '../components/CurrencySwitcher/CurrencySwitcher';
 import './HomePage.css';
 
 export default function HomePage() {
@@ -13,26 +12,36 @@ export default function HomePage() {
   const [lotteries, setLotteries] = useState<Lottery[]>([]);
   const [exchangeRate, setExchangeRate] = useState<number>(5.2);
   const [loading, setLoading] = useState(true);
-  const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT'>('TON');
   const [activeTab, setActiveTab] = useState('home');
 
   useEffect(() => {
-    const savedCurrency = localStorage.getItem('preferredCurrency');
-    const currency = (savedCurrency === 'TON' || savedCurrency === 'USDT') ? savedCurrency : 'TON';
-    setSelectedCurrency(currency);
-    loadLotteries(currency);
+    loadLotteries();
     loadExchangeRate();
   }, []);
 
-  async function loadLotteries(currency?: 'TON' | 'USDT') {
+  useEffect(() => {
+    function handleCurrencyChange(e: CustomEvent) {
+      const newCurrency = e.detail;
+      // Currency change event received, but we show all lotteries regardless
+      if (newCurrency === 'TON' || newCurrency === 'USDT') {
+        // Store preference for other components to use
+        localStorage.setItem('preferredCurrency', newCurrency);
+      }
+    }
+
+    window.addEventListener('currencyChange', handleCurrencyChange as EventListener);
+    return () => {
+      window.removeEventListener('currencyChange', handleCurrencyChange as EventListener);
+    };
+  }, []);
+
+  async function loadLotteries() {
     try {
       const response = await apiClient.getLotteries();
-      // Filter lotteries by currency if specified
-      let filteredLotteries = response.lotteries;
-      if (currency) {
-        filteredLotteries = response.lotteries.filter(lottery => lottery.currency === currency);
-      }
-      setLotteries(filteredLotteries);
+      
+      // ALWAYS show lotteries, just mark the selected currency
+      setLotteries(response.lotteries || []);
+      
     } catch (error) {
       console.error('Failed to load lotteries:', error);
     } finally {
@@ -52,11 +61,6 @@ export default function HomePage() {
   const getCurrencyIcon = (currency: string) => {
     return currency === 'TON' ? '💎' : '💵';
   };
-
-  function handleCurrencyChange(currency: 'TON' | 'USDT') {
-    setSelectedCurrency(currency);
-    loadLotteries(currency);
-  }
 
   const handleConnect = () => {
     console.log('Connecting wallet...');
@@ -115,17 +119,6 @@ export default function HomePage() {
               <p className="subtitle">Криптовалютная лотерея нового поколения на блокчейне TON</p>
             </header>
 
-            {/* Currency Switcher - COMPACT AND CENTERED */}
-            <CurrencySwitcher 
-              defaultCurrency={selectedCurrency}
-              onCurrencyChange={handleCurrencyChange}
-            />
-
-            {/* Exchange Rate Banner */}
-            <div className="exchange-rate-banner">
-              💱 Курс: 1 TON = {exchangeRate.toFixed(2)} USDT
-            </div>
-
             {/* Lotteries Section */}
             <section className="lotteries-section">
               <h2>Активные лотереи</h2>
@@ -169,9 +162,7 @@ export default function HomePage() {
                   ))
                 ) : (
                   <div className="no-lotteries">
-                    {selectedCurrency === 'TON' 
-                      ? 'Нет активных лотерей в TON' 
-                      : 'Нет активных лотерей в USDT'}
+                    Нет активных лотерей
                   </div>
                 )}
               </div>

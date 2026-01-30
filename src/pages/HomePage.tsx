@@ -19,7 +19,7 @@ export default function HomePage() {
     const savedCurrency = localStorage.getItem('preferredCurrency');
     const currency = (savedCurrency === 'TON' || savedCurrency === 'USDT') ? savedCurrency : 'TON';
     setSelectedCurrency(currency);
-    loadLotteries(currency);
+    loadLotteries();
     loadExchangeRate();
   }, []);
 
@@ -36,23 +36,12 @@ export default function HomePage() {
     };
   }, []);
 
-  async function loadLotteries(currency?: 'TON' | 'USDT') {
+  async function loadLotteries() {
     try {
       const response = await apiClient.getLotteries();
       
       // ALWAYS show lotteries, just mark the selected currency
       setLotteries(response.lotteries || []);
-      
-      // Optional: you can still filter if you want, but show all as fallback
-      // let filteredLotteries = response.lotteries || [];
-      // if (currency && filteredLotteries.length > 0) {
-      //   const filtered = filteredLotteries.filter(lottery => lottery.currency === currency);
-      //   // Only apply filter if results exist
-      //   if (filtered.length > 0) {
-      //     filteredLotteries = filtered;
-      //   }
-      // }
-      // setLotteries(filteredLotteries);
       
     } catch (error) {
       console.error('Failed to load lotteries:', error);
@@ -73,11 +62,6 @@ export default function HomePage() {
   const getCurrencyIcon = (currency: string) => {
     return currency === 'TON' ? '💎' : '💵';
   };
-
-  function handleCurrencyChange(currency: 'TON' | 'USDT') {
-    setSelectedCurrency(currency);
-    loadLotteries(currency);
-  }
 
   const handleConnect = () => {
     console.log('Connecting wallet...');

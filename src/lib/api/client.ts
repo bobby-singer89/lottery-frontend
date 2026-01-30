@@ -160,6 +160,28 @@ class ApiClient {
       body: JSON.stringify(data),
     });
   }
+
+  // Public endpoints
+  async getLotteries() {
+    return this.request<{ 
+      success: boolean;
+      lotteries: any[] 
+    }>('/public/lotteries');
+  }
+
+  async getExchangeRate(from: string, to: string) {
+    return this.request<{ 
+      success: boolean;
+      rate: number 
+    }>(`/public/exchange-rates/${from}/${to}`);
+  }
+
+  async getCurrentDrawForLottery(lotterySlug: string) {
+    return this.request<{ 
+      success: boolean;
+      draw: any 
+    }>(`/public/lottery/${lotterySlug}/current-draw`);
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

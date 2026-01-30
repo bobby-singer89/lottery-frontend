@@ -4,9 +4,8 @@ import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { motion } from 'framer-motion';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
-import Hero from './components/Hero/Hero';
-import LotteryCarousel from './components/LotteryCarousel/LotteryCarousel';
 import AnimatedBackground from './components/AnimatedBackground/AnimatedBackground';
+import HomePage from './pages/HomePage';
 import DemoPage from './pages/DemoPage';
 import WeekendSpecialPage from './pages/WeekendSpecialPage';
 import ProfilePage from './pages/ProfilePage';
@@ -64,69 +63,9 @@ function AgeGate({ onConfirm }: { onConfirm: () => void }) {
   );
 }
 
-// Sample lottery data
-const sampleLotteries = [
-  {
-    id: '1',
-    title: 'Mega Jackpot',
-    prizePool: '10,000 TON',
-    drawDate: '25 января 2026',
-    ticketPrice: '10 TON',
-    participants: 1234,
-    icon: 'trending' as const,
-  },
-  {
-    id: '2',
-    title: 'Weekend Special',
-    prizePool: '5,000 TON',
-    drawDate: '26 января 2026',
-    ticketPrice: '5 TON',
-    participants: 856,
-    icon: 'ticket' as const,
-  },
-  {
-    id: '3',
-    title: 'Daily Draw',
-    prizePool: '1,000 TON',
-    drawDate: '24 января 2026',
-    ticketPrice: '2 TON',
-    participants: 432,
-    icon: 'calendar' as const,
-  },
-  {
-    id: '4',
-    title: 'Golden Lottery',
-    prizePool: '25,000 TON',
-    drawDate: '31 января 2026',
-    ticketPrice: '20 TON',
-    participants: 2156,
-    icon: 'coins' as const,
-  },
-  {
-    id: '5',
-    title: 'Super Prize',
-    prizePool: '15,000 TON',
-    drawDate: '28 января 2026',
-    ticketPrice: '15 TON',
-    participants: 1567,
-    icon: 'trending' as const,
-  },
-];
-
 function MainScreen() {
   const [activeTab, setActiveTab] = useState('home');
   const navigate = useNavigate();
-
-  const handleBuyTicket = (lotteryId: string) => {
-    console.log('Buying ticket for lottery:', lotteryId);
-    // Navigate to lottery detail page
-    if (lotteryId === '2') {
-      navigate('/weekend-special');
-    } else {
-      // For other lotteries, navigate to a generic lottery detail page
-      navigate('/weekend-special');
-    }
-  };
 
   const handleConnect = () => {
     console.log('Connecting wallet...');
@@ -166,14 +105,8 @@ function MainScreen() {
 
         {/* Main Content */}
         <main className="main-content">
-          {/* Hero Section */}
-          <Hero />
-
-          {/* Lottery Carousel */}
-          <LotteryCarousel
-            lotteries={sampleLotteries}
-            onBuyTicket={handleBuyTicket}
-          />
+          {/* New HomePage with Currency Switcher */}
+          <HomePage />
         </main>
 
         {/* Footer Navigation */}

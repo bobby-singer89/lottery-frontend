@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiClient, type Lottery } from '../lib/api/client';
-import CurrencySwitcher, { Currency } from '../components/CurrencySwitcher/CurrencySwitcher';
+import CurrencySwitcher, { type Currency } from '../components/CurrencySwitcher/CurrencySwitcher';
 import './HomePage.css';
 
 export default function HomePage() {
@@ -34,10 +34,6 @@ export default function HomePage() {
       setLoading(false);
     }
   }
-
-  const getCurrencyIcon = (currency: string) => {
-    return currency === 'TON' ? '💎' : '💵';
-  };
 
   // Convert lottery data to selected currency
   function convertToCurrency(lottery: Lottery) {

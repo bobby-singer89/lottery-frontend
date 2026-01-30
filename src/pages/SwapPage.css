@@ -34,10 +34,10 @@
 
 /* Main swap card - COMPACT AND CENTERED */
 .swap-card {
-  max-width: 480px;
+  max-width: 420px; /* Reduced from 480px */
   width: 100%;
   margin: 5vh auto 0 auto;
-  padding: 2rem;
+  padding: 1.5rem; /* Reduced from 2rem */
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -50,34 +50,54 @@
 /* Header */
 .swap-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem; /* Reduced from 2rem */
 }
 
 .swap-title {
-  font-size: 1.8rem;
+  font-size: 1.6rem; /* Reduced from 1.8rem */
   font-weight: 700;
   color: rgba(255, 255, 255, 0.95);
   margin-bottom: 0.5rem;
 }
 
 .swap-subtitle {
-  font-size: 0.95rem;
+  font-size: 0.9rem; /* Reduced from 0.95rem */
   color: rgba(255, 255, 255, 0.6);
 }
 
 /* Input sections - GLASSMORPHISM */
 .swap-input-section {
-  padding: 1.5rem;
+  padding: 1.25rem; /* Reduced from 1.5rem */
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   margin-bottom: 1rem;
   transition: all 0.3s ease;
+  
+  /* Subtle glow effect */
+  box-shadow: 
+    0 0 0 0 rgba(255, 255, 255, 0),
+    inset 0 0 20px rgba(255, 255, 255, 0.02);
 }
 
 .swap-input-section:hover {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.15);
+  
+  /* Enhanced glow on hover */
+  box-shadow: 
+    0 0 30px rgba(255, 255, 255, 0.05),
+    inset 0 0 30px rgba(255, 255, 255, 0.03);
+}
+
+/* Even more pronounced glow when focused (has input focus) */
+.swap-input-section:focus-within {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  
+  box-shadow: 
+    0 0 40px rgba(255, 255, 255, 0.08),
+    inset 0 0 40px rgba(255, 255, 255, 0.04);
 }
 
 .swap-label {
@@ -182,6 +202,9 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   margin: 1rem 0;
+  
+  /* Subtle inner glow */
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
 }
 
 .swap-info-item {
@@ -232,12 +255,12 @@
 @media (max-width: 768px) {
   .swap-card {
     margin-top: 2vh;
-    padding: 1.5rem;
+    padding: 1.25rem; /* Reduced from 1.5rem */
     max-width: 95%;
   }
 
   .swap-title {
-    font-size: 1.5rem;
+    font-size: 1.4rem; /* Reduced from 1.5rem */
   }
 
   .swap-input {
@@ -261,7 +284,7 @@
   }
 
   .swap-card {
-    padding: 1.25rem;
+    padding: 1rem; /* Even more compact on small screens */
   }
 
   .swap-title {
@@ -269,6 +292,10 @@
   }
 
   .swap-input-section {
-    padding: 1rem;
+    padding: 1rem; /* Reduced from 1.25rem */
+  }
+  
+  .swap-header {
+    margin-bottom: 1rem; /* Reduced from 1.5rem */
   }
 }

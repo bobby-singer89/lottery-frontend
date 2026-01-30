@@ -14,6 +14,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT' | null>(null);
+  const [usingMockData, setUsingMockData] = useState(false);
 
   useEffect(() => {
     loadLotteries();
@@ -41,36 +42,44 @@ export default function HomePage() {
   async function loadLotteries(currency?: 'TON' | 'USDT') {
     try {
       setLoading(true);
-      const response = await apiClient.getLotteries();
+      console.log('Loading lotteries, currency:', currency);
+      
+      const response = await apiClient.getLotteries(currency);
+      
+      console.log('Lotteries response:', response);
       
       let allLotteries = response.lotteries || [];
       
-      // If API returns empty, use fallback mock data
-      if (allLotteries.length === 0) {
-        console.warn('No lotteries from API, using fallback data');
-        // Fallback will be handled by SQL migration
+      // Set mock data flag
+      setUsingMockData(response._isMock || false);
+      
+      // Log if using mock data
+      if (response._isMock) {
+        console.log('📦 Using mock lottery data (API not available)');
       }
       
-      // Smart filtering: if currency specified, try to filter
+      // Smart filtering with fallback
       if (currency && allLotteries.length > 0) {
-        const filtered = allLotteries.filter((lottery: Lottery) => lottery.currency === currency);
+        const filtered = allLotteries.filter(lottery => lottery.currency === currency);
         
-        // Only apply filter if results exist
-        // Otherwise show ALL lotteries
+        // If filter returns results, use them
+        // Otherwise show all lotteries
         if (filtered.length > 0) {
+          console.log(`Showing ${filtered.length} ${currency} lotteries`);
           setLotteries(filtered);
         } else {
-          console.warn(`No ${currency} lotteries found, showing all`);
+          console.warn(`No ${currency} lotteries found, showing all ${allLotteries.length} lotteries`);
           setLotteries(allLotteries);
         }
       } else {
         // No currency filter - show all
+        console.log(`Showing all ${allLotteries.length} lotteries`);
         setLotteries(allLotteries);
       }
       
     } catch (error) {
       console.error('Failed to load lotteries:', error);
-      // Don't show empty state on error - keep previous lotteries
+      // Don't clear lotteries on error - keep previous state
     } finally {
       setLoading(false);
     }
@@ -79,9 +88,10 @@ export default function HomePage() {
   async function loadExchangeRate() {
     try {
       const response = await apiClient.getExchangeRate('TON', 'USDT');
-      setExchangeRate(response.rate);
+      setExchangeRate(response.rate || 5.2);
     } catch (error) {
       console.error('Failed to load exchange rate:', error);
+      setExchangeRate(5.2); // Default fallback
     }
   }
 
@@ -203,6 +213,24 @@ export default function HomePage() {
 
         <Footer activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
+
+      {/* Development indicator */}
+      {usingMockData && (
+        <div style={{
+          position: 'fixed',
+          bottom: '1rem',
+          right: '1rem',
+          padding: '0.5rem 1rem',
+          background: 'rgba(255, 107, 53, 0.2)',
+          border: '1px solid rgba(255, 107, 53, 0.5)',
+          borderRadius: '8px',
+          fontSize: '0.85rem',
+          color: 'rgba(255, 255, 255, 0.9)',
+          zIndex: 1000,
+        }}>
+          🎲 Mock Data (API unavailable)
+        </div>
+      )}
     </div>
   );
 }

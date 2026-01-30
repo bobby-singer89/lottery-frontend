@@ -10,6 +10,30 @@ interface PaginationResponse {
   totalPages?: number;
 }
 
+export interface Lottery {
+  id: string;
+  slug: string;
+  name: string;
+  currency: string;
+  ticketPrice: number;
+  jackpot: number;
+  featured: boolean;
+}
+
+export interface Draw {
+  id: string;
+  lotteryId: string;
+  drawNumber: number;
+  scheduledAt: string;
+  status: string;
+  ticketSalesOpen: boolean;
+  ticketSalesClosedAt?: string;
+  dataFinalized?: boolean;
+  dataFinalizedAt?: string;
+  seedHash?: string;
+  winningNumbers?: number[];
+}
+
 class ApiClient {
   private baseURL: string;
   private token: string | null = null;
@@ -159,6 +183,28 @@ class ApiClient {
       method: 'PUT',
       body: JSON.stringify(data),
     });
+  }
+
+  // Public endpoints
+  async getLotteries() {
+    return this.request<{ 
+      success: boolean;
+      lotteries: Lottery[] 
+    }>('/public/lotteries');
+  }
+
+  async getExchangeRate(from: string, to: string) {
+    return this.request<{ 
+      success: boolean;
+      rate: number 
+    }>(`/public/exchange-rates/${from}/${to}`);
+  }
+
+  async getCurrentDrawForLottery(lotterySlug: string) {
+    return this.request<{ 
+      success: boolean;
+      draw: Draw | null
+    }>(`/public/lottery/${lotterySlug}/current-draw`);
   }
 }
 

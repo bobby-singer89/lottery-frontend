@@ -11,9 +11,10 @@ export default function HomePage() {
   const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT'>('TON');
 
   useEffect(() => {
-    const savedCurrency = localStorage.getItem('preferredCurrency') as 'TON' | 'USDT' || 'TON';
-    setSelectedCurrency(savedCurrency);
-    loadLotteries(savedCurrency);
+    const savedCurrency = localStorage.getItem('preferredCurrency');
+    const currency = (savedCurrency === 'TON' || savedCurrency === 'USDT') ? savedCurrency : 'TON';
+    setSelectedCurrency(currency);
+    loadLotteries(currency);
     loadExchangeRate();
   }, []);
 

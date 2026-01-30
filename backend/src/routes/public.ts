@@ -141,8 +141,8 @@ router.get('/lotteries', async (req, res) => {
       .select('*')
       .order('featured', { ascending: false });
 
-    // Filter by currency if provided
-    if (currency && (currency === 'TON' || currency === 'USDT')) {
+    // Filter by currency if provided and valid
+    if (typeof currency === 'string' && (currency === 'TON' || currency === 'USDT')) {
       query = query.eq('currency', currency);
     }
 

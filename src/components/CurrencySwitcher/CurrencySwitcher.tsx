@@ -22,13 +22,10 @@ export default function CurrencySwitcher({
     loadBalances();
   }, []);
 
-  // Load currency preference from localStorage
+  // Update active currency when defaultCurrency prop changes
   useEffect(() => {
-    const savedCurrency = localStorage.getItem('preferredCurrency') as 'TON' | 'USDT';
-    if (savedCurrency) {
-      setActiveCurrency(savedCurrency);
-    }
-  }, []);
+    setActiveCurrency(defaultCurrency);
+  }, [defaultCurrency]);
 
   async function loadBalances() {
     try {
@@ -77,10 +74,10 @@ export default function CurrencySwitcher({
             <span className="currency-icon">💵</span>
             <span className="currency-label">USDT</span>
           </button>
-          <div className="toggle-slider"></div>
+          <div className="toggle-slider" role="presentation" aria-hidden="true"></div>
         </div>
       </div>
-      <div className={`balance-info ${loading ? 'loading' : ''}`}>
+      <div className={`balance-info ${loading ? 'loading' : ''}`} aria-label="Current balance">
         {activeCurrency === 'TON' 
           ? `${balances.TON.toFixed(2)} TON` 
           : `${balances.USDT.toFixed(2)} USDT`}

@@ -18,6 +18,23 @@ router.post('/:slug/buy-ticket', async (req, res) => {
       return res.status(400).json({ error: 'Invalid numbers' });
     }
 
+    // Validate number count and values for 5/36 lottery
+    if (numbers.length !== 5) {
+      return res.status(400).json({ error: 'Must select exactly 5 numbers' });
+    }
+
+    // Validate each number is within valid range (1-36)
+    const invalidNumbers = numbers.filter(n => !Number.isInteger(n) || n < 1 || n > 36);
+    if (invalidNumbers.length > 0) {
+      return res.status(400).json({ error: 'All numbers must be integers between 1 and 36' });
+    }
+
+    // Check for duplicates
+    const uniqueNumbers = new Set(numbers);
+    if (uniqueNumbers.size !== numbers.length) {
+      return res.status(400).json({ error: 'Numbers must be unique' });
+    }
+
     if (!txHash) {
       return res.status(400).json({ error: 'Transaction hash required' });
     }
@@ -81,10 +98,19 @@ router.post('/:slug/buy-ticket', async (req, res) => {
         parseFloat(lottery.ticketPrice),
         lottery.currency
       );
-    } catch (financeError) {
+    } catch (financeError: any) {
       console.error('Finance recording error:', financeError);
-      // Don't fail the ticket purchase if finance recording fails
-      // The ticket is still valid, we just log the error
+      // Finance recording is critical - if it fails, we should clean up the ticket
+      // Delete the ticket to maintain data consistency
+      await supabase
+        .from('Ticket')
+        .delete()
+        .eq('id', ticket.id);
+      
+      return res.status(500).json({ 
+        error: 'Failed to record financial transaction', 
+        details: financeError.message 
+      });
     }
 
     // Update draw ticket count

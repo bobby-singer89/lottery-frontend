@@ -31,6 +31,11 @@ export default function FinanceStats({ lotteryId }: FinanceStatsProps) {
           },
         }
       );
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch stats');
+      }
+      
       const data = await response.json();
       setStats(data.stats);
     } catch (error) {

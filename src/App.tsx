@@ -1,8 +1,12 @@
-import { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { motion } from 'framer-motion';
-import HomePage from './pages/HomePage';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+import Hero from './components/Hero/Hero';
+import LotteryCarousel from './components/LotteryCarousel/LotteryCarousel';
+import AnimatedBackground from './components/AnimatedBackground/AnimatedBackground';
 import DemoPage from './pages/DemoPage';
 import WeekendSpecialPage from './pages/WeekendSpecialPage';
 import ProfilePage from './pages/ProfilePage';
@@ -30,6 +34,170 @@ declare global {
   interface Window {
     tonConnectButton?: HTMLButtonElement;
   }
+}
+
+// Sample lottery data with BOTH TON and USDT prices
+const sampleLotteries = [
+  {
+    id: '1',
+    title: 'Mega Jackpot',
+    prizePoolTON: '10,000 TON',
+    prizePoolUSDT: '52,000 USDT',
+    drawDate: '25 января 2026',
+    ticketPriceTON: '10 TON',
+    ticketPriceUSDT: '52 USDT',
+    participants: 1234,
+    icon: 'trending' as const,
+  },
+  {
+    id: '2',
+    title: 'Weekend Special',
+    prizePoolTON: '5,075 TON',
+    prizePoolUSDT: '26,390 USDT',
+    drawDate: '26 января 2026',
+    ticketPriceTON: '5 TON',
+    ticketPriceUSDT: '26 USDT',
+    participants: 856,
+    icon: 'ticket' as const,
+  },
+  {
+    id: '3',
+    title: 'Daily Draw',
+    prizePoolTON: '2,000 TON',
+    prizePoolUSDT: '10,400 USDT',
+    drawDate: '24 января 2026',
+    ticketPriceTON: '2 TON',
+    ticketPriceUSDT: '10 USDT',
+    participants: 432,
+    icon: 'calendar' as const,
+  },
+  {
+    id: '4',
+    title: 'Lucky Seven',
+    prizePoolTON: '7,777 TON',
+    prizePoolUSDT: '40,440 USDT',
+    drawDate: '27 января 2026',
+    ticketPriceTON: '7 TON',
+    ticketPriceUSDT: '36 USDT',
+    participants: 777,
+    icon: 'coins' as const,
+  },
+  {
+    id: '5',
+    title: 'Flash Lottery',
+    prizePoolTON: '3,500 TON',
+    prizePoolUSDT: '18,200 USDT',
+    drawDate: '25 января 2026',
+    ticketPriceTON: '3 TON',
+    ticketPriceUSDT: '15 USDT',
+    participants: 521,
+    icon: 'trending' as const,
+  },
+  {
+    id: '6',
+    title: 'Grand Prize',
+    prizePoolTON: '15,000 TON',
+    prizePoolUSDT: '78,000 USDT',
+    drawDate: '28 января 2026',
+    ticketPriceTON: '15 TON',
+    ticketPriceUSDT: '78 USDT',
+    participants: 1500,
+    icon: 'coins' as const,
+  },
+];
+
+// Main Screen Component
+function MainScreen() {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('home');
+  const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT'>(() => {
+    // Initialize from localStorage to match CurrencyToggleMini
+    const saved = localStorage.getItem('preferredCurrency') as 'TON' | 'USDT';
+    return saved || 'TON';
+  });
+
+  // Listen for currency changes from mini toggle
+  useEffect(() => {
+    function handleCurrencyChange(e: Event) {
+      const customEvent = e as CustomEvent<{ currency: 'TON' | 'USDT' }>;
+      setSelectedCurrency(customEvent.detail.currency);
+    }
+
+    window.addEventListener('currencyChange', handleCurrencyChange);
+    return () => {
+      window.removeEventListener('currencyChange', handleCurrencyChange);
+    };
+  }, []);
+
+  const handleConnect = () => {
+    // Placeholder - wallet connection is handled by TonConnect button in Header
+    console.log('Connecting wallet...');
+  };
+
+  const handleBuyTicket = (lotteryId: string) => {
+    console.log('Buying ticket for:', lotteryId);
+    navigate(`/lottery/${lotteryId}`);
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    switch(tab) {
+      case 'home':
+        navigate('/');
+        break;
+      case 'lotteries':
+        navigate('/lotteries');
+        break;
+      case 'history':
+        navigate('/history');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+      case 'referral':
+        navigate('/referral');
+        break;
+    }
+  };
+
+  // Map lotteries to display format based on selected currency
+  const displayLotteries = useMemo(() => sampleLotteries.map(lottery => ({
+    id: lottery.id,
+    title: lottery.title,
+    prizePool: selectedCurrency === 'TON' ? lottery.prizePoolTON : lottery.prizePoolUSDT,
+    drawDate: lottery.drawDate,
+    ticketPrice: selectedCurrency === 'TON' ? lottery.ticketPriceTON : lottery.ticketPriceUSDT,
+    participants: lottery.participants,
+    icon: lottery.icon,
+  })), [selectedCurrency]);
+
+  return (
+    <div className="app-root">
+      {/* Animated Background */}
+      <AnimatedBackground />
+
+      {/* Content Wrapper */}
+      <div className="content-wrapper">
+        {/* Header */}
+        <Header onConnect={handleConnect} />
+
+        {/* Main Content */}
+        <main className="main-content">
+          {/* Hero Section */}
+          <Hero />
+
+          {/* Lottery Carousel */}
+          <LotteryCarousel
+            lotteries={displayLotteries}
+            onBuyTicket={handleBuyTicket}
+          />
+        </main>
+
+        {/* Footer Navigation */}
+        <Footer activeTab={activeTab} onTabChange={handleTabChange} />
+      </div>
+    </div>
+  );
 }
 
 // Age Gate Component
@@ -78,7 +246,7 @@ function App() {
           {!ageConfirmed && <AgeGate onConfirm={handleAgeConfirm} />}
           {ageConfirmed && (
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<MainScreen />} />
               <Route path="/demo" element={<DemoPage />} />
               <Route path="/weekend-special" element={<WeekendSpecialPage />} />
               <Route path="/lottery/:slug" element={<WeekendSpecialPage />} />

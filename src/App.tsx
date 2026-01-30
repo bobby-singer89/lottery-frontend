@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { motion } from 'framer-motion';
@@ -110,7 +110,11 @@ const sampleLotteries = [
 function MainScreen() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('home');
-  const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT'>('TON');
+  const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT'>(() => {
+    // Initialize from localStorage to match CurrencyToggleMini
+    const saved = localStorage.getItem('preferredCurrency') as 'TON' | 'USDT';
+    return saved || 'TON';
+  });
 
   // Listen for currency changes from mini toggle
   useEffect(() => {
@@ -126,6 +130,7 @@ function MainScreen() {
   }, []);
 
   const handleConnect = () => {
+    // Placeholder - wallet connection is handled by TonConnect button in Header
     console.log('Connecting wallet...');
   };
 
@@ -156,7 +161,7 @@ function MainScreen() {
   };
 
   // Map lotteries to display format based on selected currency
-  const displayLotteries = sampleLotteries.map(lottery => ({
+  const displayLotteries = useMemo(() => sampleLotteries.map(lottery => ({
     id: lottery.id,
     title: lottery.title,
     prizePool: selectedCurrency === 'TON' ? lottery.prizePoolTON : lottery.prizePoolUSDT,
@@ -164,7 +169,7 @@ function MainScreen() {
     ticketPrice: selectedCurrency === 'TON' ? lottery.ticketPriceTON : lottery.ticketPriceUSDT,
     participants: lottery.participants,
     icon: lottery.icon,
-  }));
+  })), [selectedCurrency]);
 
   return (
     <div className="app-root">

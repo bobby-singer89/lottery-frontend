@@ -193,9 +193,9 @@ class ApiClient {
         params.append('currency', currency);
       }
       
-      // Correct API URL with /api prefix
+      // API URL (baseURL already includes /api)
       const response = await fetch(
-        `${this.baseURL}/api/public/lotteries?${params}`,
+        `${this.baseURL}/public/lotteries?${params}`,
         {
           method: 'GET',
           headers: {
@@ -228,7 +228,7 @@ class ApiClient {
   async getExchangeRate(from: string, to: string): Promise<{ rate: number; success: boolean }> {
     try {
       const response = await fetch(
-        `${this.baseURL}/api/public/exchange-rates/${from}/${to}`,
+        `${this.baseURL}/public/exchange-rates/${from}/${to}`,
         {
           method: 'GET',
           headers: {
@@ -258,7 +258,7 @@ class ApiClient {
     const allMockLotteries = [
       // TON Lotteries
       {
-        id: 1,
+        id: '1',
         name: 'Mega Jackpot',
         slug: 'mega-jackpot',
         currency: 'TON',
@@ -274,7 +274,7 @@ class ApiClient {
         updatedAt: new Date().toISOString(),
       },
       {
-        id: 2,
+        id: '2',
         name: 'Weekend Special',
         slug: 'weekend-special',
         currency: 'TON',
@@ -290,7 +290,7 @@ class ApiClient {
         updatedAt: new Date().toISOString(),
       },
       {
-        id: 3,
+        id: '3',
         name: 'Daily Draw',
         slug: 'daily-draw',
         currency: 'TON',
@@ -307,7 +307,7 @@ class ApiClient {
       },
       // USDT Lotteries
       {
-        id: 4,
+        id: '4',
         name: 'USDT Mega Pool',
         slug: 'usdt-mega-pool',
         currency: 'USDT',
@@ -323,7 +323,7 @@ class ApiClient {
         updatedAt: new Date().toISOString(),
       },
       {
-        id: 5,
+        id: '5',
         name: 'USDT Weekend',
         slug: 'usdt-weekend',
         currency: 'USDT',
@@ -339,7 +339,7 @@ class ApiClient {
         updatedAt: new Date().toISOString(),
       },
       {
-        id: 6,
+        id: '6',
         name: 'USDT Quick Draw',
         slug: 'usdt-quick-draw',
         currency: 'USDT',

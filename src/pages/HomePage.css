@@ -11,6 +11,12 @@
   color: #FFD700;
 }
 
+/* Currency switcher spacing on HomePage */
+.home-page .currency-selector {
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+}
+
 .exchange-rate-banner {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;

@@ -9,6 +9,7 @@ import { useTonTransaction } from '../hooks/useTonTransaction';
 import { useTicketCart } from '../hooks/useTicketCart';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import PurchaseModal from '../components/Lottery/PurchaseModal/PurchaseModal';
+import CurrencySwitcher from '../components/CurrencySwitcher/CurrencySwitcher';
 import {
   JackpotDisplay,
   DrawCountdown,
@@ -33,6 +34,7 @@ export default function WeekendSpecialPage() {
   const [participantsCount] = useState(() => Math.floor(Math.random() * 300 + 200));
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [prizesOpen, setPrizesOpen] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT'>('TON');
   
   // Initialize cart with ticket price
   const ticketPrice = lottery?.ticketPrice || WEEKEND_SPECIAL_CONFIG.ticketPrice;
@@ -222,6 +224,12 @@ export default function WeekendSpecialPage() {
         <div className="ws-header">
           <h1 className="ws-page-title">Weekend Special</h1>
         </div>
+
+        {/* Currency Switcher */}
+        <CurrencySwitcher 
+          defaultCurrency={selectedCurrency}
+          onCurrencyChange={setSelectedCurrency}
+        />
 
         {/* Jackpot Display with Steampunk Glitch */}
         <JackpotDisplay 

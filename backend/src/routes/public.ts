@@ -130,14 +130,23 @@ router.get('/ticket/:ticketId/verify', async (req, res) => {
 
 /**
  * GET /api/public/lotteries
- * Get all lotteries
+ * Get all lotteries with optional currency filter
  */
 router.get('/lotteries', async (req, res) => {
+  const { currency } = req.query;
+
   try {
-    const { data: lotteries, error } = await supabase
+    let query = supabase
       .from('Lottery')
       .select('*')
       .order('featured', { ascending: false });
+
+    // Filter by currency if provided
+    if (currency && (currency === 'TON' || currency === 'USDT')) {
+      query = query.eq('currency', currency);
+    }
+
+    const { data: lotteries, error } = await query;
 
     if (error) throw error;
 

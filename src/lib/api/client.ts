@@ -200,6 +200,43 @@ class ApiClient {
     }>(`/public/exchange-rates/${from}/${to}`);
   }
 
+  // Swap endpoints
+  async getSwapQuote(from: string, to: string, amount: number) {
+    return this.request<{ success: boolean; quote: any }>(
+      `/swap/quote?from=${from}&to=${to}&amount=${amount}`
+    );
+  }
+
+  async buildSwapTransaction(params: {
+    from: string;
+    to: string;
+    amount: number;
+    userWallet: string;
+    slippage?: number;
+  }) {
+    return this.request<{
+      success: boolean;
+      transaction: any;
+      quote: any;
+      minOutput: string;
+      estimatedGas: string;
+    }>('/swap/build-transaction', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+  }
+
+  async getSupportedTokens() {
+    return this.request<{ success: boolean; tokens: any[] }>('/swap/tokens');
+  }
+
+  async getSwapRate(from: string, to: string) {
+    return this.request<{ success: boolean; rate: number }>(
+      `/swap/rate/${from}/${to}`
+    );
+  }
+
   async getCurrentDrawForLottery(lotterySlug: string) {
     return this.request<{ 
       success: boolean;

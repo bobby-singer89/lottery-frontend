@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Wallet, Sparkles, Ticket, ShieldCheck, LogOut, User } from 'lucide-react';
+import { Wallet, Sparkles, Ticket, ShieldCheck, LogOut, User, ArrowLeftRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -64,6 +64,10 @@ function Header({ onConnect, walletAddress }: HeaderProps) {
           <Link to="/demo" className="demo-nav-link">
             <Sparkles size={16} />
             <span>Демо</span>
+          </Link>
+          <Link to="/swap" className="nav-link">
+            <ArrowLeftRight size={16} />
+            <span>Обмен</span>
           </Link>
           {walletAddress && (
             <Link to="/my-tickets" className="nav-link">

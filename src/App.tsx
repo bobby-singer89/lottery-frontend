@@ -13,6 +13,7 @@ import ProfilePage from './pages/ProfilePage';
 import LotteriesPage from './pages/LotteriesPage';
 import HistoryPage from './pages/HistoryPage';
 import ReferralPage from './pages/ReferralPage';
+import SwapPage from './pages/SwapPage';
 import AdminGuard from './components/Admin/AdminGuard';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -208,6 +209,7 @@ function App() {
               <Route path="/lotteries" element={<LotteriesPage />} />
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/referral" element={<ReferralPage />} />
+              <Route path="/swap" element={<SwapPage />} />
               <Route path="/my-tickets" element={<MyTicketsPage />} />
               <Route path="/verify/:drawId" element={<VerifyDrawPage />} />
               {/* Admin Routes */}

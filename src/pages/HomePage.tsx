@@ -62,56 +62,73 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-      <h1>🎰 Доступные лотереи</h1>
+      {/* Header */}
+      <header className="hero-section">
+        <h1 className="main-title">WEEKEND MILLIONS</h1>
+        <p className="subtitle">Криптовалютная лотерея нового поколения на блокчейне TON</p>
+      </header>
 
-      {/* Currency Switcher */}
+      {/* Currency Switcher - COMPACT AND CENTERED */}
       <CurrencySwitcher 
         defaultCurrency={selectedCurrency}
         onCurrencyChange={handleCurrencyChange}
       />
 
+      {/* Exchange Rate Banner */}
       <div className="exchange-rate-banner">
         💱 Курс: 1 TON = {exchangeRate.toFixed(2)} USDT
       </div>
 
-      <div className="lotteries-grid">
-        {lotteries.map((lottery, index) => (
-          <motion.div
-            key={lottery.id}
-            className={`lottery-card ${lottery.featured ? 'featured' : ''}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <div className="lottery-header">
-              <h2>{lottery.name}</h2>
-              <span className="currency-badge">
-                {getCurrencyIcon(lottery.currency)} {lottery.currency}
-              </span>
-            </div>
+      {/* Lotteries Section */}
+      <section className="lotteries-section">
+        <h2>Активные лотереи</h2>
+        <div className="lotteries-grid">
+          {lotteries.length > 0 ? (
+            lotteries.map((lottery, index) => (
+              <motion.div
+                key={lottery.id}
+                className={`lottery-card ${lottery.featured ? 'featured' : ''}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div className="lottery-header">
+                  <h2>{lottery.name}</h2>
+                  <span className="currency-badge">
+                    {getCurrencyIcon(lottery.currency)} {lottery.currency}
+                  </span>
+                </div>
 
-            <div className="jackpot">
-              <span className="label">Джекпот:</span>
-              <span className="amount">
-                {getCurrencyIcon(lottery.currency)} {lottery.jackpot.toLocaleString()} {lottery.currency}
-              </span>
-              {lottery.currency === 'TON' && (
-                <span className="equivalent">
-                  ≈ {(lottery.jackpot * exchangeRate).toFixed(0)} USDT
-                </span>
-              )}
-            </div>
+                <div className="jackpot">
+                  <span className="label">Джекпот:</span>
+                  <span className="amount">
+                    {getCurrencyIcon(lottery.currency)} {lottery.jackpot.toLocaleString()} {lottery.currency}
+                  </span>
+                  {lottery.currency === 'TON' && (
+                    <span className="equivalent">
+                      ≈ {(lottery.jackpot * exchangeRate).toFixed(0)} USDT
+                    </span>
+                  )}
+                </div>
 
-            <div className="ticket-price">
-              Билет: {lottery.ticketPrice} {lottery.currency}
-            </div>
+                <div className="ticket-price">
+                  Билет: {lottery.ticketPrice} {lottery.currency}
+                </div>
 
-            <a href={`/lottery/${lottery.slug}`} className="play-btn">
-              🎲 Играть
-            </a>
-          </motion.div>
-        ))}
-      </div>
+                <a href={`/lottery/${lottery.slug}`} className="play-btn">
+                  🎲 Играть
+                </a>
+              </motion.div>
+            ))
+          ) : (
+            <div className="no-lotteries">
+              {selectedCurrency === 'TON' 
+                ? 'Нет активных лотерей в TON' 
+                : 'Нет активных лотерей в USDT'}
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

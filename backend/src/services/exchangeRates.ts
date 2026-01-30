@@ -22,15 +22,37 @@ export class ExchangeRateService {
     try {
       // Fetch TON/USDT rate from DeDust API
       const response = await fetch('https://api.dedust.io/v2/pools');
-      const pools = await response.json() as any[];
+      
+      if (!response.ok) {
+        throw new Error(`DeDust API returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Validate response structure
+      if (!Array.isArray(data)) {
+        console.error('Invalid DeDust API response: expected array');
+        return;
+      }
+      
+      const pools = data as any[];
       
       // Find TON/USDT pool
       const tonUsdtPool = pools.find((p: any) => 
-        p.assets.includes('TON') && p.assets.includes('USDT')
+        p && 
+        Array.isArray(p.assets) &&
+        p.assets.includes('TON') && 
+        p.assets.includes('USDT') &&
+        typeof p.price !== 'undefined'
       );
 
-      if (tonUsdtPool) {
+      if (tonUsdtPool && typeof tonUsdtPool.price !== 'undefined') {
         const rate = parseFloat(tonUsdtPool.price);
+        
+        if (isNaN(rate) || rate <= 0) {
+          console.error('Invalid exchange rate from DeDust:', tonUsdtPool.price);
+          return;
+        }
         
         // Update TON → USDT
         await supabase

@@ -10,6 +10,30 @@ interface PaginationResponse {
   totalPages?: number;
 }
 
+export interface Lottery {
+  id: string;
+  slug: string;
+  name: string;
+  currency: string;
+  ticketPrice: number;
+  jackpot: number;
+  featured: boolean;
+}
+
+export interface Draw {
+  id: string;
+  lotteryId: string;
+  drawNumber: number;
+  scheduledAt: string;
+  status: string;
+  ticketSalesOpen: boolean;
+  ticketSalesClosedAt?: string;
+  dataFinalized?: boolean;
+  dataFinalizedAt?: string;
+  seedHash?: string;
+  winningNumbers?: number[];
+}
+
 class ApiClient {
   private baseURL: string;
   private token: string | null = null;
@@ -165,7 +189,7 @@ class ApiClient {
   async getLotteries() {
     return this.request<{ 
       success: boolean;
-      lotteries: any[] 
+      lotteries: Lottery[] 
     }>('/public/lotteries');
   }
 
@@ -179,7 +203,7 @@ class ApiClient {
   async getCurrentDrawForLottery(lotterySlug: string) {
     return this.request<{ 
       success: boolean;
-      draw: any 
+      draw: Draw | null
     }>(`/public/lottery/${lotterySlug}/current-draw`);
   }
 }

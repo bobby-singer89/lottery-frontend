@@ -38,7 +38,20 @@ export class PayoutService {
     }
 
     try {
-      const mnemonic = process.env.LOTTERY_WALLET_MNEMONIC.split(' ');
+      const mnemonicString = process.env.LOTTERY_WALLET_MNEMONIC;
+      const mnemonic = mnemonicString.split(' ');
+      
+      // Validate mnemonic format (should be 24 words)
+      if (mnemonic.length !== 24) {
+        throw new Error(`Invalid mnemonic: expected 24 words, got ${mnemonic.length}`);
+      }
+      
+      // Validate each word is non-empty
+      const invalidWords = mnemonic.filter(word => !word || word.trim().length === 0);
+      if (invalidWords.length > 0) {
+        throw new Error('Invalid mnemonic: contains empty words');
+      }
+      
       const keyPair = await mnemonicToPrivateKey(mnemonic);
       
       this.wallet = WalletContractV4.create({
@@ -202,19 +215,18 @@ export class PayoutService {
 
   /**
    * Send transaction
+   * TODO: IMPLEMENT ACTUAL TRANSACTION LOGIC BEFORE PRODUCTION USE
+   * This is a placeholder implementation that returns a mock transaction hash
    */
   async sendTransaction(to: string, amount: number, currency: string): Promise<string> {
-    // Placeholder - actual implementation depends on TON SDK
-    // For TON native:
-    if (currency === 'TON') {
-      // const tx = await this.wallet.send(...);
-      // return tx.hash;
-    }
+    // WARNING: Placeholder implementation - DO NOT USE IN PRODUCTION
+    // Actual implementation needed for:
+    // - TON native transfers using wallet.send()
+    // - USDT Jetton transfers via Jetton contract
     
-    // For USDT Jetton:
-    // Need to interact with Jetton contract
+    console.warn(`⚠️ MOCK TRANSACTION: ${amount} ${currency} to ${to} (not actually sent)`);
     
-    // Mock for now
+    // Mock transaction hash for development/testing only
     return '0x' + Math.random().toString(16).substring(2, 66);
   }
 

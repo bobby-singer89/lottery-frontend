@@ -1,17 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { apiClient } from '../lib/api/client';
+import { apiClient, type Lottery } from '../lib/api/client';
 import './HomePage.css';
-
-interface Lottery {
-  id: string;
-  slug: string;
-  name: string;
-  currency: string;
-  ticketPrice: number;
-  jackpot: number;
-  featured: boolean;
-}
 
 export default function HomePage() {
   const [lotteries, setLotteries] = useState<Lottery[]>([]);

@@ -13,6 +13,7 @@ export default function HomePage() {
   const [exchangeRate, setExchangeRate] = useState<number>(5.2);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
+  const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT' | null>(null);
 
   useEffect(() => {
     loadLotteries();
@@ -35,15 +36,57 @@ export default function HomePage() {
     };
   }, []);
 
-  async function loadLotteries() {
+  // Add global currency change listener
+  useEffect(() => {
+    function handleGlobalCurrencyChange(e: Event) {
+      const customEvent = e as CustomEvent<{ currency: 'TON' | 'USDT' }>;
+      const newCurrency = customEvent.detail.currency;
+      
+      console.log('Global currency changed to:', newCurrency);
+      setSelectedCurrency(newCurrency);
+      loadLotteries(newCurrency);
+    }
+
+    window.addEventListener('currencyChange', handleGlobalCurrencyChange);
+    
+    return () => {
+      window.removeEventListener('currencyChange', handleGlobalCurrencyChange);
+    };
+  }, []);
+
+  async function loadLotteries(currency?: 'TON' | 'USDT') {
     try {
+      setLoading(true);
       const response = await apiClient.getLotteries();
       
-      // ALWAYS show lotteries, just mark the selected currency
-      setLotteries(response.lotteries || []);
+      let allLotteries = response.lotteries || [];
+      
+      // If API returns empty, use fallback mock data
+      if (allLotteries.length === 0) {
+        console.warn('No lotteries from API, using fallback data');
+        // Fallback will be handled by SQL migration
+      }
+      
+      // Smart filtering: if currency specified, try to filter
+      if (currency && allLotteries.length > 0) {
+        const filtered = allLotteries.filter((lottery: Lottery) => lottery.currency === currency);
+        
+        // Only apply filter if results exist
+        // Otherwise show ALL lotteries
+        if (filtered.length > 0) {
+          setLotteries(filtered);
+        } else {
+          console.warn(`No ${currency} lotteries found, showing all`);
+          setLotteries(allLotteries);
+        }
+      } else {
+        // No currency filter - show all
+        setLotteries(allLotteries);
+      }
       
     } catch (error) {
       console.error('Failed to load lotteries:', error);
+      // Don't show empty state on error - keep previous lotteries
     } finally {
       setLoading(false);
     }
@@ -127,7 +170,11 @@ export default function HomePage() {
                   lotteries.map((lottery, index) => (
                     <motion.div
                       key={lottery.id}
-                      className={`lottery-card ${lottery.featured ? 'featured' : ''}`}
+                      className={`lottery-card ${lottery.featured ? 'featured' : ''} ${
+                        selectedCurrency && lottery.currency === selectedCurrency ? 'highlighted' : ''
+                      } ${
+                        selectedCurrency && lottery.currency !== selectedCurrency ? 'dimmed' : ''
+                      }`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}

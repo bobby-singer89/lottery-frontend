@@ -48,12 +48,33 @@
   font-size: 1.2rem;
 }
 
+/* Lottery card highlighting based on selected currency */
 .lottery-card {
   background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
   border-radius: 15px;
   padding: 20px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.lottery-card.highlighted {
+  opacity: 1;
+  transform: scale(1);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.lottery-card.dimmed {
+  opacity: 0.4;
+  transform: scale(0.97);
+  filter: grayscale(30%);
+}
+
+.lottery-card.dimmed:hover {
+  opacity: 0.6;
+  transform: scale(0.98);
 }
 
 .lottery-card:hover {
@@ -62,8 +83,15 @@
 }
 
 .lottery-card.featured {
-  border: 2px solid #FFD700;
+  border: 2px solid rgba(255, 107, 53, 0.3);
   background: linear-gradient(135deg, #2a2a3e 0%, #3a3a4e 100%);
+}
+
+.lottery-card.featured.highlighted {
+  border: 2px solid rgba(255, 107, 53, 0.5);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(255, 107, 53, 0.2);
 }
 
 .lottery-header {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { apiClient, type Lottery } from '../lib/api/client';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
@@ -88,9 +88,13 @@ export default function HomePage() {
       <div className="app-root">
         <AnimatedBackground />
         <div className="content-wrapper">
-          <div className="home-page">
-            <div className="loading">Загрузка...</div>
-          </div>
+          <Header onConnect={handleConnect} />
+          <main className="main-content">
+            <div className="home-page">
+              <div className="loading">Загрузка...</div>
+            </div>
+          </main>
+          <Footer activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
       </div>
     );
@@ -158,9 +162,9 @@ export default function HomePage() {
                         Билет: {lottery.ticketPrice} {lottery.currency}
                       </div>
 
-                      <a href={`/lottery/${lottery.slug}`} className="play-btn">
+                      <Link to={`/lottery/${lottery.slug}`} className="play-btn">
                         🎲 Играть
-                      </a>
+                      </Link>
                     </motion.div>
                   ))
                 ) : (

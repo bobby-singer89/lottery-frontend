@@ -34,6 +34,12 @@
   transform: scale(1.05);
 }
 
+.currency-toggle-mini button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
 .currency-toggle-mini button.active {
   background: rgba(255, 255, 255, 0.15);
   opacity: 1;

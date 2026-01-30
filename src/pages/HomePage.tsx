@@ -12,22 +12,21 @@ export default function HomePage() {
   const [lotteries, setLotteries] = useState<Lottery[]>([]);
   const [exchangeRate, setExchangeRate] = useState<number>(5.2);
   const [loading, setLoading] = useState(true);
-  const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT'>('TON');
   const [activeTab, setActiveTab] = useState('home');
 
   useEffect(() => {
-    const savedCurrency = localStorage.getItem('preferredCurrency');
-    const currency = (savedCurrency === 'TON' || savedCurrency === 'USDT') ? savedCurrency : 'TON';
-    setSelectedCurrency(currency);
     loadLotteries();
     loadExchangeRate();
   }, []);
 
   useEffect(() => {
     function handleCurrencyChange(e: CustomEvent) {
-      setSelectedCurrency(e.detail);
-      // Optionally reload lotteries
-      // loadLotteries(e.detail);
+      const newCurrency = e.detail;
+      // Currency change event received, but we show all lotteries regardless
+      if (newCurrency === 'TON' || newCurrency === 'USDT') {
+        // Store preference for other components to use
+        localStorage.setItem('preferredCurrency', newCurrency);
+      }
     }
 
     window.addEventListener('currencyChange', handleCurrencyChange as EventListener);
@@ -163,9 +162,7 @@ export default function HomePage() {
                   ))
                 ) : (
                   <div className="no-lotteries">
-                    {selectedCurrency === 'TON' 
-                      ? 'Нет активных лотерей в TON' 
-                      : 'Нет активных лотерей в USDT'}
+                    Нет активных лотерей
                   </div>
                 )}
               </div>

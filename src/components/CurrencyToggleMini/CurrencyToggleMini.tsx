@@ -29,6 +29,7 @@ export default function CurrencyToggleMini({ onChange }: CurrencyToggleMiniProps
         className={currency === 'TON' ? 'active' : ''}
         onClick={() => handleToggle('TON')}
         title="TON"
+        aria-label="Switch to TON currency"
       >
         💎
       </button>
@@ -36,6 +37,7 @@ export default function CurrencyToggleMini({ onChange }: CurrencyToggleMiniProps
         className={currency === 'USDT' ? 'active' : ''}
         onClick={() => handleToggle('USDT')}
         title="USDT"
+        aria-label="Switch to USDT currency"
       >
         💵
       </button>

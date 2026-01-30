@@ -6,6 +6,7 @@ import { payoutService } from './services/payoutService';
 import publicRoutes from './routes/public';
 import adminRoutes from './routes/admin';
 import swapRoutes from './routes/swap';
+import financeRoutes from './routes/admin/finance';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -24,6 +25,9 @@ app.use('/api/public', publicRoutes);
 
 // Admin routes
 app.use('/api/admin', adminRoutes);
+
+// Admin finance routes
+app.use('/api/admin/finance', financeRoutes);
 
 // Swap routes
 app.use('/api/swap', swapRoutes);

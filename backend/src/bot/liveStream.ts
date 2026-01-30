@@ -105,7 +105,7 @@ https://${FRONTEND_URL}/verify/${drawId}
         return;
     }
 
-    await bot.sendMessage(LIVE_CHANNEL_ID, message, {
+    await bot.sendMessage(LIVE_CHANNEL_ID!, message, {
       parse_mode: 'HTML',
     });
 

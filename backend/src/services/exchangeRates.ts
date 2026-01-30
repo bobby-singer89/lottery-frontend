@@ -22,7 +22,7 @@ export class ExchangeRateService {
     try {
       // Fetch TON/USDT rate from DeDust API
       const response = await fetch('https://api.dedust.io/v2/pools');
-      const pools = await response.json();
+      const pools = await response.json() as any[];
       
       // Find TON/USDT pool
       const tonUsdtPool = pools.find((p: any) => 

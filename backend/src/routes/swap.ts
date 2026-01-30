@@ -17,11 +17,19 @@ router.get('/quote', async (req, res) => {
     });
   }
 
+  const parsedAmount = parseFloat(amount as string);
+  if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid amount: must be a positive number',
+    });
+  }
+
   try {
     const quote = await dedustService.getSwapQuote(
       from as string,
       to as string,
-      parseFloat(amount as string)
+      parsedAmount
     );
 
     res.json({
@@ -51,11 +59,27 @@ router.post('/build-transaction', async (req, res) => {
     });
   }
 
+  const parsedAmount = parseFloat(amount);
+  if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid amount: must be a positive number',
+    });
+  }
+
+  // Basic TON address validation (should start with EQ or UQ and be base64)
+  if (!userWallet.match(/^[EU]Q[A-Za-z0-9_-]{46}$/)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid TON wallet address format',
+    });
+  }
+
   try {
     const result = await dedustService.buildSwapTransaction(
       from,
       to,
-      parseFloat(amount),
+      parsedAmount,
       userWallet,
       slippage || 0.5
     );

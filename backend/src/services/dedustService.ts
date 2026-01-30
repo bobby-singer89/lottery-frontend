@@ -112,8 +112,9 @@ export class DedustService {
     const amountInNano = Math.floor(amount * 1e9); // For TON (9 decimals)
 
     // Build transaction for TON Connect
+    // Valid for 5 minutes to give user time to review and confirm
     const transaction = {
-      validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes
+      validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes from now
       messages: [
         {
           address: DEDUST_ROUTER,
@@ -133,12 +134,16 @@ export class DedustService {
       transaction,
       quote,
       minOutput: minOutput.toFixed(6),
-      estimatedGas: '0.05', // Estimated gas in TON
+      estimatedGas: '0.05', // Estimated gas in TON - actual cost may vary
     };
   }
 
   /**
    * Build swap payload (cell for DeDust)
+   * NOTE: This is a placeholder implementation. In production, you MUST use @dedust/sdk
+   * to build proper BOC (Bag of Cells) payloads that DeDust smart contracts can process.
+   * Current implementation returns empty string which means native TON transfer without payload.
+   * For actual swaps, integrate @dedust/sdk and use proper Cell serialization.
    */
   private buildSwapPayload(
     fromToken: string,
@@ -147,19 +152,11 @@ export class DedustService {
     minOutputInNano: number,
     recipient: string
   ): string {
-    // Simplified payload - in production, use @dedust/sdk
-    const payload = {
-      $$type: 'Swap',
-      fromAsset: fromToken,
-      toAsset: toToken,
-      amountIn: amountInNano,
-      minAmountOut: minOutputInNano,
-      recipient,
-      deadline: Math.floor(Date.now() / 1000) + 300,
-    };
-
-    // Encode to base64 (simplified)
-    return Buffer.from(JSON.stringify(payload)).toString('base64');
+    // TODO: Implement proper DeDust swap payload using @dedust/sdk
+    // Example: Use ton-core's beginCell() to build proper BOC payload
+    // For now, return empty string (native TON transfer)
+    console.warn('Swap payload building not implemented - requires @dedust/sdk integration');
+    return '';
   }
 
   /**
@@ -223,7 +220,8 @@ export class DedustService {
       };
     }
 
-    // Fallback to estimated liquidity
+    // Fallback to estimated liquidity (approximate TON/USDT pool values)
+    // These are placeholder values: ~1M TON and ~5.2M USDT based on typical pool ratios
     return {
       reserveIn: 1000000,
       reserveOut: 5200000,

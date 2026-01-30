@@ -65,7 +65,7 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* Input sections - WITH VISIBLE GLOW */
+/* Input sections - WITH STRONG VISIBLE GLOW */
 .swap-input-section {
   padding: 0.75rem;
   background: rgba(255, 255, 255, 0.03);
@@ -74,30 +74,30 @@
   margin-bottom: 0.75rem;
   transition: all 0.3s ease;
   
-  /* Subtle inner glow */
+  /* Normal state - subtle inner glow */
   box-shadow: 
     0 0 0 0 rgba(255, 255, 255, 0),
-    inset 0 0 15px rgba(255, 255, 255, 0.02);
+    inset 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
 .swap-input-section:hover {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.15);
   
-  /* VISIBLE glow on hover */
+  /* STRONG glow on hover - 3x stronger */
   box-shadow: 
-    0 0 25px rgba(255, 255, 255, 0.08),
-    inset 0 0 25px rgba(255, 255, 255, 0.05);
+    0 0 30px 10px rgba(255, 255, 255, 0.15),
+    inset 0 0 30px rgba(255, 255, 255, 0.1);
 }
 
 .swap-input-section:focus-within {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.2);
   
-  /* STRONG glow on focus */
+  /* VERY STRONG glow on focus - 5x stronger */
   box-shadow: 
-    0 0 35px rgba(255, 255, 255, 0.12),
-    inset 0 0 35px rgba(255, 255, 255, 0.08);
+    0 0 40px 15px rgba(255, 255, 255, 0.25),
+    inset 0 0 40px rgba(255, 255, 255, 0.15);
 }
 
 .swap-label {
@@ -202,7 +202,14 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   margin: 0.75rem 0;
-  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.02);
+  
+  /* Subtle inner glow */
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.swap-info:hover {
+  box-shadow: inset 0 0 25px rgba(255, 255, 255, 0.08);
 }
 
 .swap-info-item {

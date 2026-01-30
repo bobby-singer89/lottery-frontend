@@ -187,10 +187,27 @@ class ApiClient {
 
   // Public endpoints
   async getLotteries() {
-    return this.request<{ 
-      success: boolean;
-      lotteries: Lottery[] 
-    }>('/public/lotteries');
+    try {
+      const response = await fetch(`${this.baseURL}/public/lotteries`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Ensure lotteries array exists
+      if (!data.lotteries) {
+        console.warn('API returned no lotteries array');
+        return { lotteries: [], success: true };
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch lotteries:', error);
+      // Return empty array instead of throwing
+      return { lotteries: [], success: false, error: (error as Error).message };
+    }
   }
 
   async getExchangeRate(from: string, to: string) {

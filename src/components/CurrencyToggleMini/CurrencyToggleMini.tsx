@@ -18,6 +18,16 @@ export default function CurrencyToggleMini({ onChange }: CurrencyToggleMiniProps
   function handleToggle(newCurrency: 'TON' | 'USDT') {
     setCurrency(newCurrency);
     localStorage.setItem('preferredCurrency', newCurrency);
+    
+    // Dispatch global event for HomePage to listen
+    const event = new CustomEvent('currencyChange', { 
+      detail: { currency: newCurrency },
+      bubbles: true 
+    });
+    window.dispatchEvent(event);
+    
+    console.log('Currency toggled to:', newCurrency);
+    
     if (onChange) {
       onChange(newCurrency);
     }

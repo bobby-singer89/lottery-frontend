@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { provablyFair } from './provablyFair';
 import { sendLiveDrawUpdate } from '../bot/liveStream';
 import { payoutService } from './payoutService';
+import { financeService } from './financeService';
 import crypto from 'crypto';
 
 // Constants
@@ -241,22 +242,56 @@ export class DrawScheduler {
         })
         .eq('id', draw.id);
 
-      // 5. Check all tickets and calculate winners
+      // 5. Get draw financials
+      const financials = await financeService.getDrawFinancials(draw.id);
+      
+      console.log('Draw financials:', financials);
+
+      // 6. Check all tickets and count winners
       const { data: tickets } = await supabase
         .from('Ticket')
         .select('*')
         .eq('drawId', draw.id);
 
       const winnersCount: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      
+      // First pass: count winners per category
+      for (const ticket of tickets || []) {
+        const matched = ticket.numbers.filter((n: number) => 
+          winningNumbers.includes(n)
+        ).length;
+        
+        if (matched > 0) {
+          winnersCount[matched]++;
+        }
+      }
+
+      // 7. Calculate and assign prizes
       let totalPaid = 0;
+      let jackpotWon = false;
 
       for (const ticket of tickets || []) {
         const matched = ticket.numbers.filter((n: number) => 
           winningNumbers.includes(n)
         ).length;
+        
+        if (matched === 0) {
+          await supabase
+            .from('Ticket')
+            .update({ status: 'lost', prizeAmount: 0, matchedNumbers: 0 })
+            .eq('id', ticket.id);
+          continue;
+        }
 
-        const prizeAmount = this.calculatePrize(matched);
+        // Calculate prize using dynamic distribution
+        const prizeAmount = await financeService.calculateDynamicPrize(
+          draw.lotteryId,
+          matched,
+          winnersCount,
+          financials.payoutPool
+        );
 
+        // Update ticket
         await supabase
           .from('Ticket')
           .update({
@@ -267,9 +302,25 @@ export class DrawScheduler {
           .eq('id', ticket.id);
 
         if (prizeAmount > 0) {
-          winnersCount[matched]++;
           totalPaid += prizeAmount;
-          
+
+          // Record payout transaction
+          await supabase.from('FinancialTransaction').insert({
+            type: 'prize_payout',
+            lotteryId: draw.lotteryId,
+            drawId: draw.id,
+            ticketId: ticket.id,
+            amount: prizeAmount,
+            currency: ticket.currency,
+            category: `match_${matched}`,
+            details: { winnersInCategory: winnersCount[matched] },
+          });
+
+          // Check for jackpot win
+          if (matched === 5) {
+            jackpotWon = true;
+          }
+
           // Queue payout
           await payoutService.queuePayout({
             ticketId: ticket.id,
@@ -295,7 +346,12 @@ export class DrawScheduler {
         });
       }
 
-      // 6. Update draw with winners stats
+      // 8. Reset jackpot if won
+      if (jackpotWon && winnersCount[5] > 0) {
+        await financeService.resetJackpot(draw.lotteryId, 1000);
+      }
+
+      // 9. Update draw with winners stats
       await supabase
         .from('Draw')
         .update({
@@ -305,7 +361,7 @@ export class DrawScheduler {
         })
         .eq('id', draw.id);
 
-      // 7. Process payouts
+      // 10. Process payouts
       // Get lottery info to determine currency
       const { data: lottery } = await supabase
         .from('Lottery')
@@ -315,7 +371,7 @@ export class DrawScheduler {
       
       await payoutService.processQueue(lottery?.currency || 'TON');
 
-      // 8. Send final results to Telegram
+      // 11. Send final results to Telegram
       await sendLiveDrawUpdate(draw.id, 'results_announced', {
         winningNumbers,
         winners: winnersCount,

@@ -60,7 +60,7 @@ export default function HomePage() {
       
       // Smart filtering with fallback
       if (currency && allLotteries.length > 0) {
-        const filtered = allLotteries.filter(lottery => lottery.currency === currency);
+        const filtered = allLotteries.filter((lottery: any) => lottery.currency === currency);
         
         // If filter returns results, use them
         // Otherwise show all lotteries

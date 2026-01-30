@@ -7,6 +7,7 @@ import publicRoutes from './routes/public';
 import adminRoutes from './routes/admin';
 import swapRoutes from './routes/swap';
 import financeRoutes from './routes/admin/finance';
+import lotteryRoutes from './routes/lottery';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -28,6 +29,12 @@ app.use('/api/admin', adminRoutes);
 
 // Admin finance routes
 app.use('/api/admin/finance', financeRoutes);
+
+// Lottery routes (ticket purchases)
+app.use('/api/lottery', lotteryRoutes);
+
+// Also support /api/tickets for bulk purchases
+app.use('/api/tickets', lotteryRoutes);
 
 // Swap routes
 app.use('/api/swap', swapRoutes);

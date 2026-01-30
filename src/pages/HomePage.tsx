@@ -20,22 +20,6 @@ export default function HomePage() {
     loadExchangeRate();
   }, []);
 
-  useEffect(() => {
-    function handleCurrencyChange(e: CustomEvent) {
-      const newCurrency = e.detail;
-      // Currency change event received, but we show all lotteries regardless
-      if (newCurrency === 'TON' || newCurrency === 'USDT') {
-        // Store preference for other components to use
-        localStorage.setItem('preferredCurrency', newCurrency);
-      }
-    }
-
-    window.addEventListener('currencyChange', handleCurrencyChange as EventListener);
-    return () => {
-      window.removeEventListener('currencyChange', handleCurrencyChange as EventListener);
-    };
-  }, []);
-
   // Add global currency change listener
   useEffect(() => {
     function handleGlobalCurrencyChange(e: Event) {

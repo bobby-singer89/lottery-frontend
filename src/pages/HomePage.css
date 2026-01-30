@@ -22,25 +22,6 @@
   margin-bottom: 2rem;
 }
 
-/* Currency switcher - compact and centered */
-.currency-selector {
-  max-width: 400px;
-  margin: 2rem auto 1.5rem auto;
-}
-
-.exchange-rate-banner {
-  max-width: 400px;
-  margin: 0 auto 2rem auto;
-  text-align: center;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
 .lotteries-section {
   margin-top: 2rem;
 }
@@ -170,14 +151,6 @@
 
   .subtitle {
     font-size: 1rem;
-  }
-
-  .currency-selector {
-    max-width: 95%;
-  }
-
-  .exchange-rate-banner {
-    max-width: 95%;
   }
 
   .lotteries-grid {

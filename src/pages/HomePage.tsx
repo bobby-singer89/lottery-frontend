@@ -5,7 +5,6 @@ import { apiClient, type Lottery } from '../lib/api/client';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
-import CurrencySwitcher from '../components/CurrencySwitcher/CurrencySwitcher';
 import './HomePage.css';
 
 export default function HomePage() {
@@ -24,15 +23,37 @@ export default function HomePage() {
     loadExchangeRate();
   }, []);
 
+  useEffect(() => {
+    function handleCurrencyChange(e: CustomEvent) {
+      setSelectedCurrency(e.detail);
+      // Optionally reload lotteries
+      // loadLotteries(e.detail);
+    }
+
+    window.addEventListener('currencyChange', handleCurrencyChange as EventListener);
+    return () => {
+      window.removeEventListener('currencyChange', handleCurrencyChange as EventListener);
+    };
+  }, []);
+
   async function loadLotteries(currency?: 'TON' | 'USDT') {
     try {
       const response = await apiClient.getLotteries();
-      // Filter lotteries by currency if specified
-      let filteredLotteries = response.lotteries;
-      if (currency) {
-        filteredLotteries = response.lotteries.filter(lottery => lottery.currency === currency);
-      }
-      setLotteries(filteredLotteries);
+      
+      // ALWAYS show lotteries, just mark the selected currency
+      setLotteries(response.lotteries || []);
+      
+      // Optional: you can still filter if you want, but show all as fallback
+      // let filteredLotteries = response.lotteries || [];
+      // if (currency && filteredLotteries.length > 0) {
+      //   const filtered = filteredLotteries.filter(lottery => lottery.currency === currency);
+      //   // Only apply filter if results exist
+      //   if (filtered.length > 0) {
+      //     filteredLotteries = filtered;
+      //   }
+      // }
+      // setLotteries(filteredLotteries);
+      
     } catch (error) {
       console.error('Failed to load lotteries:', error);
     } finally {
@@ -114,17 +135,6 @@ export default function HomePage() {
               <h1 className="main-title">WEEKEND MILLIONS</h1>
               <p className="subtitle">Криптовалютная лотерея нового поколения на блокчейне TON</p>
             </header>
-
-            {/* Currency Switcher - COMPACT AND CENTERED */}
-            <CurrencySwitcher 
-              defaultCurrency={selectedCurrency}
-              onCurrencyChange={handleCurrencyChange}
-            />
-
-            {/* Exchange Rate Banner */}
-            <div className="exchange-rate-banner">
-              💱 Курс: 1 TON = {exchangeRate.toFixed(2)} USDT
-            </div>
 
             {/* Lotteries Section */}
             <section className="lotteries-section">

@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTelegram } from '../../lib/telegram/useTelegram';
 import { adminApiClient } from '../../lib/api/adminClient';
+import CurrencyToggleMini from '../CurrencyToggleMini/CurrencyToggleMini';
 import './Header.css';
 
 interface HeaderProps {
@@ -111,6 +112,12 @@ function Header({ onConnect, walletAddress }: HeaderProps) {
               </button>
             </motion.div>
           )}
+
+          {/* Mini currency toggle */}
+          <CurrencyToggleMini onChange={(currency) => {
+            // Trigger global currency change if needed
+            window.dispatchEvent(new CustomEvent('currencyChange', { detail: currency }));
+          }} />
 
           <motion.button
             className="wallet-btn"

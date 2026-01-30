@@ -2,24 +2,24 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 0.5rem;
   position: relative;
   overflow: hidden;
   background: linear-gradient(135deg, #1a0f1f 0%, #2a1530 100%);
 }
 
-/* Back button - GLASSMORPHISM */
+/* Back button - COMPACT */
 .swap-back-button {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  padding: 0.75rem 1.5rem;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
+  border-radius: 10px;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -32,96 +32,96 @@
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
-/* Main swap card - COMPACT AND CENTERED */
+/* Main swap card - HALF SCREEN */
 .swap-card {
-  max-width: 420px; /* Reduced from 480px */
+  max-width: 340px;
   width: 100%;
-  margin: 5vh auto 0 auto;
-  padding: 1.5rem; /* Reduced from 2rem */
+  margin: 2vh auto 0 auto;
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
+  border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   z-index: 5;
   position: relative;
 }
 
-/* Header */
+/* Header - COMPACT */
 .swap-header {
   text-align: center;
-  margin-bottom: 1.5rem; /* Reduced from 2rem */
+  margin-bottom: 1rem;
 }
 
 .swap-title {
-  font-size: 1.6rem; /* Reduced from 1.8rem */
+  font-size: 1.3rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.95);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .swap-subtitle {
-  font-size: 0.9rem; /* Reduced from 0.95rem */
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* Input sections - GLASSMORPHISM */
+/* Input sections - WITH VISIBLE GLOW */
 .swap-input-section {
-  padding: 1.25rem; /* Reduced from 1.5rem */
+  padding: 0.75rem;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  margin-bottom: 1rem;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
   transition: all 0.3s ease;
   
-  /* Subtle glow effect */
+  /* Subtle inner glow */
   box-shadow: 
     0 0 0 0 rgba(255, 255, 255, 0),
-    inset 0 0 20px rgba(255, 255, 255, 0.02);
+    inset 0 0 15px rgba(255, 255, 255, 0.02);
 }
 
 .swap-input-section:hover {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.15);
   
-  /* Enhanced glow on hover */
+  /* VISIBLE glow on hover */
   box-shadow: 
-    0 0 30px rgba(255, 255, 255, 0.05),
-    inset 0 0 30px rgba(255, 255, 255, 0.03);
+    0 0 25px rgba(255, 255, 255, 0.08),
+    inset 0 0 25px rgba(255, 255, 255, 0.05);
 }
 
-/* Even more pronounced glow when focused (has input focus) */
 .swap-input-section:focus-within {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.2);
   
+  /* STRONG glow on focus */
   box-shadow: 
-    0 0 40px rgba(255, 255, 255, 0.08),
-    inset 0 0 40px rgba(255, 255, 255, 0.04);
+    0 0 35px rgba(255, 255, 255, 0.12),
+    inset 0 0 35px rgba(255, 255, 255, 0.08);
 }
 
 .swap-label {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   display: block;
   font-weight: 600;
 }
 
 .swap-input-row {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   align-items: center;
 }
 
 .swap-input {
   flex: 1;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 10px;
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
   outline: none;
   transition: all 0.3s ease;
@@ -138,14 +138,14 @@
 }
 
 .swap-currency-select {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 10px;
   color: #fff;
   cursor: pointer;
-  min-width: 120px;
-  font-size: 1rem;
+  min-width: 100px;
+  font-size: 0.85rem;
   font-weight: 600;
   outline: none;
   transition: all 0.3s ease;
@@ -162,16 +162,16 @@
 }
 
 .swap-balance {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.6);
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
-/* Flip button - GLASSMORPHISM */
+/* Flip button - COMPACT */
 .swap-flip-button {
-  width: 48px;
-  height: 48px;
-  margin: 1rem auto;
+  width: 40px;
+  height: 40px;
+  margin: 0.5rem auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -181,7 +181,7 @@
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -195,23 +195,21 @@
   transform: rotate(180deg) scale(0.95);
 }
 
-/* Info section - GLASSMORPHISM */
+/* Info section - COMPACT + GLOW */
 .swap-info {
-  padding: 1rem;
+  padding: 0.75rem;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  margin: 1rem 0;
-  
-  /* Subtle inner glow */
-  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+  margin: 0.75rem 0;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.02);
 }
 
 .swap-info-item {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem 0;
-  font-size: 0.9rem;
+  padding: 0.35rem 0;
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.8);
 }
 
@@ -219,17 +217,17 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Submit button - ENHANCED GLASSMORPHISM */
+/* Submit button - COMPACT */
 .swap-submit-button {
   width: 100%;
-  padding: 1rem;
-  margin-top: 1rem;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 16px;
+  border-radius: 12px;
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -251,51 +249,85 @@
   cursor: not-allowed;
 }
 
-/* Mobile responsive */
+/* Mobile - ULTRA COMPACT */
 @media (max-width: 768px) {
   .swap-card {
-    margin-top: 2vh;
-    padding: 1.25rem; /* Reduced from 1.5rem */
+    margin-top: 1vh;
+    padding: 0.75rem;
     max-width: 95%;
   }
 
   .swap-title {
-    font-size: 1.4rem; /* Reduced from 1.5rem */
+    font-size: 1.2rem;
   }
 
-  .swap-input {
-    font-size: 1rem;
+  .swap-header {
+    margin-bottom: 0.75rem;
   }
 
-  .swap-input-row {
-    flex-direction: column;
-    gap: 0.75rem;
+  .swap-input-section {
+    padding: 0.6rem;
+    margin-bottom: 0.6rem;
   }
 
-  .swap-currency-select {
-    width: 100%;
+  .swap-info {
+    padding: 0.6rem;
+    margin: 0.6rem 0;
+  }
+
+  .swap-submit-button {
+    padding: 0.6rem;
+  }
+
+  .swap-flip-button {
+    width: 36px;
+    height: 36px;
+    margin: 0.4rem auto;
   }
 }
 
 @media (max-width: 480px) {
   .swap-back-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
   }
 
   .swap-card {
-    padding: 1rem; /* Even more compact on small screens */
+    padding: 0.6rem;
   }
 
   .swap-title {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
+  }
+
+  .swap-subtitle {
+    font-size: 0.75rem;
   }
 
   .swap-input-section {
-    padding: 1rem; /* Reduced from 1.25rem */
+    padding: 0.5rem;
   }
-  
-  .swap-header {
-    margin-bottom: 1rem; /* Reduced from 1.5rem */
+
+  .swap-input {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .swap-currency-select {
+    font-size: 0.8rem;
+    min-width: 90px;
+  }
+
+  .swap-label {
+    font-size: 0.7rem;
+  }
+
+  .swap-balance {
+    font-size: 0.7rem;
+  }
+
+  .swap-info-item {
+    font-size: 0.75rem;
+    padding: 0.3rem 0;
   }
 }

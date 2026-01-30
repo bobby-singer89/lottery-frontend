@@ -128,4 +128,90 @@ router.get('/ticket/:ticketId/verify', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/public/lotteries
+ * Get all lotteries
+ */
+router.get('/lotteries', async (req, res) => {
+  try {
+    const { data: lotteries, error } = await supabase
+      .from('Lottery')
+      .select('*')
+      .order('featured', { ascending: false });
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      lotteries: lotteries || [],
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/public/exchange-rates/:from/:to
+ * Get exchange rate between currencies
+ */
+router.get('/exchange-rates/:from/:to', async (req, res) => {
+  const { from, to } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from('ExchangeRates')
+      .select('rate')
+      .eq('fromCurrency', from)
+      .eq('toCurrency', to)
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      rate: data?.rate || 0,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/public/lottery/:lotterySlug/current-draw
+ * Get current draw for a lottery
+ */
+router.get('/lottery/:lotterySlug/current-draw', async (req, res) => {
+  const { lotterySlug } = req.params;
+
+  try {
+    const { data: lottery } = await supabase
+      .from('Lottery')
+      .select('id')
+      .eq('slug', lotterySlug)
+      .single();
+
+    if (!lottery) {
+      return res.status(404).json({ error: 'Lottery not found' });
+    }
+
+    const { data: draw, error } = await supabase
+      .from('Draw')
+      .select('*')
+      .eq('lotteryId', lottery.id)
+      .eq('status', 'scheduled')
+      .order('scheduledAt', { ascending: true })
+      .limit(1)
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      draw: draw || null,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

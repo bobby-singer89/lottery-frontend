@@ -1,7 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import { drawScheduler } from './services/drawScheduler';
+import { exchangeRateService } from './services/exchangeRates';
+import { payoutService } from './services/payoutService';
 import publicRoutes from './routes/public';
+import adminRoutes from './routes/admin';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -18,13 +21,30 @@ app.get('/health', (req, res) => {
 // Public routes
 app.use('/api/public', publicRoutes);
 
-// Start draw scheduler
-drawScheduler.start();
+// Admin routes
+app.use('/api/admin', adminRoutes);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`✅ Backend server running on port ${PORT}`);
-  console.log(`🔗 API: http://localhost:${PORT}/api`);
+// Initialize services
+async function initializeServices() {
+  // Initialize payout wallet
+  await payoutService.initializeWallet();
+
+  // Start exchange rate updates
+  exchangeRateService.startAutoUpdate();
+
+  // Start draw scheduler
+  drawScheduler.start();
+}
+
+// Start services and server
+initializeServices().then(() => {
+  app.listen(PORT, () => {
+    console.log(`✅ Backend server running on port ${PORT}`);
+    console.log(`🔗 API: http://localhost:${PORT}/api`);
+  });
+}).catch((error) => {
+  console.error('Failed to initialize services:', error);
+  process.exit(1);
 });
 
 export default app;

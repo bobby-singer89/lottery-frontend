@@ -2,6 +2,7 @@ import cron from 'node-cron';
 import { supabase } from '../lib/supabase';
 import { provablyFair } from './provablyFair';
 import { sendLiveDrawUpdate } from '../bot/liveStream';
+import { payoutService } from './payoutService';
 import crypto from 'crypto';
 
 // Constants
@@ -9,6 +10,93 @@ const WINNING_NUMBERS_COUNT = 5;
 const MAX_LOTTERY_NUMBER = 36;
 
 export class DrawScheduler {
+  /**
+   * Close ticket sales 10 minutes before draw
+   * Runs every minute
+   */
+  scheduleTicketSalesCutoff() {
+    cron.schedule('* * * * *', async () => {
+      const now = new Date();
+      const in10Minutes = new Date(now.getTime() + 10 * 60 * 1000);
+      
+      const { data: draws } = await supabase
+        .from('Draw')
+        .select('*, lottery:Lottery(*)')
+        .eq('status', 'scheduled')
+        .eq('ticketSalesOpen', true)
+        .gte('scheduledAt', now.toISOString())
+        .lte('scheduledAt', in10Minutes.toISOString());
+      
+      for (const draw of draws || []) {
+        // Close sales
+        await supabase
+          .from('Draw')
+          .update({ 
+            ticketSalesOpen: false,
+            ticketSalesClosedAt: now.toISOString()
+          })
+          .eq('id', draw.id);
+        
+        console.log(`🛑 Sales closed for draw ${draw.drawNumber}`);
+        
+        // Notify Telegram channel
+        await sendLiveDrawUpdate(draw.id, 'sales_closed', {
+          drawNumber: draw.drawNumber,
+          scheduledAt: draw.scheduledAt,
+          totalTickets: draw.totalTickets,
+        });
+      }
+    });
+  }
+
+  /**
+   * Finalize data 5 minutes before draw
+   */
+  scheduleDataFinalization() {
+    cron.schedule('* * * * *', async () => {
+      const now = new Date();
+      const in5Minutes = new Date(now.getTime() + 5 * 60 * 1000);
+      
+      const { data: draws } = await supabase
+        .from('Draw')
+        .select('*')
+        .eq('status', 'scheduled')
+        .eq('ticketSalesOpen', false)
+        .is('dataFinalized', null)
+        .gte('scheduledAt', now.toISOString())
+        .lte('scheduledAt', in5Minutes.toISOString());
+      
+      for (const draw of draws || []) {
+        // Count tickets
+        const { count: totalTickets } = await supabase
+          .from('Ticket')
+          .select('*', { count: 'exact', head: true })
+          .eq('drawId', draw.id);
+        
+        // Calculate prize pool
+        const { data: tickets } = await supabase
+          .from('Ticket')
+          .select('price')
+          .eq('drawId', draw.id);
+        
+        const totalPrizePool = tickets?.reduce((sum, t) => sum + parseFloat(t.price), 0) || 0;
+        
+        // Finalize
+        await supabase
+          .from('Draw')
+          .update({
+            totalTickets,
+            totalPrizePool,
+            dataFinalized: true,
+            dataFinalizedAt: now.toISOString(),
+          })
+          .eq('id', draw.id);
+        
+        console.log(`✅ Data finalized for draw ${draw.drawNumber}: ${totalTickets} tickets, ${totalPrizePool} in pool`);
+      }
+    });
+  }
+
   /**
    * Schedule seed hash publication 24 hours before draw
    * Runs daily at 20:00 (day before draw)
@@ -178,9 +266,19 @@ export class DrawScheduler {
           })
           .eq('id', ticket.id);
 
-        if (matched > 0) {
+        if (prizeAmount > 0) {
           winnersCount[matched]++;
           totalPaid += prizeAmount;
+          
+          // Queue payout
+          await payoutService.queuePayout({
+            ticketId: ticket.id,
+            userId: ticket.userId,
+            walletAddress: ticket.walletAddress,
+            amount: prizeAmount,
+            currency: ticket.currency || 'TON',
+            drawId: draw.id,
+          });
         }
 
         // Log to AuditLog
@@ -207,7 +305,17 @@ export class DrawScheduler {
         })
         .eq('id', draw.id);
 
-      // 7. Send final results to Telegram
+      // 7. Process payouts
+      // Get lottery info to determine currency
+      const { data: lottery } = await supabase
+        .from('Lottery')
+        .select('currency')
+        .eq('id', draw.lotteryId)
+        .single();
+      
+      await payoutService.processQueue(lottery?.currency || 'TON');
+
+      // 8. Send final results to Telegram
       await sendLiveDrawUpdate(draw.id, 'results_announced', {
         winningNumbers,
         winners: winnersCount,
@@ -264,8 +372,10 @@ export class DrawScheduler {
    */
   start() {
     this.schedulePreCommitment();
+    this.scheduleTicketSalesCutoff();
+    this.scheduleDataFinalization();
     this.scheduleDrawExecution();
-    console.log('✅ Draw scheduler started');
+    console.log('✅ Draw scheduler started with sales cutoff');
   }
 }
 

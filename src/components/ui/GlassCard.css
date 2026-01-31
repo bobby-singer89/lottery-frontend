@@ -1,0 +1,59 @@
+/* Glass card base */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Hot numbers - orange glow */
+.glass-card-hot {
+  background: rgba(223, 96, 12, 0.1);
+  border: 1px solid rgba(223, 96, 12, 0.3);
+}
+
+/* Cold numbers - blue glow */
+.glass-card-cold {
+  background: rgba(51, 154, 240, 0.1);
+  border: 1px solid rgba(51, 154, 240, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .glass-card {
+    border-radius: 16px;
+    padding: 1rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.glass-card:nth-child(1) { animation-delay: 0.1s; }
+.glass-card:nth-child(2) { animation-delay: 0.2s; }
+.glass-card:nth-child(3) { animation-delay: 0.3s; }
+.glass-card:nth-child(4) { animation-delay: 0.4s; }
+.glass-card:nth-child(5) { animation-delay: 0.5s; }
+.glass-card:nth-child(6) { animation-delay: 0.6s; }

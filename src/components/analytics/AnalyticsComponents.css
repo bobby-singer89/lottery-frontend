@@ -1,0 +1,396 @@
+/* Card common styles */
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 1.5rem;
+}
+
+.card-note {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+/* Number badges and frequency bars */
+.numbers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.number-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.number-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.number-badge.hot {
+  background: linear-gradient(135deg, #df600c, #f45da6);
+  box-shadow: 0 4px 16px rgba(223, 96, 12, 0.4);
+}
+
+.number-badge.cold {
+  background: linear-gradient(135deg, #339af0, #228be6);
+  box-shadow: 0 4px 16px rgba(51, 154, 240, 0.4);
+}
+
+.frequency-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  flex: 1;
+}
+
+.frequency-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+  animation: fillBar 1s ease forwards;
+}
+
+.frequency-bar-fill.hot {
+  background: linear-gradient(90deg, #df600c, #f45da6);
+}
+
+.frequency-bar-fill.cold {
+  background: linear-gradient(90deg, #339af0, #228be6);
+}
+
+.frequency-text {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  min-width: 3rem;
+  text-align: right;
+}
+
+/* Biggest Wins */
+.wins-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.win-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.win-item:hover {
+  transform: scale(1.02);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.win-medal {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.win-details {
+  flex: 1;
+}
+
+.win-amount {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #df600c, #f45da6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.25rem;
+}
+
+.win-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.25rem;
+}
+
+.win-lottery {
+  font-weight: 600;
+}
+
+.win-separator {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.win-wallet {
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.win-date {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Draw History Chart */
+.chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  height: 200px;
+  margin-bottom: 1rem;
+  padding: 1rem 0;
+}
+
+.chart-bar-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100%;
+}
+
+.chart-bar {
+  width: 100%;
+  max-width: 60px;
+  background: linear-gradient(180deg, #df600c, #f45da6);
+  border-radius: 8px 8px 0 0;
+  transition: height 0.6s ease;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.25rem;
+  min-height: 20px;
+  margin-top: auto;
+  animation: growBar 1s ease forwards;
+}
+
+@keyframes growBar {
+  from {
+    height: 0;
+  }
+}
+
+.chart-bar-value {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.chart-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+}
+
+.chart-summary {
+  text-align: center;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Win Probability */
+.probability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.probability-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.probability-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.probability-match {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+}
+
+.probability-percentage {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+}
+
+.probability-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.probability-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+  animation: fillBar 1s ease forwards;
+}
+
+.probability-odds {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* All-Time Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  padding: 1.5rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #df600c, #f45da6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.25rem;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stats-extra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-extra-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.stat-extra-label {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-extra-value {
+  color: white;
+  font-weight: 600;
+}
+
+/* Glass button */
+.glass-button {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 0.875rem 1.75rem;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 44px;
+  font-size: 1rem;
+}
+
+.glass-button:hover {
+  background: linear-gradient(135deg, #df600c, #f45da6);
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(223, 96, 12, 0.4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .number-badge {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 1.1rem;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+  }
+
+  .win-amount {
+    font-size: 1.25rem;
+  }
+
+  .chart-container {
+    height: 150px;
+  }
+
+  .chart-bar {
+    max-width: 40px;
+  }
+}
+
+@media (min-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Animations */
+@keyframes fillBar {
+  from { width: 0%; }
+}

@@ -11,6 +11,7 @@ import financeRoutes from './routes/admin/finance';
 import lotteryRoutes from './routes/lottery';
 import adminDrawRoutes from './routes/admin/draws';
 import drawRoutes from './routes/draws';
+import analyticsRoutes from './routes/analytics';
 import cron from 'node-cron';
 
 const app = express();
@@ -48,6 +49,9 @@ app.use('/api/tickets', lotteryRoutes);
 
 // Swap routes
 app.use('/api/swap', swapRoutes);
+
+// Analytics routes
+app.use('/api/analytics', analyticsRoutes);
 
 // Initialize services
 async function initializeServices() {

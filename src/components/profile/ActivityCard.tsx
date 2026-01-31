@@ -32,7 +32,7 @@ function ActivityCard({ activity, summary, isLoading }: ActivityCardProps) {
 
   return (
     <div className="profile-card">
-      <h2 className="card-title">📊 Activity (30 days)</h2>
+      <h2 className="card-title">📊 Activity (Last 7 days)</h2>
       
       <div className="activity-chart">
         {last7Days.map((day, index) => (

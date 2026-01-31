@@ -15,6 +15,66 @@ import EarningsCard from '../components/profile/EarningsCard';
 import RecentTicketsCard from '../components/profile/RecentTicketsCard';
 import './ProfilePage.css';
 
+// Types
+interface UserStats {
+  ticketsBought: number;
+  wins: number;
+  tonWon: string;
+  tonSpent: string;
+  netProfit: string;
+  memberSince: string;
+}
+
+interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
+  progress: number;
+  target: number;
+}
+
+interface ActivityData {
+  date: string;
+  tickets: number;
+  wins: number;
+}
+
+interface ActivitySummary {
+  totalTickets: number;
+  totalWins: number;
+  days: number;
+}
+
+interface FavoriteNumber {
+  number: number;
+  frequency: number;
+}
+
+interface Earnings {
+  spent: string;
+  won: string;
+  referralEarnings: string;
+  netProfit: string;
+}
+
+interface Ticket {
+  id: number;
+  ticketNumber: string;
+  numbers: number[];
+  status: string;
+  winAmount?: string;
+  draw?: {
+    lottery?: {
+      name: string;
+      slug: string;
+    };
+    status: string;
+    winningNumbers?: number[];
+  };
+}
+
 function ProfilePage() {
   const { user } = useAuth();
   const { user: telegramUser } = useTelegram();
@@ -23,13 +83,13 @@ function ProfilePage() {
   const [activeTab, setActiveTab] = useState('profile');
 
   // Data states
-  const [stats, setStats] = useState<any>(null);
-  const [achievements, setAchievements] = useState<any>(null);
-  const [activity, setActivity] = useState<any>(null);
-  const [activitySummary, setActivitySummary] = useState<any>(null);
-  const [favoriteNumbers, setFavoriteNumbers] = useState<any>(null);
-  const [earnings, setEarnings] = useState<any>(null);
-  const [recentTickets, setRecentTickets] = useState<any>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [achievements, setAchievements] = useState<Achievement[] | null>(null);
+  const [activity, setActivity] = useState<ActivityData[] | null>(null);
+  const [activitySummary, setActivitySummary] = useState<ActivitySummary | null>(null);
+  const [favoriteNumbers, setFavoriteNumbers] = useState<FavoriteNumber[] | null>(null);
+  const [earnings, setEarnings] = useState<Earnings | null>(null);
+  const [recentTickets, setRecentTickets] = useState<Ticket[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch profile data
@@ -50,8 +110,8 @@ function ProfilePage() {
       }
 
       try {
-        // Fetch all profile data in parallel
-        const [statsRes, achievementsRes, activityRes, favNumbersRes, earningsRes, ticketsRes] = await Promise.all([
+        // Fetch all profile data in parallel with error resilience
+        const results = await Promise.allSettled([
           fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.STATS}?${params}`),
           fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.ACHIEVEMENTS}?${params}`),
           fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.ACTIVITY}?${params}&days=30`),
@@ -60,34 +120,40 @@ function ProfilePage() {
           fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.RECENT_TICKETS}?${params}&limit=6`),
         ]);
 
-        if (statsRes.ok) {
-          const data = await statsRes.json();
+        // Process stats
+        if (results[0].status === 'fulfilled' && results[0].value.ok) {
+          const data = await results[0].value.json();
           setStats(data.stats);
         }
 
-        if (achievementsRes.ok) {
-          const data = await achievementsRes.json();
+        // Process achievements
+        if (results[1].status === 'fulfilled' && results[1].value.ok) {
+          const data = await results[1].value.json();
           setAchievements(data.achievements);
         }
 
-        if (activityRes.ok) {
-          const data = await activityRes.json();
+        // Process activity
+        if (results[2].status === 'fulfilled' && results[2].value.ok) {
+          const data = await results[2].value.json();
           setActivity(data.activity);
           setActivitySummary(data.summary);
         }
 
-        if (favNumbersRes.ok) {
-          const data = await favNumbersRes.json();
+        // Process favorite numbers
+        if (results[3].status === 'fulfilled' && results[3].value.ok) {
+          const data = await results[3].value.json();
           setFavoriteNumbers(data.favoriteNumbers);
         }
 
-        if (earningsRes.ok) {
-          const data = await earningsRes.json();
+        // Process earnings
+        if (results[4].status === 'fulfilled' && results[4].value.ok) {
+          const data = await results[4].value.json();
           setEarnings(data.earnings);
         }
 
-        if (ticketsRes.ok) {
-          const data = await ticketsRes.json();
+        // Process recent tickets
+        if (results[5].status === 'fulfilled' && results[5].value.ok) {
+          const data = await results[5].value.json();
           setRecentTickets(data.tickets);
         }
       } catch (error) {

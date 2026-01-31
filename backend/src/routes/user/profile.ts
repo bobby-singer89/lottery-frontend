@@ -3,6 +3,9 @@ import { supabase } from '../../lib/supabase';
 
 const router = Router();
 
+// Configuration constants
+const REFERRAL_EARNINGS_PER_USER = 5; // TON - TODO: Replace with actual commission calculation
+
 /**
  * GET /api/user/profile/stats
  * Get user's lottery statistics
@@ -357,9 +360,8 @@ router.get('/earnings', async (req, res) => {
       .select('id')
       .eq('referredBy', user.referralCode);
 
-    // Calculate referral earnings: assumed 5 TON per referred user as simplified placeholder
-    // TODO: Replace with actual referral commission calculation from ticket purchases
-    const referralEarnings = (referrals?.length || 0) * 5;
+    // Calculate referral earnings using configured rate
+    const referralEarnings = (referrals?.length || 0) * REFERRAL_EARNINGS_PER_USER;
 
     const netProfit = (totalWon || 0) - (totalSpent || 0) + referralEarnings;
 

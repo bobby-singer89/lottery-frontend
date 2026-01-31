@@ -213,7 +213,7 @@
   }
   to {
     opacity: 1;
-    max-height: 300px;
+    max-height: 500px;
     padding-bottom: 0.75rem;
   }
 }
@@ -264,10 +264,6 @@
 
 /* iPhone specific (small screens) */
 @media (max-width: 430px) {
-  .faq-page-compact {
-    max-height: 50vh;
-  }
-  
   .faq-header-compact h1 {
     font-size: 1.2rem;
   }

@@ -25,6 +25,7 @@ import AdminNotifications from './pages/admin/AdminNotifications';
 import MyTicketsPage from './pages/MyTicketsPage';
 import VerifyDrawPage from './pages/VerifyDrawPage';
 import DrawResultsPage from './pages/DrawResultsPage';
+import VerificationPage from './pages/VerificationPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
@@ -267,7 +268,8 @@ function App() {
               <Route path="/referral" element={<ReferralPage />} />
               <Route path="/swap" element={<SwapPage />} />
               <Route path="/my-tickets" element={<MyTicketsPage />} />
-              <Route path="/verify/:drawId" element={<VerifyDrawPage />} />
+              <Route path="/verify-draw/:drawId" element={<VerifyDrawPage />} />
+              <Route path="/verify/:ticketId?" element={<VerificationPage />} />
               <Route path="/draw/:drawId/results" element={<DrawResultsPage />} />
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />

@@ -8,6 +8,7 @@ import { useTelegram } from '../../lib/telegram/useTelegram';
 import { adminApiClient } from '../../lib/api/adminClient';
 import CurrencyToggleMini from '../CurrencyToggleMini/CurrencyToggleMini';
 import WalletBalance from '../WalletBalance/WalletBalance';
+import NotificationCenter from '../Notifications/NotificationCenter';
 import './Header.css';
 
 function Header() {
@@ -127,6 +128,7 @@ function Header() {
             </motion.div>
           )}
 
+          <NotificationCenter />
           {tonAddress && <WalletBalance variant="compact" />}
           <TonConnectButton />
         </div>

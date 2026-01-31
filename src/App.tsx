@@ -18,8 +18,6 @@ import AdminGuard from './components/Admin/AdminGuard';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
-import AdminLotteries from './pages/admin/AdminLotteries';
-import AdminDraws from './pages/admin/AdminDraws';
 import AdminTickets from './pages/admin/AdminTickets';
 import AdminNotifications from './pages/admin/AdminNotifications';
 import AdminLoginPage from './pages/admin/AdminLoginPage';

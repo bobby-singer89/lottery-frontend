@@ -10,8 +10,8 @@ export function useGamification(userId?: string) {
     queryKey: ['gamification', 'profile', userId],
     queryFn: async () => {
       if (!userId) return null;
-      const response = await gamificationClient.getProfile(userId);
-      return response.profile;
+      const response = await gamificationClient.getProfile(userId) as { profile?: any };
+      return response?.profile || null;
     },
     enabled: !!userId
   });
@@ -20,8 +20,8 @@ export function useGamification(userId?: string) {
   const { data: leaderboard, isLoading: isLoadingLeaderboard } = useQuery({
     queryKey: ['gamification', 'leaderboard'],
     queryFn: async () => {
-      const response = await gamificationClient.getLeaderboard('level', 10, userId);
-      return response.leaderboard;
+      const response = await gamificationClient.getLeaderboard('level', 10, userId) as { leaderboard?: any };
+      return response?.leaderboard || [];
     }
   });
 

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { gamificationClient, Reward } from '../lib/api/gamificationClient';
+import { gamificationClient } from '../lib/api/gamificationClient';
+import type { Reward } from '../lib/api/gamificationClient';
 import { useState } from 'react';
 
 /**
@@ -14,8 +15,8 @@ export function useRewards(userId?: string) {
     queryKey: ['rewards', 'available', userId],
     queryFn: async () => {
       if (!userId) return [];
-      const response = await gamificationClient.getAvailableRewards(userId);
-      return response.rewards as Reward[];
+      const response = await gamificationClient.getAvailableRewards(userId) as { rewards?: Reward[] };
+      return (response?.rewards || []) as Reward[];
     },
     enabled: !!userId
   });
@@ -25,8 +26,8 @@ export function useRewards(userId?: string) {
     queryKey: ['rewards', 'claimed', userId],
     queryFn: async () => {
       if (!userId) return [];
-      const response = await gamificationClient.getClaimedRewards(userId);
-      return response.rewards as Reward[];
+      const response = await gamificationClient.getClaimedRewards(userId) as { rewards?: Reward[] };
+      return (response?.rewards || []) as Reward[];
     },
     enabled: !!userId
   });

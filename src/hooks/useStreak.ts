@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { gamificationClient, StreakInfo } from '../lib/api/gamificationClient';
+import { gamificationClient } from '../lib/api/gamificationClient';
+import type { StreakInfo } from '../lib/api/gamificationClient';
 import { useState } from 'react';
 
 /**
@@ -14,8 +15,8 @@ export function useStreak(userId?: string) {
     queryKey: ['streak', 'current', userId],
     queryFn: async () => {
       if (!userId) return null;
-      const response = await gamificationClient.getCurrentStreak(userId);
-      return response.streak as StreakInfo;
+      const response = await gamificationClient.getCurrentStreak(userId) as { streak?: StreakInfo };
+      return (response?.streak || null) as StreakInfo | null;
     },
     enabled: !!userId,
     refetchInterval: 60000 // Refetch every minute to update canCheckIn status

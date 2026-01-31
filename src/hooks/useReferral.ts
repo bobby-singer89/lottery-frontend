@@ -14,8 +14,8 @@ export function useReferral(userId?: string) {
     queryKey: ['referral', 'code', userId],
     queryFn: async () => {
       if (!userId) return null;
-      const response = await gamificationClient.getReferralCode(userId);
-      return response.code;
+      const response = await gamificationClient.getReferralCode(userId) as { code?: string };
+      return response?.code || null;
     },
     enabled: !!userId
   });
@@ -25,8 +25,8 @@ export function useReferral(userId?: string) {
     queryKey: ['referral', 'stats', userId],
     queryFn: async () => {
       if (!userId) return null;
-      const response = await gamificationClient.getReferralStats(userId);
-      return response.stats;
+      const response = await gamificationClient.getReferralStats(userId) as { stats?: any };
+      return response?.stats || null;
     },
     enabled: !!userId
   });
@@ -36,8 +36,8 @@ export function useReferral(userId?: string) {
     queryKey: ['referral', 'tree', userId],
     queryFn: async () => {
       if (!userId) return null;
-      const response = await gamificationClient.getReferralTree(userId);
-      return response.tree;
+      const response = await gamificationClient.getReferralTree(userId) as { tree?: any };
+      return response?.tree || null;
     },
     enabled: !!userId
   });

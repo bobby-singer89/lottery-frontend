@@ -10,10 +10,7 @@ import CurrencyToggleMini from '../CurrencyToggleMini/CurrencyToggleMini';
 import WalletBalance from '../WalletBalance/WalletBalance';
 import './Header.css';
 
-interface HeaderProps {
-}
-
-function Header({}: HeaderProps) {
+function Header() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const { user: telegramUser } = useTelegram();

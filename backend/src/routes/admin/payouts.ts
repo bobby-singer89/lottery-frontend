@@ -41,7 +41,7 @@ router.post('/:id/process', adminAuth, async (req, res) => {
   try {
     const { id } = req.params;
 
-    await payoutQueue.processPayout(id);
+    await payoutQueue.processPayoutById(id);
 
     res.json({ success: true, message: 'Payout processed' });
   } catch (error) {

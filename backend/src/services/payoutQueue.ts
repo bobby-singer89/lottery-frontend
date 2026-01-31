@@ -72,6 +72,27 @@ export class PayoutQueueService {
   }
 
   /**
+   * Manually process a specific payout by ID (admin action)
+   */
+  async processPayoutById(payoutId: string): Promise<void> {
+    const { data: payout } = await supabase
+      .from('Payout')
+      .select('*')
+      .eq('id', payoutId)
+      .single();
+
+    if (!payout) {
+      throw new Error('Payout not found');
+    }
+
+    if (payout.status !== 'pending') {
+      throw new Error(`Cannot process payout with status: ${payout.status}`);
+    }
+
+    await this.processPayout(payout);
+  }
+
+  /**
    * Process a single payout
    */
   private async processPayout(payout: any): Promise<void> {

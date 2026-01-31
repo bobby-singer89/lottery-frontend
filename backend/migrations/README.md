@@ -233,7 +233,7 @@ psql $DATABASE_URL < migrations/010_gamification_system.sql
 After running the migration, seed initial quests and achievements:
 
 ```bash
-psql $DATABASE_URL < backend/prisma/seed.ts
+psql $DATABASE_URL < backend/prisma/seed.sql
 ```
 
 This seeds:

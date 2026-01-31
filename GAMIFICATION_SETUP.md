@@ -71,10 +71,10 @@ Seed the database with initial quests and achievements:
 
 ```bash
 # Using SQL
-psql $DATABASE_URL < prisma/seed.ts  # (Note: This file contains SQL, not TypeScript)
+psql $DATABASE_URL < prisma/seed.sql  # (Note: This file contains SQL, not TypeScript)
 
 # Or via Supabase SQL Editor
-# Copy and execute the contents of prisma/seed.ts
+# Copy and execute the contents of prisma/seed.sql
 ```
 
 ### 6. Build and Start Backend
@@ -289,7 +289,7 @@ See `backend/prisma/schema.prisma` for the complete schema.
 
 ### Customizing Quests
 
-Edit `backend/prisma/seed.ts` to add custom quests:
+Edit `backend/prisma/seed.sql` to add custom quests:
 
 ```typescript
 INSERT INTO public."Quest" ("title", "description", "type", "category", "target", "reward", "difficulty")

@@ -226,21 +226,12 @@ export class AchievementService {
   }
 
   private async getWinCount(userId: string): Promise<number> {
-    const profile = await prisma.userProfile.findUnique({
-      where: { userId },
-      select: { walletAddress: true }
-    });
-
-    if (!profile?.walletAddress) {
-      return 0;
-    }
-
     // Query Supabase for win count (using existing Ticket table)
     const { supabase } = await import('../lib/supabase');
     const { count } = await supabase
       .from('Ticket')
       .select('*', { count: 'exact', head: true })
-      .eq('walletAddress', profile.walletAddress)
+      .eq('userId', userId)
       .gt('prizeAmount', 0);
 
     return count || 0;

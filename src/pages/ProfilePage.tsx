@@ -175,7 +175,7 @@ function ProfilePage() {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={handleConnectWallet} walletAddress={userProfileDisplay.walletAddress || undefined} />
+        <Header onConnect={handleConnectWallet} />
         
         <main className="profile-page">
           {!isReady ? (

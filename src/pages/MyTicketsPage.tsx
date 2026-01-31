@@ -76,7 +76,7 @@ const MyTicketsPage: React.FC = () => {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={handleConnectWallet} walletAddress={walletAddress || undefined} />
+        <Header onConnect={handleConnectWallet} />
         
         <main className="my-tickets-page">
           {!walletAddress ? (

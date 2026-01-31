@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
@@ -96,14 +96,7 @@ export default function VerificationPage() {
   const [error, setError] = useState<string | null>(null);
   const [verificationData, setVerificationData] = useState<VerificationResult | null>(null);
 
-  // If ticketId is in URL, auto-verify
-  useEffect(() => {
-    if (urlTicketId) {
-      handleVerify(urlTicketId);
-    }
-  }, [urlTicketId]);
-
-  const handleVerify = async (ticketId: string) => {
+  const handleVerify = useCallback(async (ticketId: string) => {
     setLoading(true);
     setError(null);
 
@@ -137,7 +130,14 @@ export default function VerificationPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // If ticketId is in URL, auto-verify
+  useEffect(() => {
+    if (urlTicketId) {
+      handleVerify(urlTicketId);
+    }
+  }, [urlTicketId, handleVerify]);
 
   const handleBack = () => {
     navigate(-1);

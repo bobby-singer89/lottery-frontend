@@ -1,9 +1,36 @@
-import { client } from './client';
+import { getApiBaseUrl } from '../utils/env';
+
+const API_BASE_URL = getApiBaseUrl();
 
 /**
  * Gamification API Client
  * Provides methods to interact with gamification endpoints
  */
+
+// Helper function to make API requests with userId header
+async function request<T>(
+  endpoint: string,
+  userId?: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...(userId && { 'x-user-id': userId }),
+    ...options.headers,
+  };
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || 'API request failed');
+  }
+
+  return response.json();
+}
 
 export interface UserProfile {
   userId: string;
@@ -68,113 +95,97 @@ export interface Reward {
   expiresAt?: Date;
 }
 
-// Helper to add userId to request
-const withUserId = (userId: string) => ({
-  headers: {
-    'x-user-id': userId
-  }
-});
-
 export const gamificationClient = {
   // Profile
   async getProfile(userId: string) {
-    const response = await client.get('/gamification/profile', withUserId(userId));
-    return response.data;
+    return request('/gamification/profile', userId);
   },
 
   async getLeaderboard(type: 'level' | 'xp' | 'tickets' | 'winnings' = 'level', limit: number = 10, userId?: string) {
-    const response = await client.get(`/gamification/leaderboard?type=${type}&limit=${limit}`, 
-      userId ? withUserId(userId) : {}
-    );
-    return response.data;
+    return request(`/gamification/leaderboard?type=${type}&limit=${limit}`, userId);
   },
 
   // Referral
   async getReferralCode(userId: string) {
-    const response = await client.get('/gamification/referral/code', withUserId(userId));
-    return response.data;
+    return request('/gamification/referral/code', userId);
   },
 
   async applyReferralCode(userId: string, code: string) {
-    const response = await client.post('/gamification/referral/apply', { code }, withUserId(userId));
-    return response.data;
+    return request('/gamification/referral/apply', userId, {
+      method: 'POST',
+      body: JSON.stringify({ code })
+    });
   },
 
   async getReferralStats(userId: string) {
-    const response = await client.get('/gamification/referral/stats', withUserId(userId));
-    return response.data;
+    return request('/gamification/referral/stats', userId);
   },
 
   async getReferralTree(userId: string, maxDepth: number = 3) {
-    const response = await client.get(`/gamification/referral/tree?maxDepth=${maxDepth}`, withUserId(userId));
-    return response.data;
+    return request(`/gamification/referral/tree?maxDepth=${maxDepth}`, userId);
   },
 
   // Quests
   async getAvailableQuests(userId: string, type?: string) {
     const url = type ? `/gamification/quests/available?type=${type}` : '/gamification/quests/available';
-    const response = await client.get(url, withUserId(userId));
-    return response.data;
+    return request(url, userId);
   },
 
   async getUserQuests(userId: string) {
-    const response = await client.get('/gamification/quests/mine', withUserId(userId));
-    return response.data;
+    return request('/gamification/quests/mine', userId);
   },
 
   async claimQuestReward(userId: string, questId: string) {
-    const response = await client.post(`/gamification/quests/${questId}/claim`, {}, withUserId(userId));
-    return response.data;
+    return request(`/gamification/quests/${questId}/claim`, userId, {
+      method: 'POST'
+    });
   },
 
   // Achievements
   async getAllAchievements(userId?: string) {
-    const response = await client.get('/gamification/achievements/all', 
-      userId ? withUserId(userId) : {}
-    );
-    return response.data;
+    return request('/gamification/achievements/all', userId);
   },
 
   async getUserAchievements(userId: string) {
-    const response = await client.get('/gamification/achievements/mine', withUserId(userId));
-    return response.data;
+    return request('/gamification/achievements/mine', userId);
   },
 
   async claimAchievementReward(userId: string, achievementId: string) {
-    const response = await client.post(`/gamification/achievements/${achievementId}/claim`, {}, withUserId(userId));
-    return response.data;
+    return request(`/gamification/achievements/${achievementId}/claim`, userId, {
+      method: 'POST'
+    });
   },
 
   async checkAchievements(userId: string) {
-    const response = await client.post('/gamification/achievements/check', {}, withUserId(userId));
-    return response.data;
+    return request('/gamification/achievements/check', userId, {
+      method: 'POST'
+    });
   },
 
   // Streak
   async getCurrentStreak(userId: string) {
-    const response = await client.get('/gamification/streak/current', withUserId(userId));
-    return response.data;
+    return request('/gamification/streak/current', userId);
   },
 
   async checkIn(userId: string) {
-    const response = await client.post('/gamification/streak/checkin', {}, withUserId(userId));
-    return response.data;
+    return request('/gamification/streak/checkin', userId, {
+      method: 'POST'
+    });
   },
 
   // Rewards
   async getAvailableRewards(userId: string) {
-    const response = await client.get('/gamification/rewards/available', withUserId(userId));
-    return response.data;
+    return request('/gamification/rewards/available', userId);
   },
 
   async getClaimedRewards(userId: string, limit: number = 20) {
-    const response = await client.get(`/gamification/rewards/claimed?limit=${limit}`, withUserId(userId));
-    return response.data;
+    return request(`/gamification/rewards/claimed?limit=${limit}`, userId);
   },
 
   async claimReward(userId: string, rewardId: string) {
-    const response = await client.post(`/gamification/rewards/${rewardId}/claim`, {}, withUserId(userId));
-    return response.data;
+    return request(`/gamification/rewards/${rewardId}/claim`, userId, {
+      method: 'POST'
+    });
   }
 };
 

@@ -1,4 +1,5 @@
 .ticket-card {
+  position: relative;
   background: linear-gradient(135deg, #1a1a2e, #16213e);
   border: 2px solid rgba(255, 215, 0, 0.3);
   border-radius: 16px;
@@ -181,7 +182,26 @@
   text-align: center;
   margin-top: 12px;
   padding-top: 12px;
+  padding-bottom: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Tiny verify link */
+.ticket-verify-link {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.ticket-verify-link:hover {
+  color: #df600c;
 }
 
 @media (max-width: 480px) {

@@ -156,6 +156,9 @@ function MainScreen() {
       case 'history':
         navigate('/history');
         break;
+      case 'verify':
+        navigate('/verify');
+        break;
       case 'profile':
         navigate('/profile');
         break;

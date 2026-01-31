@@ -1,0 +1,232 @@
+.admin-lotteries-page {
+  max-width: 1200px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+  margin: 0;
+}
+
+.create-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #df600c, #f45da6);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.create-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(223, 96, 12, 0.3);
+}
+
+.lottery-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.lottery-form {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.lottery-form h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #df600c;
+  box-shadow: 0 0 0 3px rgba(223, 96, 12, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.form-actions button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.form-actions button[type="button"] {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.form-actions button[type="submit"] {
+  background: linear-gradient(135deg, #df600c, #f45da6);
+  color: white;
+}
+
+.lotteries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lottery-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.lottery-info h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 0.25rem;
+}
+
+.lottery-slug {
+  color: #6c757d;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.lottery-description {
+  color: #495057;
+  margin-bottom: 1rem;
+}
+
+.lottery-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.lottery-meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.draw-date {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.lottery-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lottery-actions button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: white;
+  color: #495057;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lottery-actions button:hover {
+  background: #f8f9fa;
+}
+
+.lottery-actions button.delete-btn {
+  border-color: #ff6b6b;
+  color: #c92a2a;
+}
+
+.lottery-actions button.delete-btn:hover {
+  background: #fff5f5;
+}
+
+.empty-message {
+  text-align: center;
+  color: #6c757d;
+  padding: 3rem;
+  background: white;
+  border-radius: 12px;
+}

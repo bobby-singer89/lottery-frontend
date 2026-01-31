@@ -22,6 +22,12 @@ import AdminLotteries from './pages/admin/AdminLotteries';
 import AdminDraws from './pages/admin/AdminDraws';
 import AdminTickets from './pages/admin/AdminTickets';
 import AdminNotifications from './pages/admin/AdminNotifications';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminLotteriesPage from './pages/admin/AdminLotteriesPage';
+import AdminDrawsPage from './pages/admin/AdminDrawsPage';
+import AdminPayoutsPage from './pages/admin/AdminPayoutsPage';
+import AdminRoute from './components/AdminRoute';
 import MyTicketsPage from './pages/MyTicketsPage';
 import VerifyDrawPage from './pages/VerifyDrawPage';
 import DrawResultsPage from './pages/DrawResultsPage';
@@ -269,14 +275,18 @@ function App() {
               <Route path="/my-tickets" element={<MyTicketsPage />} />
               <Route path="/verify/:drawId" element={<VerifyDrawPage />} />
               <Route path="/draw/:drawId/results" element={<DrawResultsPage />} />
-              {/* Admin Routes */}
+              {/* Admin Routes - Old Telegram-based */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               <Route path="/admin/users" element={<AdminGuard><AdminUsers /></AdminGuard>} />
-              <Route path="/admin/lotteries" element={<AdminGuard><AdminLotteries /></AdminGuard>} />
-              <Route path="/admin/draws" element={<AdminGuard><AdminDraws /></AdminGuard>} />
               <Route path="/admin/tickets" element={<AdminGuard><AdminTickets /></AdminGuard>} />
               <Route path="/admin/notifications" element={<AdminGuard><AdminNotifications /></AdminGuard>} />
+              {/* New Admin Routes - JWT-based with light theme */}
+              <Route path="/admin/auth/login" element={<AdminLoginPage />} />
+              <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+              <Route path="/admin/lotteries" element={<AdminRoute><AdminLotteriesPage /></AdminRoute>} />
+              <Route path="/admin/draws" element={<AdminRoute><AdminDrawsPage /></AdminRoute>} />
+              <Route path="/admin/payouts" element={<AdminRoute><AdminPayoutsPage /></AdminRoute>} />
             </Routes>
           )}
           {/* DevTools Panel - Only in Development */}

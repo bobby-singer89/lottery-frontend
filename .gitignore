@@ -6,3 +6,5 @@ backend/dist/
 .env.local
 *.log
 .DS_Store
+*.old
+tsconfig.node.tsbuildinfo

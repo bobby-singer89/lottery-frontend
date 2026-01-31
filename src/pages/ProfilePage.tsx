@@ -15,6 +15,9 @@ import EarningsCard from '../components/profile/EarningsCard';
 import RecentTicketsCard from '../components/profile/RecentTicketsCard';
 import './ProfilePage.css';
 
+// Constants
+const TOTAL_CARDS = 6;
+
 // Types
 interface UserStats {
   ticketsBought: number;
@@ -168,7 +171,7 @@ function ProfilePage() {
 
   // Swipe handlers
   const handlers = useSwipeable({
-    onSwipedLeft: () => setActiveCard(prev => Math.min(prev + 1, 5)),
+    onSwipedLeft: () => setActiveCard(prev => Math.min(prev + 1, TOTAL_CARDS - 1)),
     onSwipedRight: () => setActiveCard(prev => Math.max(prev - 1, 0)),
     trackMouse: true,
     trackTouch: true,
@@ -230,7 +233,7 @@ function ProfilePage() {
 
           {/* Pagination Dots */}
           <div className="pagination-dots">
-            {[0, 1, 2, 3, 4, 5].map((index) => (
+            {Array.from({ length: TOTAL_CARDS }).map((_, index) => (
               <button
                 key={index}
                 className={`dot ${activeCard === index ? 'active' : ''}`}

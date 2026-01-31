@@ -4,7 +4,8 @@ import { supabase } from '../../lib/supabase';
 const router = Router();
 
 // Configuration constants
-const REFERRAL_EARNINGS_PER_USER = 5; // TON - TODO: Replace with actual commission calculation
+const REFERRAL_EARNINGS_PER_USER = 5; // TON - Placeholder flat rate per referred user
+const TOP_FAVORITE_NUMBERS_COUNT = 5; // Number of top favorite numbers to return
 
 /**
  * GET /api/user/profile/stats
@@ -286,14 +287,14 @@ router.get('/favorite-numbers', async (req, res) => {
       });
     });
 
-    // Sort by frequency and get top 5
+    // Sort by frequency and get top N favorite numbers
     const favoriteNumbers = Object.entries(numberFrequency)
       .map(([number, count]) => ({
         number: parseInt(number),
         frequency: count,
       }))
       .sort((a, b) => b.frequency - a.frequency)
-      .slice(0, 5);
+      .slice(0, TOP_FAVORITE_NUMBERS_COUNT);
 
     res.json({
       success: true,

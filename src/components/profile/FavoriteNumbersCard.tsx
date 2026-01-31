@@ -29,7 +29,8 @@ function FavoriteNumbersCard({ favoriteNumbers, isLoading }: FavoriteNumbersCard
   const handleQuickPick = () => {
     if (favoriteNumbers && favoriteNumbers.length > 0) {
       const numbers = favoriteNumbers.slice(0, 5).map(fn => fn.number);
-      // Store the numbers in sessionStorage for the buy page
+      // Store selected numbers for the buy page to pre-fill
+      // Format: JSON array of number values, e.g., [3, 7, 12, 23, 35]
       sessionStorage.setItem('quickPickNumbers', JSON.stringify(numbers));
       navigate('/lotteries');
     }

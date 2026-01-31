@@ -52,9 +52,9 @@ export default function FAQPage() {
               <p>No questions found</p>
             </div>
           ) : (
-            filteredFAQs.map((faq, index) => (
+            filteredFAQs.map((faq) => (
               <FAQCompactItem 
-                key={index}
+                key={faq.question}
                 question={faq.question}
                 answer={faq.answer}
               />

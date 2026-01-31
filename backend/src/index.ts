@@ -11,6 +11,8 @@ import financeRoutes from './routes/admin/finance';
 import lotteryRoutes from './routes/lottery';
 import adminDrawRoutes from './routes/admin/draws';
 import drawRoutes from './routes/draws';
+import gamificationRoutes from './routes/gamification';
+import { gamificationJobs } from './jobs/gamificationJobs';
 import cron from 'node-cron';
 
 const app = express();
@@ -49,6 +51,9 @@ app.use('/api/tickets', lotteryRoutes);
 // Swap routes
 app.use('/api/swap', swapRoutes);
 
+// Gamification routes
+app.use('/api/gamification', gamificationRoutes);
+
 // Initialize services
 async function initializeServices() {
   // Initialize payout wallet
@@ -59,6 +64,9 @@ async function initializeServices() {
 
   // Start draw scheduler
   drawScheduler.start();
+
+  // Start gamification jobs
+  gamificationJobs.start();
 
   // Start payout queue processor - runs every 5 minutes
   cron.schedule('*/5 * * * *', async () => {

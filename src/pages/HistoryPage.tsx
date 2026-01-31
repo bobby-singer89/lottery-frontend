@@ -63,9 +63,6 @@ function HistoryPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('history');
 
-  const handleConnect = () => {
-    console.log('Connecting wallet...');
-  };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -119,7 +116,7 @@ function HistoryPage() {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={handleConnect} />
+        <Header />
         
         <main className="history-page">
           <motion.div

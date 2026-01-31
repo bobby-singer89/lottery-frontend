@@ -89,9 +89,6 @@ export default function HomePage() {
     return currency === 'TON' ? '💎' : '💵';
   };
 
-  const handleConnect = () => {
-    console.log('Connecting wallet...');
-  };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -119,7 +116,7 @@ export default function HomePage() {
       <div className="app-root">
         <AnimatedBackground />
         <div className="content-wrapper">
-          <Header onConnect={handleConnect} />
+          <Header />
           <main className="main-content">
             <div className="home-page">
               <div className="loading">Загрузка...</div>
@@ -136,7 +133,7 @@ export default function HomePage() {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={handleConnect} />
+        <Header />
         
         <main className="main-content">
           <div className="home-page">

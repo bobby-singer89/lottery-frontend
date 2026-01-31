@@ -8,7 +8,8 @@ export default function CurrencyToggleMini() {
     const saved = localStorage.getItem('preferredCurrency') as 'TON' | 'USDT';
     if (saved) {
       setCurrency(saved);
-      // Dispatch initial event on mount
+      // Dispatch initial event on mount to sync with other components
+      // This ensures MainScreen displays the correct currency on page load
       dispatchCurrencyChange(saved);
     }
   }, []);

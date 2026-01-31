@@ -135,12 +135,7 @@ function MainScreen() {
     return () => {
       window.removeEventListener('currencyChange', handleCurrencyChange);
     };
-  }, [selectedCurrency]);
-
-  const handleConnect = () => {
-    // Placeholder - wallet connection is handled by TonConnect button in Header
-    console.log('Connecting wallet...');
-  };
+  }, []);
 
   const handleBuyTicket = (lotteryId: string) => {
     console.log('Buying ticket for:', lotteryId);
@@ -194,7 +189,7 @@ function MainScreen() {
       {/* Content Wrapper */}
       <div className="content-wrapper">
         {/* Header */}
-        <Header onConnect={handleConnect} />
+        <Header />
 
         {/* Main Content */}
         <main className="main-content">

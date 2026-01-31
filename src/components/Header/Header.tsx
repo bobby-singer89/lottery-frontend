@@ -11,10 +11,9 @@ import WalletBalance from '../WalletBalance/WalletBalance';
 import './Header.css';
 
 interface HeaderProps {
-  onConnect?: () => void;
 }
 
-function Header({ onConnect: _onConnect }: HeaderProps) {
+function Header({}: HeaderProps) {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const { user: telegramUser } = useTelegram();

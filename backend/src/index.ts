@@ -7,9 +7,7 @@ import { payoutQueue } from './services/payoutQueue';
 import publicRoutes from './routes/public';
 import adminRoutes from './routes/admin';
 import swapRoutes from './routes/swap';
-import financeRoutes from './routes/admin/finance';
 import lotteryRoutes from './routes/lottery';
-import adminDrawRoutes from './routes/admin/draws';
 import drawRoutes from './routes/draws';
 import cron from 'node-cron';
 
@@ -28,14 +26,8 @@ app.get('/health', (req, res) => {
 // Public routes
 app.use('/api/public', publicRoutes);
 
-// Admin routes
+// Admin routes (includes auth, stats, lotteries, draws, payouts, finance)
 app.use('/api/admin', adminRoutes);
-
-// Admin finance routes
-app.use('/api/admin/finance', financeRoutes);
-
-// Admin draw routes
-app.use('/api/admin/draws', adminDrawRoutes);
 
 // Public draw routes
 app.use('/api/draws', drawRoutes);

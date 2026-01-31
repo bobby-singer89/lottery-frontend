@@ -1,5 +1,9 @@
+import { SupabaseClient } from '@supabase/supabase-js';
+
+// Constants
 const TON_API = 'https://toncenter.com/api/v2';
 const LOTTERY_WALLET = 'UQDAy6M4QQRcIy8jLl4n4acb7IxmDnPZiBqz7A_6xvY90NwS';
+const MIN_TX_HASH_LENGTH = 20; // Minimum length for a valid TON transaction hash
 
 interface TransactionInfo {
   hash: string;
@@ -23,8 +27,8 @@ export async function verifyTicketPurchaseTransaction(
     // TODO: Implement actual transaction query via TON API
     // For now, basic validation
     
-    // 1. Check txHash format
-    if (!txHash || txHash.length < 20) {
+    // 1. Check txHash format - must meet minimum length requirement
+    if (!txHash || txHash.length < MIN_TX_HASH_LENGTH) {
       return { valid: false, error: 'Invalid transaction hash format' };
     }
     
@@ -62,17 +66,26 @@ export async function verifyTicketPurchaseTransaction(
 
 /**
  * Check if transaction hash was already used
+ * Returns true if the transaction exists in the database (already used)
+ * Returns false if the transaction is not found (not used yet) or on query error
  */
-export async function isTransactionUsed(txHash: string, supabase: any): Promise<boolean> {
+export async function isTransactionUsed(txHash: string, supabase: SupabaseClient): Promise<boolean> {
   try {
     const { data, error } = await supabase
       .from('Ticket')
       .select('id')
       .eq('transactionHash', txHash)
-      .single();
+      .maybeSingle(); // Use maybeSingle() instead of single() to handle "not found" gracefully
     
-    return !!data && !error;
+    // Transaction is used if we found a record and there's no error
+    if (error) {
+      console.error('Error checking transaction:', error);
+      return false; // On error, assume not used to avoid blocking legitimate purchases
+    }
+    
+    return !!data; // Return true if data exists (transaction already used)
   } catch (error) {
-    return false;
+    console.error('Exception checking transaction:', error);
+    return false; // On exception, assume not used to avoid blocking legitimate purchases
   }
 }

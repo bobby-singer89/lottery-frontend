@@ -1,6 +1,9 @@
 import { TonClient, Address } from '@ton/ton';
 import { CURRENT_CONFIG, LOTTERY_CONFIG } from '../config/contracts';
 
+// Constants
+const MIN_TX_HASH_LENGTH = 20; // Minimum length for a valid TON transaction hash
+
 // Initialize TON Client
 const tonClient = new TonClient({
   endpoint: CURRENT_CONFIG.TON_API,
@@ -65,8 +68,8 @@ export async function verifyTransaction(
     }
     
     // TODO: Implement full transaction verification
-    // For now, assume valid if txHash is provided
-    const isValid = !!(txHash && txHash.length > 20);
+    // For now, assume valid if txHash is provided and meets minimum length
+    const isValid = !!(txHash && txHash.length > MIN_TX_HASH_LENGTH);
     
     console.log(`   Result: ${isValid ? '✅ Valid' : '❌ Invalid'}`);
     return isValid;
@@ -100,9 +103,12 @@ export async function getTransactionDetails(txHash: string): Promise<any> {
 
 /**
  * Format address for display (truncate middle)
+ * Returns full address if it's too short to format meaningfully
  */
 export function formatAddress(address: string, chars: number = 6): string {
-  if (!address || address.length < chars * 2) return address;
+  if (!address) return '';
+  // Only format if address is long enough to make truncation meaningful
+  if (address.length <= chars * 2 + 3) return address; // +3 for "..."
   return `${address.slice(0, chars)}...${address.slice(-chars)}`;
 }
 

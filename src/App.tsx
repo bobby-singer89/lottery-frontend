@@ -11,7 +11,7 @@ import DemoPage from './pages/DemoPage';
 import WeekendSpecialPage from './pages/WeekendSpecialPage';
 import ProfilePage from './pages/ProfilePage';
 import LotteriesPage from './pages/LotteriesPage';
-import HistoryPage from './pages/HistoryPage';
+import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import ReferralPage from './pages/ReferralPage';
 import SwapPage from './pages/SwapPage';
 import AdminGuard from './components/Admin/AdminGuard';
@@ -262,7 +262,7 @@ function App() {
               <Route path="/lottery/:slug" element={<WeekendSpecialPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/lotteries" element={<LotteriesPage />} />
-              <Route path="/history" element={<HistoryPage />} />
+              <Route path="/history" element={<TransactionHistoryPage />} />
               <Route path="/referral" element={<ReferralPage />} />
               <Route path="/swap" element={<SwapPage />} />
               <Route path="/my-tickets" element={<MyTicketsPage />} />

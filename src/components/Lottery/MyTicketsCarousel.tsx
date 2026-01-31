@@ -6,14 +6,23 @@ import './MyTicketsCarousel.css';
 interface Ticket {
   id: string;
   lotteryName: string;
-  ticketNumber: string;
-  selectedNumbers: number[];
-  date: string;
-  drawDate: string;
-  status: 'active' | 'win' | 'lost';
+  ticketNumber?: string;
+  number?: string;
+  selectedNumbers?: number[];
+  numbers?: number[];
+  date?: string;
+  purchaseDate?: Date;
+  drawDate: string | Date;
+  status: 'active' | 'win' | 'won' | 'lost';
   prize?: number;
   transactionHash: string;
-  rules: string;
+  rules?: string;
+  cost?: number;
+  matchedNumbers?: number;
+}
+
+interface MyTicketsCarouselProps {
+  tickets?: Ticket[];
 }
 
 type TicketTab = 'active' | 'history' | 'wins';
@@ -111,15 +120,18 @@ const mockTickets: Ticket[] = [
   }
 ];
 
-const MyTicketsCarousel: React.FC = () => {
+const MyTicketsCarousel: React.FC<MyTicketsCarouselProps> = ({ tickets: propTickets }) => {
   const [activeTab, setActiveTab] = useState<TicketTab>('active');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flippedTickets, setFlippedTickets] = useState<Set<string>>(new Set());
 
-  const filteredTickets = mockTickets.filter(ticket => {
+  // Use provided tickets or fall back to mock data
+  const ticketsData = propTickets && propTickets.length > 0 ? propTickets : mockTickets;
+
+  const filteredTickets = ticketsData.filter(ticket => {
     if (activeTab === 'active') return ticket.status === 'active';
-    if (activeTab === 'wins') return ticket.status === 'win';
-    if (activeTab === 'history') return ticket.status === 'lost' || ticket.status === 'win';
+    if (activeTab === 'wins') return ticket.status === 'win' || ticket.status === 'won';
+    if (activeTab === 'history') return ticket.status === 'lost' || ticket.status === 'win' || ticket.status === 'won';
     return true;
   });
 
@@ -154,6 +166,7 @@ const MyTicketsCarousel: React.FC = () => {
       case 'active':
         return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
       case 'win':
+      case 'won':
         return 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
       case 'lost':
         return 'linear-gradient(135deg, #4b5563 0%, #374151 100%)';
@@ -167,6 +180,7 @@ const MyTicketsCarousel: React.FC = () => {
       case 'active':
         return '🎯 Активный';
       case 'win':
+      case 'won':
         return '🎉 Выигрыш';
       case 'lost':
         return '❌ Проигрыш';
@@ -228,7 +242,7 @@ const MyTicketsCarousel: React.FC = () => {
               >
                 <div
                   className={`ticket-card ${flippedTickets.has(filteredTickets[currentIndex].id) ? 'flipped' : ''} ${
-                    filteredTickets[currentIndex].status === 'win' ? 'winning' : ''
+                    filteredTickets[currentIndex].status === 'win' || filteredTickets[currentIndex].status === 'won' ? 'winning' : ''
                   }`}
                   onClick={() => toggleFlip(filteredTickets[currentIndex].id)}
                 >
@@ -242,7 +256,7 @@ const MyTicketsCarousel: React.FC = () => {
                           <div className="lottery-logo">🎰</div>
                           <div className="ticket-info">
                             <h3>{filteredTickets[currentIndex].lotteryName}</h3>
-                            <p className="ticket-number">{filteredTickets[currentIndex].ticketNumber}</p>
+                            <p className="ticket-number">{filteredTickets[currentIndex].ticketNumber || filteredTickets[currentIndex].number || 'N/A'}</p>
                           </div>
                           <div className={`status-badge ${filteredTickets[currentIndex].status}`}>
                             {getStatusLabel(filteredTickets[currentIndex].status)}
@@ -252,7 +266,7 @@ const MyTicketsCarousel: React.FC = () => {
                         <div className="selected-numbers">
                           <p className="numbers-label">Выбранные числа:</p>
                           <div className="numbers-grid">
-                            {filteredTickets[currentIndex].selectedNumbers.map((num, idx) => (
+                            {(filteredTickets[currentIndex].selectedNumbers || filteredTickets[currentIndex].numbers || []).map((num, idx) => (
                               <motion.div
                                 key={idx}
                                 className="number-ball"
@@ -268,7 +282,14 @@ const MyTicketsCarousel: React.FC = () => {
 
                         <div className="ticket-footer-content">
                           <div className="ticket-date">
-                            <span>📅 Куплен: {filteredTickets[currentIndex].date}</span>
+                            <span>📅 Куплен: {
+                              filteredTickets[currentIndex].date || 
+                              (filteredTickets[currentIndex].purchaseDate ? 
+                                filteredTickets[currentIndex].purchaseDate instanceof Date ? 
+                                  filteredTickets[currentIndex].purchaseDate.toLocaleDateString('ru-RU') : 
+                                  new Date(filteredTickets[currentIndex].purchaseDate!).toLocaleDateString('ru-RU') : 
+                                'N/A')
+                            }</span>
                           </div>
                           {filteredTickets[currentIndex].prize && (
                             <div className="prize-amount">
@@ -288,14 +309,26 @@ const MyTicketsCarousel: React.FC = () => {
                       <div className="ticket-back-content">
                         <h3>📋 Детали билета</h3>
 
-                        <div className="back-info-section">
-                          <p className="info-label">Правила розыгрыша:</p>
-                          <p className="info-text">{filteredTickets[currentIndex].rules}</p>
-                        </div>
+                        {filteredTickets[currentIndex].rules && (
+                          <div className="back-info-section">
+                            <p className="info-label">Правила розыгрыша:</p>
+                            <p className="info-text">{filteredTickets[currentIndex].rules}</p>
+                          </div>
+                        )}
 
                         <div className="back-info-section">
                           <p className="info-label">🎯 Дата розыгрыша:</p>
-                          <p className="info-text">{filteredTickets[currentIndex].drawDate}</p>
+                          <p className="info-text">{
+                            typeof filteredTickets[currentIndex].drawDate === 'string' ? 
+                              filteredTickets[currentIndex].drawDate : 
+                              (filteredTickets[currentIndex].drawDate as Date).toLocaleDateString('ru-RU', { 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })
+                          }</p>
                         </div>
 
                         <div className="back-info-section">

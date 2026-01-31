@@ -400,7 +400,7 @@ function ProfilePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <h2 className="section-title">Мои билеты</h2>
+              <h2 className="section-title">🎫 Мои билеты</h2>
               <div className="tickets-summary">
                 <div className="ticket-stat">
                   <span className="ticket-stat-label">Всего</span>
@@ -450,6 +450,20 @@ function ProfilePage() {
                   )}
                 </div>
               )}
+              
+              <button 
+                className="profile-action-btn"
+                onClick={() => navigate('/my-tickets')}
+              >
+                Посмотреть все билеты →
+              </button>
+              
+              <button 
+                className="profile-action-btn"
+                onClick={() => navigate('/history')}
+              >
+                История транзакций →
+              </button>
             </motion.div>
 
             {/* Referral Section */}

@@ -3,10 +3,11 @@ import { supabase } from '../../lib/supabase';
 import { drawEngine } from '../../services/drawEngine';
 import { notificationService } from '../../services/notificationService';
 import { payoutQueue } from '../../services/payoutQueue';
+import { adminAuth } from '../../middleware/adminAuth';
 
 const router = Router();
 
-// Middleware to check admin
+// Legacy middleware for backwards compatibility
 function isAdmin(req: any, res: any, next: any) {
   const adminKey = req.headers['x-admin-key'];
   if (adminKey !== process.env.ADMIN_API_KEY) {
@@ -16,10 +17,38 @@ function isAdmin(req: any, res: any, next: any) {
 }
 
 /**
+ * GET /api/admin/draws
+ * Get all draws with optional status filter
+ */
+router.get('/', adminAuth, async (req, res) => {
+  try {
+    const { status } = req.query;
+
+    let query = supabase
+      .from('Draw')
+      .select('*, Lottery(name)')
+      .order('scheduledAt', { ascending: false });
+
+    if (status) {
+      query = query.eq('status', status);
+    }
+
+    const { data: draws, error } = await query;
+
+    if (error) throw error;
+
+    res.json({ draws: draws || [] });
+  } catch (error) {
+    console.error('Failed to fetch draws:', error);
+    res.status(500).json({ error: 'Failed to fetch draws' });
+  }
+});
+
+/**
  * POST /api/admin/draws/:lotteryId/execute
  * Manually trigger a draw execution
  */
-router.post('/:lotteryId/execute', isAdmin, async (req, res) => {
+router.post('/:lotteryId/execute', adminAuth, async (req, res) => {
   const { lotteryId } = req.params;
 
   try {

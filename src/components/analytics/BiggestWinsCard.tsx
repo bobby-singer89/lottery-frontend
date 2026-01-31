@@ -22,6 +22,11 @@ const BiggestWinsCard: React.FC<BiggestWinsCardProps> = ({ winners }) => {
     return `${wallet.slice(0, 5)}...${wallet.slice(-5)}`;
   };
 
+  const handleViewAll = () => {
+    // Future enhancement: Navigate to winners page or open modal
+    alert('Полный список победителей скоро будет доступен!');
+  };
+
   return (
     <div className="glass-card">
       <h2 className="card-title">💰 Biggest Wins</h2>
@@ -49,7 +54,7 @@ const BiggestWinsCard: React.FC<BiggestWinsCardProps> = ({ winners }) => {
         ))}
       </div>
       
-      <button className="glass-button">View All Winners →</button>
+      <button className="glass-button" onClick={handleViewAll}>View All Winners →</button>
     </div>
   );
 };

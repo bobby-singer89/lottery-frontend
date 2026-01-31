@@ -9,6 +9,11 @@ const WinProbabilityCard: React.FC = () => {
     { match: 3, percentage: 1.5, odds: '1 in 66' },
   ];
 
+  const handleCalculate = () => {
+    // Future enhancement: Open modal with odds calculator
+    alert('Калькулятор шансов скоро будет доступен!');
+  };
+
   return (
     <div className="glass-card">
       <h2 className="card-title">🎯 Win Probability</h2>
@@ -32,7 +37,7 @@ const WinProbabilityCard: React.FC = () => {
         ))}
       </div>
       
-      <button className="glass-button">Calculate My Odds</button>
+      <button className="glass-button" onClick={handleCalculate}>Calculate My Odds</button>
     </div>
   );
 };

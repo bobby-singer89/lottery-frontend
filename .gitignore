@@ -6,3 +6,6 @@ backend/dist/
 .env.local
 *.log
 .DS_Store
+*.backup
+*_old.tsx
+*_old.css

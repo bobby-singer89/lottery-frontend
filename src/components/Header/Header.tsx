@@ -74,6 +74,14 @@ function Header() {
             <span className="action-btn-text">Обмен</span>
           </button>
 
+          <button 
+            className="action-btn analytics-btn" 
+            onClick={() => navigate('/analytics')}
+          >
+            <span>📊</span>
+            <span className="action-btn-text">Аналитика</span>
+          </button>
+
           {tonAddress && (
             <button 
               className="action-btn tickets-btn" 

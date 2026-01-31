@@ -153,6 +153,9 @@ function MainScreen() {
       case 'lotteries':
         navigate('/lotteries');
         break;
+      case 'analytics':
+        navigate('/analytics');
+        break;
       case 'history':
         navigate('/history');
         break;

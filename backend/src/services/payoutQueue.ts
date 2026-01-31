@@ -2,7 +2,7 @@ import { supabase } from '../lib/supabase';
 import { payoutService } from './payoutService';
 
 interface PayoutRequest {
-  winnerId?: string;
+  winnerId?: string; // Optional: Only set when created via Winner table, not for direct ticket payouts
   ticketId: string;
   userId: string;
   walletAddress: string;

@@ -43,7 +43,11 @@ router.get('/:drawId/results', async (req, res) => {
       const tier = ticket.matchedNumbers;
       if (tier >= 3) {
         winnersByTier[tier].count++;
-        winnersByTier[tier].totalPrize += parseFloat(ticket.prizeAmount);
+        // Convert to number safely
+        const prizeAmount = typeof ticket.prizeAmount === 'string' 
+          ? parseFloat(ticket.prizeAmount) 
+          : Number(ticket.prizeAmount) || 0;
+        winnersByTier[tier].totalPrize += prizeAmount;
       }
     }
 

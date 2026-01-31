@@ -17,6 +17,8 @@ interface WinnerInfo {
   prizeAmount: number;
 }
 
+const UNKNOWN_USER_ID = 'unknown';
+
 export class DrawEngine {
   /**
    * Execute a draw for a lottery
@@ -111,7 +113,7 @@ export class DrawEngine {
       // Create winner record
       winners.push({
         ticketId: ticket.id,
-        userId: ticket.userId || 'unknown',
+        userId: ticket.userId || UNKNOWN_USER_ID,
         tier: matched,
         matches: matched,
         prizeAmount,

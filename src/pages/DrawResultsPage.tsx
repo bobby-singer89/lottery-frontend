@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trophy, Calendar, Users, DollarSign, CheckCircle2, ExternalLink } from 'lucide-react';
@@ -35,6 +35,7 @@ export default function DrawResultsPage() {
 
   useEffect(() => {
     fetchDrawResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drawId]);
 
   const fetchDrawResults = async () => {

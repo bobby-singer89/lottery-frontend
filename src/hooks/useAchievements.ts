@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { gamificationClient, Achievement } from '../lib/api/gamificationClient';
+import { gamificationClient } from '../lib/api/gamificationClient';
+import type { Achievement } from '../lib/api/gamificationClient';
 import { useState } from 'react';
 
 /**
@@ -13,8 +14,8 @@ export function useAchievements(userId?: string) {
   const { data: allAchievements, isLoading: isLoadingAll } = useQuery({
     queryKey: ['achievements', 'all'],
     queryFn: async () => {
-      const response = await gamificationClient.getAllAchievements(userId);
-      return response.achievements as Achievement[];
+      const response = await gamificationClient.getAllAchievements(userId) as { achievements?: Achievement[] };
+      return (response?.achievements || []) as Achievement[];
     }
   });
 
@@ -23,8 +24,8 @@ export function useAchievements(userId?: string) {
     queryKey: ['achievements', 'mine', userId],
     queryFn: async () => {
       if (!userId) return [];
-      const response = await gamificationClient.getUserAchievements(userId);
-      return response.achievements as Achievement[];
+      const response = await gamificationClient.getUserAchievements(userId) as { achievements?: Achievement[] };
+      return (response?.achievements || []) as Achievement[];
     },
     enabled: !!userId
   });
@@ -54,9 +55,10 @@ export function useAchievements(userId?: string) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['achievements'] });
-      if (data.newlyUnlocked && data.newlyUnlocked.length > 0) {
+      const responseData = data as { newlyUnlocked?: Achievement[] };
+      if (responseData?.newlyUnlocked && responseData.newlyUnlocked.length > 0) {
         // You could show a notification here
-        console.log('🎉 New achievements unlocked:', data.newlyUnlocked);
+        console.log('🎉 New achievements unlocked:', responseData.newlyUnlocked);
       }
       setError(null);
     },

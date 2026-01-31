@@ -54,7 +54,7 @@ export default function FAQPage() {
           ) : (
             filteredFAQs.map((faq) => (
               <FAQCompactItem 
-                key={faq.question}
+                key={faq.id}
                 question={faq.question}
                 answer={faq.answer}
               />

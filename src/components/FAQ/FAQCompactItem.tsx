@@ -14,9 +14,10 @@ export default function FAQCompactItem({ question, answer }: Props) {
         className="faq-question-compact"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
+        aria-label={`Toggle answer for: ${question}`}
       >
         <span className="question-text">{question}</span>
-        <span className={`faq-icon-compact ${isOpen ? 'open' : ''}`}>
+        <span className={`faq-icon-compact ${isOpen ? 'open' : ''}`} aria-hidden="true">
           ▶
         </span>
       </button>

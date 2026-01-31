@@ -66,7 +66,7 @@ export async function verifyTransaction(
     
     // TODO: Implement full transaction verification
     // For now, assume valid if txHash is provided
-    const isValid = txHash && txHash.length > 20;
+    const isValid = !!(txHash && txHash.length > 20);
     
     console.log(`   Result: ${isValid ? '✅ Valid' : '❌ Invalid'}`);
     return isValid;

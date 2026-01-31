@@ -26,6 +26,7 @@ import MyTicketsPage from './pages/MyTicketsPage';
 import VerifyDrawPage from './pages/VerifyDrawPage';
 import DrawResultsPage from './pages/DrawResultsPage';
 import VerificationPage from './pages/VerificationPage';
+import FAQPage from './pages/FAQPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
@@ -274,6 +275,7 @@ function App() {
               <Route path="/verify-draw/:drawId" element={<VerifyDrawPage />} />
               <Route path="/verify/:ticketId?" element={<VerificationPage />} />
               <Route path="/draw/:drawId/results" element={<DrawResultsPage />} />
+              <Route path="/faq" element={<FAQPage />} />
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />

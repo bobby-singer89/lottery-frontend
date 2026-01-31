@@ -123,7 +123,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
 
       {/* Tiny verify link */}
       <Link to={`/verify/${ticket.id}`} className="ticket-verify-link">
-        verify →
+        проверить →
       </Link>
     </motion.div>
   );

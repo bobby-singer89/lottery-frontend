@@ -1,6 +1,8 @@
 import type { Notification } from '../types/notification';
 
 const STORAGE_KEY = 'lottery_notifications';
+const HOUR_IN_MS = 60 * 60 * 1000;
+const DAY_IN_MS = 24 * HOUR_IN_MS;
 
 const MOCK_NOTIFICATIONS: Notification[] = [
   {
@@ -8,7 +10,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     type: 'win',
     title: 'Congratulations! 🎉',
     message: 'You won 500 TON in Weekend Special!',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+    timestamp: new Date(Date.now() - 2 * HOUR_IN_MS), // 2 hours ago
     read: false,
     actionUrl: '/my-tickets',
     metadata: {
@@ -22,7 +24,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     type: 'draw_soon',
     title: 'Draw Starting Soon ⏰',
     message: 'Mega Jackpot draw starts in 1 hour',
-    timestamp: new Date(Date.now() - 23 * 60 * 60 * 1000), // 23 hours ago
+    timestamp: new Date(Date.now() - 23 * HOUR_IN_MS), // 23 hours ago
     read: false,
     actionUrl: '/lottery/mega-jackpot',
     metadata: {
@@ -34,7 +36,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     type: 'purchase',
     title: 'Ticket Purchased ✅',
     message: 'Your ticket for Weekend Special is confirmed',
-    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+    timestamp: new Date(Date.now() - 2 * DAY_IN_MS), // 2 days ago
     read: true,
     actionUrl: '/my-tickets',
     metadata: {
@@ -47,7 +49,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     type: 'draw_complete',
     title: 'Draw Results Ready 🔮',
     message: 'Weekend Special draw #42 results are available',
-    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+    timestamp: new Date(Date.now() - 3 * DAY_IN_MS), // 3 days ago
     read: true,
     actionUrl: '/draw/weekend-special-42/results',
     metadata: {
@@ -59,7 +61,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     type: 'prize_claimed',
     title: 'Prize Sent 💰',
     message: '50 TON has been sent to your wallet',
-    timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+    timestamp: new Date(Date.now() - 5 * DAY_IN_MS), // 5 days ago
     read: true,
     actionUrl: '/history',
     metadata: {
@@ -72,7 +74,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     type: 'system',
     title: 'Scheduled Maintenance ⚠️',
     message: 'System will be down for maintenance on Saturday 2:00 AM UTC',
-    timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+    timestamp: new Date(Date.now() - 7 * DAY_IN_MS), // 7 days ago
     read: true,
     actionUrl: undefined
   }

@@ -53,7 +53,7 @@ function FavoriteNumbersCard({ favoriteNumbers, isLoading }: FavoriteNumbersCard
                     <div 
                       className="freq-fill"
                       style={{ 
-                        width: `${(fn.frequency / (favoriteNumbers[0]?.frequency || 1)) * 100}%` 
+                        width: `${Math.min(100, (fn.frequency / Math.max(...favoriteNumbers.map(n => n.frequency))) * 100)}%` 
                       }}
                     />
                   </div>

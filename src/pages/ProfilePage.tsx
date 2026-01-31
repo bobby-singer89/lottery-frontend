@@ -31,7 +31,7 @@ function ProfilePage() {
   const [recentTickets, setRecentTickets] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
   // Fetch profile data
   useEffect(() => {
@@ -99,7 +99,7 @@ function ProfilePage() {
     };
 
     fetchProfileData();
-  }, [userAddress, telegramUser?.id, API_BASE_URL]);
+  }, [userAddress, telegramUser?.id]);
 
   // Swipe handlers
   const handlers = useSwipeable({

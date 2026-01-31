@@ -23,7 +23,7 @@ function JourneyCard({ stats, isLoading }: JourneyCardProps) {
   }
 
   const netProfit = parseFloat(stats?.netProfit || '0');
-  const profitEmoji = netProfit > 0 ? '📈' : netProfit < 0 ? '📊' : '➡️';
+  const profitEmoji = netProfit > 0 ? '📈' : '➡️';
   const memberSinceDate = stats?.memberSince 
     ? new Date(stats.memberSince).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     : 'Recently';
@@ -86,7 +86,7 @@ function JourneyCard({ stats, isLoading }: JourneyCardProps) {
         transition={{ delay: 0.4 }}
       >
         <div className="profit-label">Net Result {profitEmoji}</div>
-        <div className={`profit-value ${netProfit > 0 ? 'positive' : netProfit < 0 ? 'neutral' : 'neutral'}`}>
+        <div className={`profit-value ${netProfit > 0 ? 'positive' : 'neutral'}`}>
           {netProfit > 0 ? '+' : ''}{stats?.netProfit || '0'} TON
         </div>
       </motion.div>

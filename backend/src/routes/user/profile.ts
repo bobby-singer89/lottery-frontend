@@ -40,7 +40,7 @@ router.get('/stats', async (req, res) => {
     const wonTickets = tickets?.filter(t => t.status === 'won').length || 0;
     const totalWon = tickets
       ?.filter(t => t.status === 'won')
-      .reduce((sum, t) => sum + parseFloat(t.winAmount || '0'), 0) || 0;
+      .reduce((sum, t) => sum + parseFloat(t.winAmount || '0'), 0);
 
     // Calculate total spent (assuming each ticket costs something)
     const { data: ticketsWithPrice } = await supabase
@@ -56,17 +56,17 @@ router.get('/stats', async (req, res) => {
     const totalSpent = ticketsWithPrice?.reduce((sum, t: any) => {
       const price = t.draw?.lottery?.ticketPrice || 0;
       return sum + parseFloat(price);
-    }, 0) || 0;
+    }, 0);
 
-    const netProfit = totalWon - totalSpent;
+    const netProfit = (totalWon || 0) - (totalSpent || 0);
 
     res.json({
       success: true,
       stats: {
         ticketsBought: totalTickets,
         wins: wonTickets,
-        tonWon: totalWon.toFixed(2),
-        tonSpent: totalSpent.toFixed(2),
+        tonWon: (totalWon || 0).toFixed(2),
+        tonSpent: (totalSpent || 0).toFixed(2),
         netProfit: netProfit.toFixed(2),
         memberSince: user.createdAt,
       },
@@ -114,7 +114,7 @@ router.get('/achievements', async (req, res) => {
     const wonTickets = tickets?.filter(t => t.status === 'won').length || 0;
     const totalWon = tickets
       ?.filter(t => t.status === 'won')
-      .reduce((sum, t) => sum + parseFloat(t.winAmount || '0'), 0) || 0;
+      .reduce((sum, t) => sum + parseFloat(t.winAmount || '0'), 0);
 
     // Define achievements
     const achievements = [
@@ -357,16 +357,17 @@ router.get('/earnings', async (req, res) => {
       .select('id')
       .eq('referredBy', user.referralCode);
 
-    // Simplified referral earnings calculation (5% of their spending)
-    const referralEarnings = (referrals?.length || 0) * 0.5; // Simplified
+    // Calculate referral earnings: assumed 5 TON per referred user as simplified placeholder
+    // TODO: Replace with actual referral commission calculation from ticket purchases
+    const referralEarnings = (referrals?.length || 0) * 5;
 
-    const netProfit = totalWon - totalSpent + referralEarnings;
+    const netProfit = (totalWon || 0) - (totalSpent || 0) + referralEarnings;
 
     res.json({
       success: true,
       earnings: {
-        spent: totalSpent.toFixed(2),
-        won: totalWon.toFixed(2),
+        spent: (totalSpent || 0).toFixed(2),
+        won: (totalWon || 0).toFixed(2),
         referralEarnings: referralEarnings.toFixed(2),
         netProfit: netProfit.toFixed(2),
       },

@@ -58,7 +58,7 @@ function ActivityCard({ activity, summary, isLoading }: ActivityCardProps) {
           <div className="summary-value">{summary?.totalTickets || 0}</div>
         </div>
         <div className="summary-item">
-          <div className="summary-label">Draws Entered</div>
+          <div className="summary-label">Active Days</div>
           <div className="summary-value">{last7Days.length}</div>
         </div>
         <div className="summary-item">

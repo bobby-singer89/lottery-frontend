@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
+import { useTonAddress } from '@tonconnect/ui-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ticketApi } from '../services/ticketApi';
@@ -12,7 +12,6 @@ import './MyTicketsPage.css';
 
 const MyTicketsPage: React.FC = () => {
   const navigate = useNavigate();
-  const [tonConnectUI] = useTonConnectUI();
   const walletAddress = useTonAddress();
   const [tickets, setTickets] = useState<PurchasedTicket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,13 +41,6 @@ const MyTicketsPage: React.FC = () => {
     }
   }, [walletAddress, loadTickets]);
 
-  const handleConnectWallet = async () => {
-    try {
-      await tonConnectUI.openModal();
-    } catch (error) {
-      console.error('Failed to open wallet modal:', error);
-    }
-  };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -76,7 +68,7 @@ const MyTicketsPage: React.FC = () => {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={handleConnectWallet} walletAddress={walletAddress || undefined} />
+        <Header />
         
         <main className="my-tickets-page">
           {!walletAddress ? (

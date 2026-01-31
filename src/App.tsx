@@ -120,7 +120,15 @@ function MainScreen() {
   useEffect(() => {
     function handleCurrencyChange(e: Event) {
       const customEvent = e as CustomEvent<{ currency: 'TON' | 'USDT' }>;
-      setSelectedCurrency(customEvent.detail.currency);
+      const newCurrency = customEvent.detail.currency;
+      
+      console.group('📱 MainScreen Currency Update');
+      console.log('Previous:', selectedCurrency);
+      console.log('New:', newCurrency);
+      console.log('Will update displayLotteries');
+      console.groupEnd();
+      
+      setSelectedCurrency(newCurrency);
     }
 
     window.addEventListener('currencyChange', handleCurrencyChange);
@@ -128,11 +136,6 @@ function MainScreen() {
       window.removeEventListener('currencyChange', handleCurrencyChange);
     };
   }, []);
-
-  const handleConnect = () => {
-    // Placeholder - wallet connection is handled by TonConnect button in Header
-    console.log('Connecting wallet...');
-  };
 
   const handleBuyTicket = (lotteryId: string) => {
     console.log('Buying ticket for:', lotteryId);
@@ -161,15 +164,22 @@ function MainScreen() {
   };
 
   // Map lotteries to display format based on selected currency
-  const displayLotteries = useMemo(() => sampleLotteries.map(lottery => ({
-    id: lottery.id,
-    title: lottery.title,
-    prizePool: selectedCurrency === 'TON' ? lottery.prizePoolTON : lottery.prizePoolUSDT,
-    drawDate: lottery.drawDate,
-    ticketPrice: selectedCurrency === 'TON' ? lottery.ticketPriceTON : lottery.ticketPriceUSDT,
-    participants: lottery.participants,
-    icon: lottery.icon,
-  })), [selectedCurrency]);
+  const displayLotteries = useMemo(() => {
+    const lotteries = sampleLotteries.map(lottery => ({
+      id: lottery.id,
+      title: lottery.title,
+      prizePool: selectedCurrency === 'TON' ? lottery.prizePoolTON : lottery.prizePoolUSDT,
+      drawDate: lottery.drawDate,
+      ticketPrice: selectedCurrency === 'TON' ? lottery.ticketPriceTON : lottery.ticketPriceUSDT,
+      participants: lottery.participants,
+      icon: lottery.icon,
+    }));
+
+    console.log('💰 Current currency:', selectedCurrency);
+    console.log('🎰 Display lotteries:', lotteries.map(l => `${l.title}: ${l.prizePool}`));
+    
+    return lotteries;
+  }, [selectedCurrency]);
 
   return (
     <div className="app-root">
@@ -179,7 +189,7 @@ function MainScreen() {
       {/* Content Wrapper */}
       <div className="content-wrapper">
         {/* Header */}
-        <Header onConnect={handleConnect} />
+        <Header />
 
         {/* Main Content */}
         <main className="main-content">

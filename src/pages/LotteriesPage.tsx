@@ -60,9 +60,6 @@ function LotteriesPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('lotteries');
 
-  const handleConnect = () => {
-    console.log('Connecting wallet...');
-  };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -100,7 +97,7 @@ function LotteriesPage() {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={handleConnect} />
+        <Header />
         
         <main className="lotteries-page">
           <motion.div

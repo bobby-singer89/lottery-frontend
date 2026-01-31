@@ -13,9 +13,6 @@ function ReferralPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('referral');
 
-  const handleConnect = () => {
-    console.log('Connecting wallet...');
-  };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -43,7 +40,7 @@ function ReferralPage() {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={handleConnect} />
+        <Header />
         
         <main className="referral-page">
           <motion.div

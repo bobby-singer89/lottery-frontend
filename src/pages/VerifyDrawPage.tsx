@@ -63,7 +63,7 @@ export default function VerifyDrawPage() {
     return (
       <div className="verify-page-wrapper">
         <AnimatedBackground />
-        <Header onConnect={() => {}} />
+        <Header />
         <div className="verify-page loading">
           <div className="loading-spinner"></div>
           <p>Загрузка данных проверки...</p>
@@ -77,7 +77,7 @@ export default function VerifyDrawPage() {
     return (
       <div className="verify-page-wrapper">
         <AnimatedBackground />
-        <Header onConnect={() => {}} />
+        <Header />
         <div className="verify-page error">
           <XCircle size={64} />
           <h2>Ошибка загрузки</h2>
@@ -91,7 +91,7 @@ export default function VerifyDrawPage() {
   return (
     <div className="verify-page-wrapper">
       <AnimatedBackground />
-      <Header onConnect={() => {}} />
+      <Header />
       
       <div className="verify-page">
         <motion.h1 

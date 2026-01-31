@@ -122,10 +122,10 @@ function ProfilePage() {
     referralEarnings: profileData?.statistics?.referralEarnings || '0',
   };
 
+
   const handleConnectWallet = async () => {
     try {
       await tonConnectUI.openModal();
-      // Wallet connection will automatically trigger binding via WalletConnectionHandler
     } catch (error) {
       console.error('Failed to open wallet modal:', error);
     }
@@ -175,7 +175,7 @@ function ProfilePage() {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={handleConnectWallet} walletAddress={userProfileDisplay.walletAddress || undefined} />
+        <Header />
         
         <main className="profile-page">
           {!isReady ? (

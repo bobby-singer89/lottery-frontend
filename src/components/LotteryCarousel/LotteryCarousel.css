@@ -53,6 +53,20 @@
 .lottery-carousel-item {
   flex-shrink: 0;
   width: 380px;
+  
+  /* Smooth transition when content changes */
+  transition: all 0.3s ease;
+}
+
+/* Add flash effect when currency changes */
+@keyframes currency-flash {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.lottery-carousel-item.currency-change {
+  animation: currency-flash 0.4s ease;
 }
 
 .carousel-nav-btn {

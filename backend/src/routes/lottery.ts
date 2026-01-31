@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { supabase } from '../lib/supabase';
 import { financeService } from '../services/financeService';
+import { verifyTicketPurchaseTransaction, isTransactionUsed } from '../services/tonVerificationService';
 
 const router = Router();
 
@@ -48,6 +49,31 @@ router.post('/:slug/buy-ticket', async (req, res) => {
 
     if (lotteryError || !lottery) {
       return res.status(404).json({ error: 'Lottery not found' });
+    }
+
+    // Verify transaction if txHash provided
+    if (txHash) {
+      // Check if transaction already used
+      const alreadyUsed = await isTransactionUsed(txHash, supabase);
+      if (alreadyUsed) {
+        return res.status(400).json({ 
+          error: 'Transaction already used for another ticket' 
+        });
+      }
+
+      // Verify transaction is valid
+      const verification = await verifyTicketPurchaseTransaction(
+        txHash,
+        parseFloat(lottery.ticketPrice)
+      );
+
+      if (!verification.valid) {
+        return res.status(400).json({ 
+          error: verification.error || 'Invalid transaction' 
+        });
+      }
+
+      console.log('✅ Transaction verified:', verification.transaction);
     }
 
     // Get current draw

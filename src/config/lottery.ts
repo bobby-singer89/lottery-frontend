@@ -1,10 +1,12 @@
+import { CURRENT_CONFIG, LOTTERY_CONFIG as CONTRACT_CONFIG } from './contracts';
+
 // Lottery Configuration Constants
 export const LOTTERY_CONFIG = {
-  // Testnet wallet address for receiving payments
-  WALLET_ADDRESS: '0QDAy6M4QQRcIy8jLl4n4acb7IxmDnPZiBqz7A_6xvY90GeY',
+  // Use contract configuration
+  WALLET_ADDRESS: CURRENT_CONFIG.LOTTERY_WALLET,
   
   // Ticket price in TON
-  TICKET_PRICE: 1,
+  TICKET_PRICE: CONTRACT_CONFIG.TICKET_PRICE_TON,
   
   // Discount threshold (5+ tickets = 5% off)
   DISCOUNT_THRESHOLD: 5,
@@ -18,9 +20,9 @@ export const WEEKEND_SPECIAL_CONFIG = {
   format: '5/36',
   numbersToSelect: 5,
   numbersPool: 36,
-  ticketPrice: LOTTERY_CONFIG.TICKET_PRICE, // TON
-  ticketPriceNano: '1000000000', // nanotons
-  lotteryWallet: import.meta.env.VITE_LOTTERY_WALLET || LOTTERY_CONFIG.WALLET_ADDRESS,
+  ticketPrice: LOTTERY_CONFIG.TICKET_PRICE,
+  ticketPriceNano: (CONTRACT_CONFIG.TICKET_PRICE_TON * 1e9).toString(),
+  lotteryWallet: CURRENT_CONFIG.LOTTERY_WALLET,
   prizes: {
     5: 500,    // TON
     4: 50,

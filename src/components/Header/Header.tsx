@@ -5,7 +5,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTelegram } from '../../lib/telegram/useTelegram';
 import { adminApiClient } from '../../lib/api/adminClient';
+import { useTonAddress } from '@tonconnect/ui-react';
 import CurrencyToggleMini from '../CurrencyToggleMini/CurrencyToggleMini';
+import WalletBalance from '../WalletBalance/WalletBalance';
 import './Header.css';
 
 interface HeaderProps {
@@ -17,6 +19,7 @@ function Header({ onConnect, walletAddress }: HeaderProps) {
   const { user, isAuthenticated, logout } = useAuth();
   const { user: telegramUser } = useTelegram();
   const [isAdmin, setIsAdmin] = useState(false);
+  const tonAddress = useTonAddress();
 
   // Check admin status when user is authenticated
   useEffect(() => {
@@ -118,6 +121,9 @@ function Header({ onConnect, walletAddress }: HeaderProps) {
             // Trigger global currency change if needed
             window.dispatchEvent(new CustomEvent('currencyChange', { detail: currency }));
           }} />
+
+          {/* Show balance if wallet connected */}
+          {tonAddress && <WalletBalance variant="compact" />}
 
           <motion.button
             className="wallet-btn"

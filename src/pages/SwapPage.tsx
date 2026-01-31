@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTonAddress } from '@tonconnect/ui-react';
+import { useWalletBalance } from '../hooks/useWalletBalance';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import './SwapPage.css';
 
@@ -9,17 +10,13 @@ type Currency = 'TON' | 'USDT';
 export default function SwapPage() {
   const navigate = useNavigate();
   const userAddress = useTonAddress();
+  const { ton: tonBalance, usdt: usdtBalance } = useWalletBalance();
   
   const [fromCurrency, setFromCurrency] = useState<Currency>('TON');
   const [toCurrency, setToCurrency] = useState<Currency>('USDT');
   const [fromAmount, setFromAmount] = useState('');
   const [toAmount, setToAmount] = useState('');
   const [exchangeRate] = useState(5.2);
-  
-  const [balances] = useState({
-    TON: 2.5,
-    USDT: 150
-  });
 
   function handleFlip() {
     setFromCurrency(toCurrency);
@@ -60,7 +57,8 @@ export default function SwapPage() {
       return;
     }
 
-    if (amount > balances[fromCurrency]) {
+    const currentBalance = fromCurrency === 'TON' ? tonBalance : usdtBalance;
+    if (amount > currentBalance) {
       alert('Недостаточно средств');
       return;
     }
@@ -112,7 +110,7 @@ export default function SwapPage() {
             </select>
           </div>
           <div className="swap-balance">
-            Баланс: {balances[fromCurrency].toFixed(2)} {fromCurrency}
+            Баланс: {(fromCurrency === 'TON' ? tonBalance : usdtBalance).toFixed(2)} {fromCurrency}
           </div>
         </div>
 
@@ -142,7 +140,7 @@ export default function SwapPage() {
             </select>
           </div>
           <div className="swap-balance">
-            Баланс: {balances[toCurrency].toFixed(2)} {toCurrency}
+            Баланс: {(toCurrency === 'TON' ? tonBalance : usdtBalance).toFixed(2)} {toCurrency}
           </div>
         </div>
 

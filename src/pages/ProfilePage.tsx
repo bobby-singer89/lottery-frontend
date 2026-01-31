@@ -8,6 +8,7 @@ import { apiClient } from '../lib/api/client';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
+import WalletBalance from '../components/WalletBalance/WalletBalance';
 import { useNavigate } from 'react-router-dom';
 import './ProfilePage.css';
 
@@ -294,6 +295,19 @@ function ProfilePage() {
                 )}
               </div>
             </motion.div>
+
+            {/* Wallet Balance Section */}
+            {userAddress && (
+              <motion.div
+                className="wallet-balance-section"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+              >
+                <h2 className="section-title">💰 Кошелёк</h2>
+                <WalletBalance variant="detailed" showAddress={true} />
+              </motion.div>
+            )}
 
             {/* Stats Grid */}
             <div className="profile-stats-grid">

@@ -155,7 +155,7 @@ export default function TransactionHistoryPage() {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={() => {}} />
+        <Header />
         
         <main className="main-content">
           <div className="page-header">

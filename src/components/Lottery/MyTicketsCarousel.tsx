@@ -13,7 +13,7 @@ interface Ticket {
   date?: string;
   purchaseDate?: Date;
   drawDate: string | Date;
-  status: 'active' | 'win' | 'won' | 'lost';
+  status: 'active' | 'win' | 'won' | 'lost' | 'pending';
   prize?: number;
   transactionHash: string;
   rules?: string;
@@ -164,6 +164,7 @@ const MyTicketsCarousel: React.FC<MyTicketsCarouselProps> = ({ tickets: propTick
   const getStatusGradient = (status: Ticket['status']) => {
     switch (status) {
       case 'active':
+      case 'pending':
         return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
       case 'win':
       case 'won':
@@ -179,6 +180,8 @@ const MyTicketsCarousel: React.FC<MyTicketsCarouselProps> = ({ tickets: propTick
     switch (status) {
       case 'active':
         return '🎯 Активный';
+      case 'pending':
+        return '⏳ Ожидание';
       case 'win':
       case 'won':
         return '🎉 Выигрыш';
@@ -256,7 +259,7 @@ const MyTicketsCarousel: React.FC<MyTicketsCarouselProps> = ({ tickets: propTick
                           <div className="lottery-logo">🎰</div>
                           <div className="ticket-info">
                             <h3>{filteredTickets[currentIndex].lotteryName}</h3>
-                            <p className="ticket-number">{filteredTickets[currentIndex].ticketNumber || filteredTickets[currentIndex].number || 'N/A'}</p>
+                            <p className="ticket-number">{filteredTickets[currentIndex].ticketNumber || filteredTickets[currentIndex].number || '—'}</p>
                           </div>
                           <div className={`status-badge ${filteredTickets[currentIndex].status}`}>
                             {getStatusLabel(filteredTickets[currentIndex].status)}
@@ -288,7 +291,7 @@ const MyTicketsCarousel: React.FC<MyTicketsCarouselProps> = ({ tickets: propTick
                                 filteredTickets[currentIndex].purchaseDate instanceof Date ? 
                                   filteredTickets[currentIndex].purchaseDate.toLocaleDateString('ru-RU') : 
                                   new Date(filteredTickets[currentIndex].purchaseDate!).toLocaleDateString('ru-RU') : 
-                                'N/A')
+                                '—')
                             }</span>
                           </div>
                           {filteredTickets[currentIndex].prize && (

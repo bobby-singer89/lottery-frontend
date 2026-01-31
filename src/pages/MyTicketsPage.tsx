@@ -5,7 +5,7 @@ import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import MyTicketsCarousel from '../components/Lottery/MyTicketsCarousel';
-import { ticketApi, type PurchasedTicket } from '../services/ticketApi';
+import { ticketApi } from '../services/ticketApi';
 import './MyTicketsPage.css';
 
 type TicketStatus = 'active' | 'won' | 'lost' | 'pending';
@@ -56,7 +56,7 @@ export default function MyTicketsPage() {
         number: ticket.id.substring(0, 8).toUpperCase(), // Use first 8 chars of ID
         lotteryName: formatLotteryName(ticket.lotterySlug),
         lotteryType: 'regular' as const,
-        purchaseDate: new Date(ticket.purchasedAt || ticket.createdAt || Date.now()),
+        purchaseDate: new Date(ticket.purchasedAt || ticket.createdAt || ''),
         drawDate: getDrawDate(ticket.lotterySlug), // TODO: Get from lottery info
         numbers: ticket.numbers,
         cost: ticket.price,
@@ -90,7 +90,7 @@ export default function MyTicketsPage() {
     ).join(' ');
   }
 
-  function getDrawDate(slug: string): Date {
+  function getDrawDate(_slug: string): Date {
     // TODO: Fetch from lottery API
     // For now, return next Saturday
     const date = new Date();
@@ -136,7 +136,7 @@ export default function MyTicketsPage() {
       <AnimatedBackground />
       
       <div className="content-wrapper">
-        <Header onConnect={() => {}} />
+        <Header />
         
         <main className="main-content">
           <div className="page-header">

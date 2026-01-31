@@ -22,6 +22,10 @@ function FavoriteNumbersCard({ favoriteNumbers, isLoading }: FavoriteNumbersCard
     );
   }
 
+  const maxFrequency = favoriteNumbers && favoriteNumbers.length > 0
+    ? Math.max(...favoriteNumbers.map(n => n.frequency))
+    : 1;
+
   const handleQuickPick = () => {
     if (favoriteNumbers && favoriteNumbers.length > 0) {
       const numbers = favoriteNumbers.slice(0, 5).map(fn => fn.number);
@@ -53,7 +57,7 @@ function FavoriteNumbersCard({ favoriteNumbers, isLoading }: FavoriteNumbersCard
                     <div 
                       className="freq-fill"
                       style={{ 
-                        width: `${Math.min(100, (fn.frequency / Math.max(...favoriteNumbers.map(n => n.frequency))) * 100)}%` 
+                        width: `${Math.min(100, (fn.frequency / maxFrequency) * 100)}%` 
                       }}
                     />
                   </div>

@@ -3,6 +3,7 @@ import { useSwipeable } from 'react-swipeable';
 import { useTonAddress } from '@tonconnect/ui-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTelegram } from '../lib/telegram/useTelegram';
+import { API_CONFIG } from '../config/api';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
@@ -31,8 +32,6 @@ function ProfilePage() {
   const [recentTickets, setRecentTickets] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
-
   // Fetch profile data
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -53,12 +52,12 @@ function ProfilePage() {
       try {
         // Fetch all profile data in parallel
         const [statsRes, achievementsRes, activityRes, favNumbersRes, earningsRes, ticketsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/user/profile/stats?${params}`),
-          fetch(`${API_BASE_URL}/user/profile/achievements?${params}`),
-          fetch(`${API_BASE_URL}/user/profile/activity?${params}&days=30`),
-          fetch(`${API_BASE_URL}/user/profile/favorite-numbers?${params}`),
-          fetch(`${API_BASE_URL}/user/profile/earnings?${params}`),
-          fetch(`${API_BASE_URL}/user/profile/recent-tickets?${params}&limit=6`),
+          fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.STATS}?${params}`),
+          fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.ACHIEVEMENTS}?${params}`),
+          fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.ACTIVITY}?${params}&days=30`),
+          fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.FAVORITE_NUMBERS}?${params}`),
+          fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.EARNINGS}?${params}`),
+          fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.RECENT_TICKETS}?${params}&limit=6`),
         ]);
 
         if (statsRes.ok) {

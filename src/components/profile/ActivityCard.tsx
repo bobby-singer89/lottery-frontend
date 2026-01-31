@@ -28,6 +28,7 @@ function ActivityCard({ activity, summary, isLoading }: ActivityCardProps) {
   // Get the last 7 days for the chart
   const last7Days = activity?.slice(-7) || [];
   const maxTickets = Math.max(...last7Days.map(d => d.tickets), 1);
+  const activeDaysCount = last7Days.filter(d => d.tickets > 0).length;
 
   return (
     <div className="profile-card">
@@ -59,7 +60,7 @@ function ActivityCard({ activity, summary, isLoading }: ActivityCardProps) {
         </div>
         <div className="summary-item">
           <div className="summary-label">Active Days</div>
-          <div className="summary-value">{last7Days.length}</div>
+          <div className="summary-value">{activeDaysCount}</div>
         </div>
         <div className="summary-item">
           <div className="summary-label">Wins</div>

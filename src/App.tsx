@@ -25,6 +25,7 @@ import AdminNotifications from './pages/admin/AdminNotifications';
 import MyTicketsPage from './pages/MyTicketsPage';
 import VerifyDrawPage from './pages/VerifyDrawPage';
 import DrawResultsPage from './pages/DrawResultsPage';
+import LandingPage from './pages/LandingPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
@@ -258,6 +259,7 @@ function App() {
           {ageConfirmed && (
             <Routes>
               <Route path="/" element={<MainScreen />} />
+              <Route path="/landing" element={<LandingPage />} />
               <Route path="/demo" element={<DemoPage />} />
               <Route path="/weekend-special" element={<WeekendSpecialPage />} />
               <Route path="/lottery/:slug" element={<WeekendSpecialPage />} />

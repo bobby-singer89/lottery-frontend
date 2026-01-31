@@ -150,3 +150,173 @@ DROP TABLE IF EXISTS public."ReserveFund";
 - All new columns have default values, so existing lottery records will be automatically updated
 - The migration is idempotent - running it multiple times won't cause errors or duplicate data
 
+
+---
+
+## Migration: 010_gamification_system.sql
+
+### NEW Gamification System
+
+This migration adds a complete gamification system to the lottery application.
+
+### What This Migration Does
+
+Creates 11 new tables for gamification features:
+
+#### 1. UserProfile Table
+- Extended user profiles with level, XP, and statistics
+- Links to the existing User table via userId
+- Tracks:
+  - User level (starts at 1)
+  - Experience points (XP)
+  - Total tickets purchased
+  - Total winnings
+
+#### 2. Referral System Tables
+- **ReferralCode**: User referral codes for invitations
+  - Unique 6-character alphanumeric codes
+  - Usage tracking and limits
+  - Expiration dates
+- **ReferralRelationship**: Tracks referrer-referred relationships
+  - Status tracking (pending, active, completed)
+  - Reward claim status
+- **ReferralReward**: Rewards earned from referrals
+  - XP boosts, bonus tickets, discounts
+  - Expiration tracking
+
+#### 3. Quest System Tables
+- **Quest**: Available quests (daily, weekly, monthly, special)
+  - Title, description, type, category
+  - Target value and reward structure
+  - Difficulty levels
+- **UserQuest**: User progress on quests
+  - Progress tracking
+  - Completion and reward claim status
+
+#### 4. Achievement System Tables
+- **Achievement**: Available achievements
+  - Name, title, description
+  - Category and tier (bronze, silver, gold, diamond, platinum)
+  - Requirement and reward structure
+- **UserAchievement**: Achievements unlocked by users
+  - Unlock timestamp
+  - Reward claim status
+
+#### 5. Streak System Table
+- **UserStreak**: Daily login streak tracking
+  - Current and longest streak
+  - Last check-in timestamp
+  - Total check-ins and accumulated bonuses
+
+#### 6. Reward System Tables
+- **Reward**: Available rewards in the system
+  - Type, name, description
+  - Value and currency
+  - Conditions for receiving
+- **UserReward**: Rewards earned by users
+  - Claim status and timestamp
+  - Expiration tracking
+  - Metadata for additional information
+
+### Running the Migration
+
+```bash
+# Using psql
+psql $DATABASE_URL < migrations/010_gamification_system.sql
+
+# Or via Supabase SQL Editor
+# Copy contents of 010_gamification_system.sql and execute
+```
+
+### Seeding Initial Data
+
+After running the migration, seed initial quests and achievements:
+
+```bash
+psql $DATABASE_URL < backend/prisma/seed.ts
+```
+
+This seeds:
+- 12 default quests (4 daily, 3 weekly, 3 monthly, 2 special)
+- 25+ achievements across 5 categories (tickets, wins, referrals, streak, level)
+- 7 default reward types
+
+### Verification
+
+Check that tables were created:
+
+```sql
+-- List all gamification tables
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = 'public' 
+  AND table_name IN (
+    'UserProfile', 'ReferralCode', 'ReferralRelationship', 'ReferralReward',
+    'Quest', 'UserQuest', 'Achievement', 'UserAchievement',
+    'UserStreak', 'Reward', 'UserReward'
+  );
+
+-- Check seed data
+SELECT COUNT(*) as quest_count FROM "Quest";
+SELECT COUNT(*) as achievement_count FROM "Achievement";
+SELECT COUNT(*) as reward_count FROM "Reward";
+```
+
+Expected results:
+- 11 tables created
+- 12 quests seeded
+- 25+ achievements seeded
+- 7 rewards seeded
+
+### Rollback (If Needed)
+
+```sql
+DROP TABLE IF EXISTS public."UserReward" CASCADE;
+DROP TABLE IF EXISTS public."Reward" CASCADE;
+DROP TABLE IF EXISTS public."UserStreak" CASCADE;
+DROP TABLE IF EXISTS public."UserAchievement" CASCADE;
+DROP TABLE IF EXISTS public."Achievement" CASCADE;
+DROP TABLE IF EXISTS public."UserQuest" CASCADE;
+DROP TABLE IF EXISTS public."Quest" CASCADE;
+DROP TABLE IF EXISTS public."ReferralReward" CASCADE;
+DROP TABLE IF EXISTS public."ReferralRelationship" CASCADE;
+DROP TABLE IF EXISTS public."ReferralCode" CASCADE;
+DROP TABLE IF EXISTS public."UserProfile" CASCADE;
+```
+
+**Warning**: This will delete all gamification data!
+
+### API Endpoints
+
+After migration, these endpoints become available:
+
+- `/api/gamification/profile` - Get user gamification profile
+- `/api/gamification/leaderboard` - Get leaderboard
+- `/api/gamification/referral/*` - Referral system
+- `/api/gamification/quests/*` - Quest system
+- `/api/gamification/achievements/*` - Achievement system
+- `/api/gamification/streak/*` - Streak tracking
+- `/api/gamification/rewards/*` - Reward management
+
+See [GAMIFICATION_API.md](../../GAMIFICATION_API.md) for complete API documentation.
+
+### Background Jobs
+
+The gamification system runs several cron jobs:
+- Daily quest reset: Midnight (00:00)
+- Weekly quest reset: Monday midnight
+- Monthly quest reset: 1st of month midnight
+- Streak checker: Daily at 1 AM
+- Reward cleanup: Daily at 2 AM
+
+These are automatically started when the backend initializes.
+
+### Notes
+
+- All tables use UUID for primary keys
+- Indexes are created for optimal query performance
+- Foreign keys ensure data integrity
+- Cascade deletes clean up related data
+- The migration is idempotent - safe to run multiple times
+- Compatible with existing lottery tables (non-breaking)
+

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { gamificationClient } from '../lib/api/gamificationClient';
+import type { ReferralStats } from '../lib/api/gamificationClient';
 import { useEffect, useState } from 'react';
 
 /**
@@ -25,7 +26,7 @@ export function useReferral(userId?: string) {
     queryKey: ['referral', 'stats', userId],
     queryFn: async () => {
       if (!userId) return null;
-      const response = await gamificationClient.getReferralStats(userId) as { stats?: any };
+      const response = await gamificationClient.getReferralStats(userId) as { stats?: ReferralStats };
       return response?.stats || null;
     },
     enabled: !!userId
@@ -36,7 +37,7 @@ export function useReferral(userId?: string) {
     queryKey: ['referral', 'tree', userId],
     queryFn: async () => {
       if (!userId) return null;
-      const response = await gamificationClient.getReferralTree(userId) as { tree?: any };
+      const response = await gamificationClient.getReferralTree(userId) as { tree?: unknown };
       return response?.tree || null;
     },
     enabled: !!userId

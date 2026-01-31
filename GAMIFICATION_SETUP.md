@@ -1,103 +1,12 @@
 # Gamification System Setup Guide
 
-## Overview
+> **Note**: This guide refers to the backend gamification system. The backend code is now in a separate repository: [lottery-backend](https://github.com/bobby-singer89/lottery-backend)
+> 
+> For backend setup instructions, please refer to the backend repository.
 
-This guide will help you set up and integrate the complete gamification system into the lottery application. The system includes:
+## Frontend Integration
 
-- **Referral System**: User invitations with referral codes
-- **Quest System**: Daily, weekly, and monthly challenges
-- **Achievement System**: Milestone-based achievements
-- **Streak System**: Daily login rewards
-- **Reward System**: Unified reward distribution
-
-## Prerequisites
-
-- Node.js 18+ and npm
-- PostgreSQL database (Supabase or standalone)
-- Existing lottery backend running
-
-## Backend Setup
-
-### 1. Install Dependencies
-
-The gamification backend uses Prisma ORM for database management.
-
-```bash
-cd backend
-npm install
-```
-
-Prisma 5.x is already installed via the package.json.
-
-### 2. Configure Database
-
-Add the `DATABASE_URL` to your `.env` file:
-
-```bash
-# .env
-DATABASE_URL=postgresql://user:password@host:port/database
-
-# For Supabase, use the connection string from your Supabase project:
-# DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
-```
-
-### 3. Run Database Migrations
-
-Apply the gamification schema to your database:
-
-```bash
-# Using Supabase SQL Editor or psql
-psql $DATABASE_URL < migrations/010_gamification_system.sql
-```
-
-Or run via Supabase dashboard:
-1. Go to your Supabase project
-2. Navigate to SQL Editor
-3. Copy contents of `migrations/010_gamification_system.sql`
-4. Execute the SQL
-
-### 4. Generate Prisma Client
-
-```bash
-cd backend
-npx prisma generate
-```
-
-This generates the TypeScript types and client for the gamification models.
-
-### 5. Seed Initial Data
-
-Seed the database with initial quests and achievements:
-
-```bash
-# Using SQL
-psql $DATABASE_URL < prisma/seed.sql  # (Note: This file contains SQL, not TypeScript)
-
-# Or via Supabase SQL Editor
-# Copy and execute the contents of prisma/seed.sql
-```
-
-### 6. Build and Start Backend
-
-```bash
-cd backend
-npm run build
-npm start
-```
-
-The backend will now include gamification endpoints at `/api/gamification/*`.
-
-### 7. Verify Installation
-
-Test the health endpoint:
-
-```bash
-curl http://localhost:3001/health
-```
-
-Test a gamification endpoint:
-
-```bash
+This section covers how to integrate gamification features in the frontend application.
 curl -H "x-user-id: test-user" http://localhost:3001/api/gamification/profile
 ```
 

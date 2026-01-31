@@ -1,350 +1,145 @@
-# Weekend Special Lottery - Setup Guide
+# Weekend Special Lottery - Frontend Setup Guide
 
-Complete step-by-step guide for setting up the Weekend Special Lottery system.
+Setup guide for the **Frontend** repository of the Weekend Special Lottery system.
+
+> **Note**: This repository contains only the frontend. The backend is in a separate repository: [lottery-backend](https://github.com/bobby-singer89/lottery-backend)
 
 ---
 
 ## Prerequisites
 
 - Node.js 18+ and npm
-- PostgreSQL database (we use Supabase)
-- Telegram Bot (created via @BotFather)
-- TON Testnet wallet
+- Backend API running (see [lottery-backend](https://github.com/bobby-singer89/lottery-backend) repository)
 
 ---
 
-## 📦 Part 1: Initial Setup
+## 📦 Setup
 
 ### 1. Clone the repository
 
 ```bash
 git clone <repository-url>
-cd test
+cd lottery-frontend
 ```
 
-### 2. Install frontend dependencies
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Install backend dependencies
-
-```bash
-cd backend
-npm install
-cd ..
-```
-
----
-
-## 🔐 Part 2: Environment Configuration
-
-### 1. Create environment file
+### 3. Configure environment
 
 ```bash
 cp .env.example .env.local
 ```
 
-### 2. Configure environment variables
-
-Edit `.env.local` with your actual credentials:
+Edit `.env.local` with your backend API URL:
 
 ```env
-# Database
-DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@db.yqqwlodfmhlaeepqslyq.supabase.co:5432/postgres"
-
-# Telegram Bot (get from @BotFather)
-TELEGRAM_BOT_TOKEN="8356073461:AAGvKE42hZf5611XK13sTaq4kL6WZyq3OQA"
-TELEGRAM_BOT_USERNAME="@Lottery_555_bot"
+# Backend API URL
+VITE_API_URL="http://localhost:3001/api"
 
 # TON Configuration
-TON_NETWORK="testnet"
-LOTTERY_WALLET="0QDAy6M4QQRcIy8jLl4n4acb7IxmDnPZiBqz7A_6xvY90GeY"
+VITE_TON_NETWORK="testnet"
 
-# Lottery Settings
-TICKET_PRICE="1"
-DRAW_TIME="18:00"
-DRAW_TIMEZONE="Europe/Moscow"
+# App Configuration
+VITE_APP_URL="http://localhost:5173"
 
-# JWT Secret (MUST GENERATE!)
-JWT_SECRET="your-generated-secret-here"
-
-# Admin Telegram IDs (your Telegram user IDs)
-ADMIN_TELEGRAM_IDS="123456789,987654321"
-
-# URLs
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-NEXT_PUBLIC_API_URL="http://localhost:3001/api"
+# Optional: Enable mock auth for testing (DO NOT use in production)
+# VITE_ENABLE_MOCK_AUTH="true"
 ```
-
-### 3. Generate JWT Secret
-
-```bash
-# On Linux/Mac:
-openssl rand -base64 32
-
-# On Windows (PowerShell):
-[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Minimum 0 -Maximum 256 }))
-```
-
-Copy the output and paste it as `JWT_SECRET` in `.env.local`.
 
 ---
 
-## 🗄️ Part 3: Database Setup
+## 🚀 Running the Frontend
 
-### 1. Ensure PostgreSQL is running
-
-If using Supabase, your database is already running. Just make sure the `DATABASE_URL` is correct.
-
-### 2. Generate Prisma Client
+### Development mode
 
 ```bash
-cd backend
-npm run db:generate
-```
-
-Expected output:
-```
-✔ Generated Prisma Client (v5.22.0)
-```
-
-### 3. Run database migrations
-
-```bash
-npm run db:migrate
-```
-
-This will create all tables in your database:
-- users
-- lotteries
-- tickets
-- draws
-- transactions
-- notifications
-- admin_users
-
-### 4. Seed initial data
-
-```bash
-npm run db:seed
-```
-
-This creates:
-- Weekend Special lottery configuration
-- First pending draw scheduled for today at 18:00
-
-Expected output:
-```
-Created lottery: { id: 1, name: 'Weekend Special', ... }
-Created draw: { id: 1, lotteryId: 1, ... }
-```
-
-### 5. (Optional) Open Prisma Studio
-
-To visually inspect your database:
-
-```bash
-npm run db:studio
-```
-
-This opens a web interface at `http://localhost:5555`
-
----
-
-## 🚀 Part 4: Running the Application
-
-### Terminal 1: Backend Server
-
-```bash
-cd backend
 npm run dev
 ```
 
-Expected output:
-```
-🚀 Backend server running on port 3001
-📡 API available at http://localhost:3001/api
-💚 Health check: http://localhost:3001/api/health
-```
+Frontend will be available at `http://localhost:5173`
 
-### Terminal 2: Frontend Server
+### Production build
 
 ```bash
-# From project root
-npm run dev
-```
-
-Expected output:
-```
-  VITE v7.2.4  ready in XXX ms
-
-  ➜  Local:   http://localhost:3000/
-  ➜  Network: use --host to expose
+npm run build
+npm run preview
 ```
 
 ---
 
-## ✅ Part 5: Verification
+## 🔗 Backend Setup
 
-### 1. Check backend health
-
-Open in browser or use curl:
-
-```bash
-curl http://localhost:3001/api/health
-```
-
-Expected response:
-```json
-{
-  "success": true,
-  "status": "healthy",
-  "timestamp": "2026-01-24T...",
-  "uptime": 10
-}
-```
-
-### 2. Check lottery list
-
-```bash
-curl http://localhost:3001/api/lottery/list
-```
-
-You should see the Weekend Special lottery in the response.
-
-### 3. Check frontend
-
-Open `http://localhost:3000` in your browser. You should see the lottery application.
+For backend setup instructions, see the [lottery-backend](https://github.com/bobby-singer89/lottery-backend) repository.
 
 ---
 
-## 🎮 Part 6: Testing the Flow
+## ✅ Verification
 
-### 1. Get your Telegram ID
+### 1. Check frontend
 
-Open Telegram and send a message to `@userinfobot`. It will reply with your Telegram ID.
+Open `http://localhost:5173` in your browser. You should see the lottery application.
 
-### 2. Test authentication
+### 2. Test with mock authentication (development only)
 
-```bash
-curl -X POST http://localhost:3001/api/auth/telegram \
-  -H "Content-Type: application/json" \
-  -d '{
-    "telegramId": YOUR_TELEGRAM_ID,
-    "username": "testuser",
-    "firstName": "Test",
-    "lastName": "User",
-    "languageCode": "en"
-  }'
-```
+If `VITE_ENABLE_MOCK_AUTH=true` is set in `.env.local`:
+- Look for the orange DevTools button in the bottom-right corner
+- Click it to access mock authentication
+- Login as a test user to explore the app
 
-Save the returned `token` for the next steps.
+### 3. Test with real backend
 
-### 3. Connect TON wallet (optional)
-
-```bash
-curl -X POST http://localhost:3001/api/auth/connect-wallet \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{
-    "tonWallet": "EQC..."
-  }'
-```
-
-### 4. Get current draw
-
-```bash
-curl http://localhost:3001/api/draws/current?lotterySlug=weekend-special
-```
-
-### 5. Test ticket purchase (requires actual TON transaction)
-
-```bash
-curl -X POST http://localhost:3001/api/lottery/weekend-special/buy-ticket \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{
-    "selectedNumbers": [5, 12, 18, 24, 31],
-    "txHash": "your_transaction_hash"
-  }'
-```
+Ensure your backend API is running (see [lottery-backend](https://github.com/bobby-singer89/lottery-backend)) and accessible at the URL configured in `VITE_API_URL`.
 
 ---
 
-## 🔧 Part 7: Telegram Bot Setup
+## 🌐 Production Deployment
 
-### 1. Create a bot with @BotFather
+### Recommended Platforms
 
-1. Open Telegram and search for `@BotFather`
-2. Send `/newbot`
-3. Follow the prompts to create your bot
-4. Copy the bot token
+- **Vercel** (recommended)
+- **Netlify**
+- **Cloudflare Pages**
 
-### 2. Set bot webhook (for production)
+### Deployment Steps
 
-```bash
-curl -X POST https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook \
-  -d "url=https://your-domain.com/api/webhooks/telegram"
-```
+1. Connect your repository to the platform
+2. Set environment variables:
+   - `VITE_API_URL` - Your production backend API URL
+   - `VITE_TON_NETWORK` - "mainnet" for production
+   - `VITE_APP_URL` - Your production frontend URL
+3. Build command: `npm run build`
+4. Output directory: `dist`
+5. Deploy!
 
-### 3. Test bot notifications
-
-The backend can send Telegram notifications to users. Test this manually in your code or wait for actual events (ticket purchase, draw results, etc.)
-
----
-
-## 🌐 Part 8: Production Deployment
-
-### Backend (e.g., Railway, Render, Fly.io)
-
-1. Set all environment variables
-2. Run migrations: `npm run db:migrate`
-3. Build: `npm run build`
-4. Start: `npm run start`
-
-### Frontend (e.g., Vercel, Netlify)
-
-1. Set environment variables in your hosting platform
-2. Build command: `npm run build`
-3. Output directory: `dist`
-
-### Database (Supabase)
-
-Already configured! Just ensure the `DATABASE_URL` is correct.
+**Important:** For PWA support, HTTPS is required!
 
 ---
 
 ## 📝 Common Issues
 
-### Issue: "Cannot connect to database"
+### Issue: "Cannot connect to API"
 
 **Solution:** Check that:
-- Database is running
-- `DATABASE_URL` in `.env.local` is correct
-- No firewall blocking the connection
-- IP whitelist allows your IP (if using Supabase)
+- Backend API is running
+- `VITE_API_URL` in `.env.local` is correct
+- No CORS issues (backend must allow your frontend origin)
 
-### Issue: "Prisma Client not found"
-
-**Solution:**
-```bash
-cd backend
-npm run db:generate
-```
-
-### Issue: "Port 3000 or 3001 already in use"
+### Issue: "Port 5173 already in use"
 
 **Solution:**
 - Kill the process using that port
-- Or change the port in the code
+- Or Vite will automatically try the next available port
 
-### Issue: "JWT token invalid"
+### Issue: "Build fails"
 
 **Solution:**
-- Ensure `JWT_SECRET` is the same on backend and matches what was used to sign the token
-- Token might be expired (default 30 days)
+- Run `npm install` to ensure all dependencies are installed
+- Check TypeScript errors with `npm run lint`
+- Clear cache: `rm -rf node_modules dist && npm install`
 
 ---
 
@@ -352,22 +147,20 @@ npm run db:generate
 
 After successful setup:
 
-1. **Configure Telegram Bot** - Set up bot commands and webhooks
-2. **Add Admin Users** - Add admin Telegram IDs to `ADMIN_TELEGRAM_IDS`
-3. **Test Draw Execution** - Implement scheduled draw execution
-4. **Setup Prize Payouts** - Implement automatic prize distribution
-5. **Add Monitoring** - Set up logging and error tracking
-6. **Security Hardening** - Add rate limiting, CORS, etc.
-7. **Deploy to Production** - Deploy to your hosting platforms
+1. **Configure Environment** - Set up production environment variables
+2. **Test Features** - Test all lottery features thoroughly
+3. **Setup Backend** - Follow the [lottery-backend](https://github.com/bobby-singer89/lottery-backend) setup guide
+4. **Deploy to Production** - Deploy both frontend and backend
+5. **Enable PWA** - Ensure HTTPS is configured for PWA features
 
 ---
 
 ## 📚 Additional Resources
 
-- [Prisma Documentation](https://www.prisma.io/docs)
-- [TON Documentation](https://docs.ton.org)
-- [Telegram Bot API](https://core.telegram.org/bots/api)
-- [Express.js Guide](https://expressjs.com)
+- [Vite Documentation](https://vitejs.dev)
+- [React Documentation](https://react.dev)
+- [TON Connect Documentation](https://docs.ton.org/develop/dapps/ton-connect)
+- [Backend Repository](https://github.com/bobby-singer89/lottery-backend)
 
 ---
 
@@ -375,10 +168,9 @@ After successful setup:
 
 If you encounter issues:
 
-1. Check the logs for error messages
+1. Check the browser console for error messages
 2. Review this setup guide again
-3. Check `backend/README.md` for API documentation
-4. Check `backend/API_DOCUMENTATION.md` for endpoint details
+3. Check the [lottery-backend](https://github.com/bobby-singer89/lottery-backend) repository for backend issues
 
 ---
 

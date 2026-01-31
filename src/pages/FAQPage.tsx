@@ -32,7 +32,7 @@ export default function FAQPage() {
       <div className="faq-page-compact">
         {/* Compact Header */}
         <div className="faq-header-compact">
-          <h1>❓ FAQ</h1>
+          <h1><span aria-hidden="true">❓</span> FAQ</h1>
         </div>
 
         {/* Search */}

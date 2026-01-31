@@ -66,12 +66,12 @@ export default function FAQSwipeCategories({ categories, activeIndex, onCategory
       </div>
       
       <div className="category-dots">
-        {categories.map((_, index) => (
+        {categories.map((category) => (
           <button
-            key={index}
-            className={`dot ${index === activeIndex ? 'active' : ''}`}
-            onClick={() => onCategoryChange(index)}
-            aria-label={`Go to ${categories[index].name} category`}
+            key={category.id}
+            className={`dot ${categories.indexOf(category) === activeIndex ? 'active' : ''}`}
+            onClick={() => onCategoryChange(categories.indexOf(category))}
+            aria-label={`Go to ${category.name} category`}
           />
         ))}
       </div>

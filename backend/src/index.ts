@@ -3,11 +3,15 @@ import cors from 'cors';
 import { drawScheduler } from './services/drawScheduler';
 import { exchangeRateService } from './services/exchangeRates';
 import { payoutService } from './services/payoutService';
+import { payoutQueue } from './services/payoutQueue';
 import publicRoutes from './routes/public';
 import adminRoutes from './routes/admin';
 import swapRoutes from './routes/swap';
 import financeRoutes from './routes/admin/finance';
 import lotteryRoutes from './routes/lottery';
+import adminDrawRoutes from './routes/admin/draws';
+import drawRoutes from './routes/draws';
+import cron from 'node-cron';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -30,6 +34,12 @@ app.use('/api/admin', adminRoutes);
 // Admin finance routes
 app.use('/api/admin/finance', financeRoutes);
 
+// Admin draw routes
+app.use('/api/admin/draws', adminDrawRoutes);
+
+// Public draw routes
+app.use('/api/draws', drawRoutes);
+
 // Lottery routes (ticket purchases)
 app.use('/api/lottery', lotteryRoutes);
 
@@ -49,6 +59,14 @@ async function initializeServices() {
 
   // Start draw scheduler
   drawScheduler.start();
+
+  // Start payout queue processor - runs every 5 minutes
+  cron.schedule('*/5 * * * *', async () => {
+    console.log('🔄 Running payout queue processor...');
+    await payoutQueue.processPendingPayouts();
+  });
+
+  console.log('✅ Payout queue processor scheduled (every 5 minutes)');
 }
 
 // Start services and server

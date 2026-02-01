@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { gamificationApi } from '../services/gamificationApi';
-import type { ReferralStats, ReferralUser } from '../types/gamification';
 import { useState } from 'react';
 
 /**

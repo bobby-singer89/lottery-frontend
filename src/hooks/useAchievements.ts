@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { gamificationApi } from '../services/gamificationApi';
-import type { Achievement, UserAchievement, AchievementProgress, AchievementCategory } from '../types/gamification';
+import type { AchievementCategory } from '../types/gamification';
 import { useState } from 'react';
 
 /**

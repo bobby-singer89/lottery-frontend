@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { gamificationApi } from '../services/gamificationApi';
-import type { GamificationProfile } from '../types/gamification';
 
 /**
  * Main hook for gamification profile data with level, xp, progress calculation

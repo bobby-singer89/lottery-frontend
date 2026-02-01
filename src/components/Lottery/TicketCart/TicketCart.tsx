@@ -5,9 +5,14 @@ import { useTonConnectUI, useTonAddress } from '@tonconnect/ui-react';
 import { toNano } from '@ton/core';
 import { useSound } from '../../Advanced/SoundManager';
 import { LOTTERY_CONFIG } from '../../../config/lottery';
+import { LOTTERY_CONFIG as CONTRACT_CONFIG } from '../../../config/contracts';
 import type { CartTicket } from '../../../hooks/useTicketCart';
 import { ticketApi } from '../../../services/ticketApi';
+import { useJettonTransaction } from '../../../hooks/useJettonTransaction';
+import { useWalletBalance } from '../../../hooks/useWalletBalance';
 import './TicketCart.css';
+
+type Currency = 'TON' | 'USDT';
 
 interface TicketCartProps {
   tickets: CartTicket[];
@@ -42,6 +47,18 @@ export default function TicketCart({
   const userAddress = useTonAddress();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency>('TON');
+  
+  // Jetton transaction hook
+  const { buyLotteryTicketWithUsdt } = useJettonTransaction();
+  
+  // Wallet balances (both TON and USDT)
+  const { ton: tonBalance, usdt: usdtBalance } = useWalletBalance();
+  
+  // Calculate prices in USDT
+  const usdtSubtotal = subtotal * CONTRACT_CONFIG.TON_TO_USDT_RATE;
+  const usdtDiscount = discount * CONTRACT_CONFIG.TON_TO_USDT_RATE;
+  const usdtTotal = total * CONTRACT_CONFIG.TON_TO_USDT_RATE;
 
   const handleRemove = (id: string) => {
     onRemoveTicket(id);
@@ -60,30 +77,44 @@ export default function TicketCart({
     setError(null);
 
     try {
-      const transaction = {
-        validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes
-        messages: [
-          {
-            address: LOTTERY_CONFIG.WALLET_ADDRESS,
-            amount: toNano(total).toString(),
-            // Optional: add payload with ticket numbers
-          },
-        ],
-      };
-
-      const result = await tonConnectUI.sendTransaction(transaction);
+      let result;
       
-      console.log('Transaction sent:', result.boc);
+      if (selectedCurrency === 'USDT') {
+        // Check USDT balance
+        if (usdtBalance < usdtTotal) {
+          throw new Error(`Insufficient USDT balance. Need ${usdtTotal.toFixed(2)} USDT, have ${usdtBalance.toFixed(2)} USDT`);
+        }
+        
+        // Send USDT via Jetton transfer
+        result = await buyLotteryTicketWithUsdt(usdtTotal, LOTTERY_CONFIG.WALLET_ADDRESS);
+        console.log('USDT transaction sent:', result);
+      } else {
+        // Send TON
+        const transaction = {
+          validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes
+          messages: [
+            {
+              address: LOTTERY_CONFIG.WALLET_ADDRESS,
+              amount: toNano(total).toString(),
+            },
+          ],
+        };
+
+        const tonResult = await tonConnectUI.sendTransaction(transaction);
+        result = tonResult.boc;
+        console.log('TON transaction sent:', result);
+      }
       
       // Save tickets to database
       try {
-        const ticketPrice = total / tickets.length; // Calculate individual ticket price
+        const ticketPrice = (selectedCurrency === 'USDT' ? usdtTotal : total) / tickets.length;
         const ticketsToSave = tickets.map((ticket) => ({
           lotterySlug,
           numbers: ticket.numbers,
-          txHash: result.boc,
+          txHash: result,
           walletAddress: userAddress,
           price: ticketPrice,
+          currency: selectedCurrency,
         }));
 
         await ticketApi.saveTickets(ticketsToSave);
@@ -94,9 +125,8 @@ export default function TicketCart({
       }
       
       // Call onPurchase callback with transaction BOC for backend registration
-      // This should be done before clearing cart in case it fails
       if (onPurchase) {
-        await onPurchase(result.boc);
+        await onPurchase(result);
       }
       
       // Clear cart after successful backend registration
@@ -235,11 +265,82 @@ export default function TicketCart({
 
                     {/* Price Summary */}
                     <div className="cart-summary">
+                      {/* Currency Selector */}
+                      <div className="currency-selector" style={{
+                        display: 'flex',
+                        gap: '8px',
+                        marginBottom: '12px',
+                        padding: '8px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: '8px'
+                      }}>
+                        <button
+                          onClick={() => {
+                            setSelectedCurrency('TON');
+                            playSound('click');
+                          }}
+                          style={{
+                            flex: 1,
+                            padding: '8px 12px',
+                            borderRadius: '6px',
+                            border: selectedCurrency === 'TON' ? '2px solid #0088cc' : '1px solid rgba(255,255,255,0.2)',
+                            backgroundColor: selectedCurrency === 'TON' ? 'rgba(0, 136, 204, 0.2)' : 'transparent',
+                            color: selectedCurrency === 'TON' ? '#0088cc' : '#fff',
+                            cursor: 'pointer',
+                            fontWeight: selectedCurrency === 'TON' ? 'bold' : 'normal',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          💎 TON
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedCurrency('USDT');
+                            playSound('click');
+                          }}
+                          style={{
+                            flex: 1,
+                            padding: '8px 12px',
+                            borderRadius: '6px',
+                            border: selectedCurrency === 'USDT' ? '2px solid #26a17b' : '1px solid rgba(255,255,255,0.2)',
+                            backgroundColor: selectedCurrency === 'USDT' ? 'rgba(38, 161, 123, 0.2)' : 'transparent',
+                            color: selectedCurrency === 'USDT' ? '#26a17b' : '#fff',
+                            cursor: 'pointer',
+                            fontWeight: selectedCurrency === 'USDT' ? 'bold' : 'normal',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          💵 USDT
+                        </button>
+                      </div>
+
+                      {/* Balance Display */}
+                      {userAddress && (
+                        <div style={{
+                          fontSize: '0.875rem',
+                          color: 'rgba(255, 255, 255, 0.7)',
+                          marginBottom: '12px',
+                          padding: '6px 8px',
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          borderRadius: '4px'
+                        }}>
+                          {selectedCurrency === 'USDT' ? (
+                            <>💵 {t('balance', { defaultValue: 'Balance' })}: {usdtBalance.toFixed(2)} USDT</>
+                          ) : (
+                            <>💎 {t('balance', { defaultValue: 'Balance' })}: {tonBalance.toFixed(4)} TON</>
+                          )}
+                        </div>
+                      )}
+
                       <div className="summary-row">
                         <span className="summary-label">
                           {t('subtotal', { defaultValue: 'Subtotal' })}:
                         </span>
-                        <span className="summary-value">{subtotal.toFixed(2)} TON</span>
+                        <span className="summary-value">
+                          {selectedCurrency === 'USDT' 
+                            ? `${usdtSubtotal.toFixed(2)} USDT` 
+                            : `${subtotal.toFixed(2)} TON`}
+                        </span>
                       </div>
 
                       {discount > 0 && (
@@ -252,7 +353,9 @@ export default function TicketCart({
                             {t('discount', { defaultValue: 'Discount' })} {discountPercent}%:
                           </span>
                           <span className="summary-value discount-value">
-                            -{discount.toFixed(2)} TON 🎁
+                            -{selectedCurrency === 'USDT' 
+                              ? `${usdtDiscount.toFixed(2)} USDT` 
+                              : `${discount.toFixed(2)} TON`} 🎁
                           </span>
                         </motion.div>
                       )}
@@ -263,7 +366,11 @@ export default function TicketCart({
                         <span className="summary-label">
                           {t('total', { defaultValue: 'Total' })}:
                         </span>
-                        <span className="summary-total">{total.toFixed(2)} TON</span>
+                        <span className="summary-total">
+                          {selectedCurrency === 'USDT' 
+                            ? `${usdtTotal.toFixed(2)} USDT` 
+                            : `${total.toFixed(2)} TON`}
+                        </span>
                       </div>
                     </div>
 
@@ -309,7 +416,11 @@ export default function TicketCart({
                             {isLoading ? (
                               <>⏳ {t('processing', { defaultValue: 'Обработка...' })}</>
                             ) : (
-                              <>💎 {t('buyTickets', { defaultValue: 'Купить билеты' })} — {total.toFixed(2)} TON</>
+                              <>
+                                {selectedCurrency === 'USDT' ? '💵' : '💎'} {t('buyTickets', { defaultValue: 'Купить билеты' })} — {selectedCurrency === 'USDT' 
+                                  ? `${usdtTotal.toFixed(2)} USDT` 
+                                  : `${total.toFixed(2)} TON`}
+                              </>
                             )}
                           </motion.button>
                         </>

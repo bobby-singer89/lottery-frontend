@@ -6,6 +6,7 @@ export interface TicketPurchaseData {
   txHash: string;
   walletAddress: string;
   price: number;
+  currency?: 'TON' | 'USDT';  // Payment currency
 }
 
 export interface PurchasedTicket {

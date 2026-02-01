@@ -1,5 +1,5 @@
 import { TonClient, Address } from '@ton/ton';
-import { CURRENT_CONFIG, LOTTERY_CONFIG } from '../config/contracts';
+import { CURRENT_CONFIG } from '../config/contracts';
 
 // Constants
 const MIN_TX_HASH_LENGTH = 20; // Minimum length for a valid TON transaction hash
@@ -28,26 +28,11 @@ export async function getTonBalance(address: string): Promise<number> {
 
 /**
  * Get USDT Jetton balance for an address
- * MOCK IMPLEMENTATION - Replace with real Jetton query later
  */
 export async function getUsdtBalance(address: string): Promise<number> {
-  // TODO: Implement real Jetton wallet query when ready
-  console.log('⚠️ Using MOCK USDT balance (Jetton query not implemented yet)');
-  
-  try {
-    // Mock: Use TON balance to estimate USDT
-    const tonBalance = await getTonBalance(address);
-    const estimatedUSDT = tonBalance * LOTTERY_CONFIG.TON_TO_USDT_RATE;
-    
-    // Return at least 150 USDT for testing
-    const mockUSDT = Math.max(estimatedUSDT, 150);
-    
-    console.log(`💵 USDT Balance (MOCK) for ${address}: ${mockUSDT.toFixed(2)} USDT`);
-    return mockUSDT;
-  } catch (error) {
-    console.error('Failed to get USDT balance:', error);
-    return 150; // Default mock balance
-  }
+  // Import the real implementation from jettonService
+  const { getUsdtBalance: getRealUsdtBalance } = await import('../lib/ton/jettonService');
+  return getRealUsdtBalance(address);
 }
 
 /**

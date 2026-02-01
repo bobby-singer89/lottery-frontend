@@ -9,6 +9,20 @@ interface DailyQuestsProps {
   isClaiming?: boolean;
 }
 
+// Helper function to map reward types to icons
+const getRewardIcon = (rewardType: 'xp' | 'ticket' | 'badge'): string => {
+  switch (rewardType) {
+    case 'xp':
+      return 'XP';
+    case 'ticket':
+      return '🎟️';
+    case 'badge':
+      return '🏆';
+    default:
+      return '';
+  }
+};
+
 function DailyQuests({ quests, onClaim, isClaiming }: DailyQuestsProps) {
   // Calculate time until midnight for reset timer (in seconds)
   const getTimeUntilReset = () => {
@@ -113,7 +127,7 @@ function DailyQuests({ quests, onClaim, isClaiming }: DailyQuestsProps) {
                     <div className="reward-badge">
                       {userQuest.claimed && <div className="reward-checkmark">✓</div>}
                       <span className="reward-amount">
-                        +{quest.rewardValue} {quest.rewardType === 'xp' ? 'XP' : quest.rewardType === 'ticket' ? '🎟️' : '🏆'}
+                        +{quest.rewardValue} {getRewardIcon(quest.rewardType)}
                       </span>
                     </div>
                   )}

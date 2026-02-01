@@ -306,7 +306,7 @@ function ProfilePage() {
             </motion.div>
 
             {/* Gamification: Check-In Button */}
-            {userId && streak.streak && (
+            {userId && !streak.isLoading && streak.canCheckIn !== undefined && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -339,7 +339,7 @@ function ProfilePage() {
             )}
 
             {/* Gamification: Streak Counter */}
-            {userId && streak.streak && (
+            {userId && !streak.isLoading && streak.currentStreak !== undefined && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

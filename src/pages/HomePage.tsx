@@ -152,7 +152,7 @@ export default function HomePage() {
             </header>
 
             {/* Check-In Banner for Logged-In Users */}
-            {user && userId && streak.streak && (
+            {user && userId && !streak.isLoading && streak.canCheckIn !== undefined && (
               <motion.section
                 className="checkin-banner-section"
                 initial={{ opacity: 0, y: 20 }}

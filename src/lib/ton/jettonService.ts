@@ -1,4 +1,5 @@
 import { TonClient, Address } from '@ton/ton';
+import { beginCell } from '@ton/core';
 import { CURRENT_CONFIG } from '../../config/contracts';
 
 // Initialize TON Client
@@ -21,9 +22,12 @@ export async function getJettonWalletAddress(
     const jettonMaster = Address.parse(jettonMasterAddress);
     const owner = Address.parse(ownerAddress);
     
+    // Create a cell containing the owner address
+    const ownerCell = beginCell().storeAddress(owner).endCell();
+    
     // Call get_wallet_address on Jetton Master
     const result = await tonClient.runMethod(jettonMaster, 'get_wallet_address', [
-      { type: 'slice', cell: owner.toCell() }
+      { type: 'slice', cell: ownerCell }
     ]);
     
     // Parse the returned address

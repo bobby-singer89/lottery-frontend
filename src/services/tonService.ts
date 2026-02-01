@@ -1,5 +1,5 @@
 import { TonClient, Address } from '@ton/ton';
-import { CURRENT_CONFIG, LOTTERY_CONFIG } from '../config/contracts';
+import { CURRENT_CONFIG } from '../config/contracts';
 
 // Constants
 const MIN_TX_HASH_LENGTH = 20; // Minimum length for a valid TON transaction hash

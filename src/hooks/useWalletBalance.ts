@@ -17,7 +17,7 @@ export function useWalletBalance(): WalletBalance {
   const userAddress = useTonAddress();
   const [ton, setTon] = useState(0);
   const [usdt, setUsdt] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Start as loading
   const [error, setError] = useState<string | null>(null);
 
   // Load cached balance on mount

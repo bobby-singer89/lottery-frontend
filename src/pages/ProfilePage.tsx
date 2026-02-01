@@ -10,6 +10,15 @@ import Footer from '../components/Footer/Footer';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import WalletBalance from '../components/WalletBalance/WalletBalance';
 import { useNavigate } from 'react-router-dom';
+import CheckInButton from '../components/Gamification/CheckInButton';
+import PlayerLevel from '../components/Gamification/PlayerLevel';
+import StreakCounter from '../components/Gamification/StreakCounter';
+import DailyQuests from '../components/Gamification/DailyQuests';
+import AchievementBadges from '../components/Gamification/AchievementBadges';
+import { useGamification } from '../hooks/useGamification';
+import { useStreak } from '../hooks/useStreak';
+import { useQuests } from '../hooks/useQuests';
+import { useAchievements } from '../hooks/useAchievements';
 import './ProfilePage.css';
 
 interface UserProfile {
@@ -61,6 +70,13 @@ function ProfilePage() {
   const [copied, setCopied] = useState(false);
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
+  // Gamification hooks
+  const userId = user?.id?.toString();
+  const gamification = useGamification(userId);
+  const streak = useStreak(userId);
+  const quests = useQuests(userId);
+  const achievements = useAchievements(userId);
 
   // Fetch user profile data
   useEffect(() => {
@@ -289,6 +305,53 @@ function ProfilePage() {
               </div>
             </motion.div>
 
+            {/* Gamification: Check-In Button */}
+            {userId && !streak.isLoading && streak.canCheckIn !== undefined && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.12 }}
+              >
+                <CheckInButton
+                  currentStreak={streak.currentStreak}
+                  canCheckIn={streak.canCheckIn}
+                  isCheckingIn={streak.isCheckingIn}
+                  onCheckIn={streak.checkIn}
+                  checkInResult={streak.checkInResult}
+                />
+              </motion.div>
+            )}
+
+            {/* Gamification: Player Level */}
+            {userId && gamification.profile && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.14 }}
+              >
+                <PlayerLevel
+                  level={gamification.level}
+                  xp={gamification.xp}
+                  xpToNextLevel={gamification.xpToNextLevel}
+                  progress={gamification.progress}
+                />
+              </motion.div>
+            )}
+
+            {/* Gamification: Streak Counter */}
+            {userId && !streak.isLoading && streak.currentStreak !== undefined && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.16 }}
+              >
+                <StreakCounter
+                  currentStreak={streak.currentStreak}
+                  longestStreak={streak.longestStreak}
+                />
+              </motion.div>
+            )}
+
             {/* Wallet Balance Section */}
             {userAddress && (
               <motion.div
@@ -385,6 +448,36 @@ function ProfilePage() {
                 />
               </div>
             </motion.div>
+
+            {/* Gamification: Daily Quests */}
+            {userId && quests.dailyQuests.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <DailyQuests
+                  quests={quests.dailyQuests}
+                  onClaim={quests.claimQuest}
+                  isClaiming={quests.isClaiming}
+                />
+              </motion.div>
+            )}
+
+            {/* Gamification: Achievements */}
+            {userId && achievements.progress.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 }}
+              >
+                <AchievementBadges
+                  achievements={achievements.progress}
+                  onClaim={achievements.claimAchievement}
+                  isClaiming={achievements.isClaiming}
+                />
+              </motion.div>
+            )}
 
             {/* My Tickets */}
             <motion.div

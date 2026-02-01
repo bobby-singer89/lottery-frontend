@@ -11,8 +11,8 @@ export const LOTTERY_CONFIG = {
     // USDT Jetton Master Contract
     USDT_JETTON: 'UQAfATgmh11oc6BFRBa6Jta8cIO0vvuLn3jUHSaMNdeneSbk',
     
-    // TON API Endpoint
-    TON_API: 'https://toncenter.com/api/v2',
+    // TON API Endpoint (use jsonRPC endpoint for TonClient)
+    TON_API: 'https://toncenter.com/api/v2/jsonRPC',
     TON_API_KEY: '', // Optional: add if you have API key
   },
   
@@ -20,7 +20,7 @@ export const LOTTERY_CONFIG = {
   TESTNET: {
     LOTTERY_WALLET: '0QDAy6M4QQRcIy8jLl4n4acb7IxmDnPZiBqz7A_6xvY90GeY',
     USDT_JETTON: '', // Testnet USDT not available yet
-    TON_API: 'https://testnet.toncenter.com/api/v2',
+    TON_API: 'https://testnet.toncenter.com/api/v2/jsonRPC',
     TON_API_KEY: '',
   },
   

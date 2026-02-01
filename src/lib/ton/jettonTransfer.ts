@@ -9,15 +9,13 @@ const JETTON_TRANSFER_OP = 0x0f8a7ea5;
  * @param toAddress - Destination TON address (lottery wallet)
  * @param responseAddress - User's address for excess TON return
  * @param forwardTonAmount - TON amount for forward notification (default 0.05 TON)
- * @param forwardPayload - Optional comment or payload
  * @returns Cell containing the Jetton transfer message
  */
 export function createJettonTransferMessage(
   jettonAmount: bigint,
   toAddress: string,
   responseAddress: string,
-  forwardTonAmount: bigint = toNano('0.05'),
-  forwardPayload?: string
+  forwardTonAmount: bigint = toNano('0.05')
 ): Cell {
   const body = beginCell()
     .storeUint(JETTON_TRANSFER_OP, 32)  // op code for jetton_transfer
@@ -27,15 +25,7 @@ export function createJettonTransferMessage(
     .storeAddress(Address.parse(responseAddress))  // response_destination
     .storeBit(false)                     // no custom_payload
     .storeCoins(forwardTonAmount)        // forward_ton_amount
-    .storeBit(false);                    // no forward_payload for now
-
-  // If we have a forward payload (comment), we can add it
-  // For now, keeping it simple with no payload
-  if (forwardPayload) {
-    // To add a comment, we would need to:
-    // .storeBit(true) above
-    // .storeRef(beginCell().storeUint(0, 32).storeStringTail(forwardPayload).endCell())
-  }
+    .storeBit(false);                    // no forward_payload
 
   return body.endCell();
 }

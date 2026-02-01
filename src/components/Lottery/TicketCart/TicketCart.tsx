@@ -9,7 +9,7 @@ import { LOTTERY_CONFIG as CONTRACT_CONFIG } from '../../../config/contracts';
 import type { CartTicket } from '../../../hooks/useTicketCart';
 import { ticketApi } from '../../../services/ticketApi';
 import { useJettonTransaction } from '../../../hooks/useJettonTransaction';
-import { useUsdtBalance } from '../../../hooks/useUsdtBalance';
+import { useWalletBalance } from '../../../hooks/useWalletBalance';
 import './TicketCart.css';
 
 type Currency = 'TON' | 'USDT';
@@ -52,8 +52,8 @@ export default function TicketCart({
   // Jetton transaction hook
   const { buyLotteryTicketWithUsdt } = useJettonTransaction();
   
-  // USDT balance
-  const { balance: usdtBalance } = useUsdtBalance(userAddress);
+  // Wallet balances (both TON and USDT)
+  const { ton: tonBalance, usdt: usdtBalance } = useWalletBalance();
   
   // Calculate prices in USDT
   const usdtSubtotal = subtotal * CONTRACT_CONFIG.TON_TO_USDT_RATE;
@@ -327,7 +327,7 @@ export default function TicketCart({
                           {selectedCurrency === 'USDT' ? (
                             <>💵 {t('balance', { defaultValue: 'Balance' })}: {usdtBalance.toFixed(2)} USDT</>
                           ) : (
-                            <>💎 {t('balance', { defaultValue: 'Balance' })}: ... TON</>
+                            <>💎 {t('balance', { defaultValue: 'Balance' })}: {tonBalance.toFixed(4)} TON</>
                           )}
                         </div>
                       )}

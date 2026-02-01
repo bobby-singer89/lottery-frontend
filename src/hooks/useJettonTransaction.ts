@@ -85,8 +85,9 @@ export function useJettonTransaction() {
     usdtAmount: number,
     lotteryWallet: string
   ): Promise<string> => {
-    // Convert USDT to Jetton units (6 decimals)
-    const jettonAmount = BigInt(Math.floor(usdtAmount * 1_000_000));
+    // Convert USDT to Jetton units (6 decimals) using the utility function
+    const { usdtToJettonUnits } = await import('../lib/ton/jettonService');
+    const jettonAmount = usdtToJettonUnits(usdtAmount);
     
     return sendJettonTransfer(
       jettonAmount,

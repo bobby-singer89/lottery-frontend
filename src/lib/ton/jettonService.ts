@@ -8,6 +8,9 @@ const tonClient = new TonClient({
   apiKey: CURRENT_CONFIG.TON_API_KEY || undefined,
 });
 
+// USDT has 6 decimal places
+const USDT_DECIMALS = 1_000_000;
+
 /**
  * Get Jetton wallet address for a given owner address
  * @param jettonMasterAddress - Address of the Jetton Master contract
@@ -82,7 +85,7 @@ export async function getUsdtBalance(ownerAddress: string): Promise<number> {
     const balanceRaw = await getJettonWalletBalance(jettonWalletAddress);
     
     // 3. Convert from Jetton units to USDT (6 decimals)
-    const balance = Number(balanceRaw) / 1_000_000;
+    const balance = Number(balanceRaw) / USDT_DECIMALS;
     
     console.log(`💵 USDT Balance: ${balance.toFixed(2)} USDT`);
     return balance;
@@ -99,7 +102,7 @@ export async function getUsdtBalance(ownerAddress: string): Promise<number> {
  * @returns Amount in Jetton units as bigint
  */
 export function usdtToJettonUnits(usdtAmount: number): bigint {
-  return BigInt(Math.floor(usdtAmount * 1_000_000));
+  return BigInt(Math.floor(usdtAmount * USDT_DECIMALS));
 }
 
 /**
@@ -108,5 +111,5 @@ export function usdtToJettonUnits(usdtAmount: number): bigint {
  * @returns Amount in USDT
  */
 export function jettonUnitsToUsdt(jettonUnits: bigint): number {
-  return Number(jettonUnits) / 1_000_000;
+  return Number(jettonUnits) / USDT_DECIMALS;
 }

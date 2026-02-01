@@ -306,7 +306,7 @@ function ProfilePage() {
             </motion.div>
 
             {/* Gamification: Check-In Button */}
-            {userId && !streak.isLoading && streak.canCheckIn !== undefined && (
+            {userId && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -339,7 +339,7 @@ function ProfilePage() {
             )}
 
             {/* Gamification: Streak Counter */}
-            {userId && !streak.isLoading && streak.currentStreak !== undefined && (
+            {userId && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -450,7 +450,7 @@ function ProfilePage() {
             </motion.div>
 
             {/* Gamification: Daily Quests */}
-            {userId && quests.dailyQuests.length > 0 && (
+            {userId && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -465,7 +465,7 @@ function ProfilePage() {
             )}
 
             {/* Gamification: Achievements */}
-            {userId && achievements.progress.length > 0 && (
+            {userId && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

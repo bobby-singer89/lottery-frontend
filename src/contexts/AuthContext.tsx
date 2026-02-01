@@ -112,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
       
       // Set mock token
-      const mockToken = 'mock_token_' + Date.now();
+      const mockToken = 'mock_token_' + crypto.randomUUID();
       localStorage.setItem('auth_token', mockToken);
       localStorage.setItem('user_id', String(telegramUser.id));
       apiClient.setToken(mockToken);

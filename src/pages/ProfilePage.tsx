@@ -203,8 +203,8 @@ function ProfilePage() {
             >
               <div className="telegram-only-message">
                 <AlertCircle size={64} className="alert-icon" />
-                <h2>Authorization Required</h2>
-                <p>Please log in to view your profile.</p>
+                <h2>Требуется авторизация</h2>
+                <p>Пожалуйста, войдите в систему, чтобы просмотреть ваш профиль.</p>
               </div>
             </motion.div>
           ) : isLoadingProfile ? (

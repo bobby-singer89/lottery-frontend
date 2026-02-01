@@ -39,7 +39,7 @@ export default function DevToolsPanel() {
       const success = await loginWithTelegram({
         ...mockUser,
         auth_date: Math.floor(Date.now() / 1000),
-        hash: 'mock_dev_hash_' + Date.now()
+        hash: 'mock_dev_hash_' + crypto.randomUUID()
       });
       
       if (!success) {

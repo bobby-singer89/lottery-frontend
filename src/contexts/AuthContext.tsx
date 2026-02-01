@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { apiClient } from '../lib/api/client';
 import { useTelegram } from '../lib/telegram/useTelegram';
+import { isMockAuthEnabled } from '../lib/utils/env';
 import type { TelegramUser } from '../components/TelegramLoginWidget/TelegramLoginWidget';
 
 interface User {
@@ -94,6 +95,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [telegramUser]);
 
   const loginWithTelegram = async (telegramUser: TelegramUser): Promise<boolean> => {
+    // If mock auth is enabled, bypass API validation
+    if (isMockAuthEnabled()) {
+      console.log('🔧 MOCK LOGIN: Bypassing API validation');
+      const mockUser: User = {
+        id: telegramUser.id,
+        telegramId: telegramUser.id,
+        username: telegramUser.username,
+        firstName: telegramUser.first_name,
+        lastName: telegramUser.last_name,
+        photoUrl: telegramUser.photo_url,
+        level: '1',
+        experience: 0,
+        referralCode: 'MOCK' + telegramUser.id,
+        isAdmin: false,
+      };
+      
+      // Set mock token
+      const mockToken = 'mock_token_' + crypto.randomUUID();
+      localStorage.setItem('auth_token', mockToken);
+      localStorage.setItem('user_id', String(telegramUser.id));
+      apiClient.setToken(mockToken);
+      
+      setUser(mockUser);
+      console.log('✅ Mock login successful:', mockUser.username);
+      return true;
+    }
+    
+    // Original API call for real Telegram auth
     try {
       const response = await apiClient.loginTelegram({
         id: telegramUser.id,

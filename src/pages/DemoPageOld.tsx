@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import PlayerLevel, { type PlayerLevelData } from '../components/Gamification/PlayerLevel';
+import PlayerLevel from '../components/Gamification/PlayerLevel';
 import StreakCounter from '../components/Gamification/StreakCounter';
-import DailyQuests, { type Quest } from '../components/Gamification/DailyQuests';
-import AchievementBadges, { type Achievement } from '../components/Gamification/AchievementBadges';
+import DailyQuests from '../components/Gamification/DailyQuests';
+import AchievementBadges from '../components/Gamification/AchievementBadges';
 import CountdownTimer from '../components/Statistics/CountdownTimer';
 import LivePrizeCounter from '../components/Statistics/LivePrizeCounter';
 import Leaderboard, { type LeaderboardEntry } from '../components/Social/Leaderboard';
@@ -15,105 +15,18 @@ function DemoPage() {
   const [showSkeletons, setShowSkeletons] = useState(false);
 
   // Mock data
-  const playerLevel: PlayerLevelData = {
-    current: 'gold',
+  const playerLevelData = {
+    level: 15,
     xp: 7500,
-    xpToNext: 10000,
-    benefits: [
-      'Скидка 10% на все билеты',
-      'Приоритетная поддержка',
-      'Эксклюзивные лотереи',
-      'Удвоенный XP от покупок',
-    ],
+    xpToNextLevel: 10000,
+    progress: 75,
   };
 
-  const streakHistory = [true, true, true, true, true, false, false];
+  const longestStreak = 12;
   const currentStreak = 5;
 
-  const quests: Quest[] = [
-    {
-      id: '1',
-      title: 'Купи 3 билета',
-      description: 'Приобрети 3 билета сегодня',
-      reward: '+10 TON',
-      progress: 2,
-      total: 3,
-      completed: false,
-    },
-    {
-      id: '2',
-      title: 'Войди 3 дня подряд',
-      description: 'Заходи в приложение 3 дня подряд',
-      reward: '+5 TON',
-      progress: 3,
-      total: 3,
-      completed: true,
-    },
-    {
-      id: '3',
-      title: 'Пригласи друга',
-      description: 'Пригласи 1 друга через реферальную ссылку',
-      reward: '+20 TON',
-      progress: 0,
-      total: 1,
-      completed: false,
-    },
-  ];
-
-  const achievements: Achievement[] = [
-    {
-      id: '1',
-      title: 'Первый билет',
-      description: 'Купи свой первый лотерейный билет',
-      icon: '🎫',
-      unlocked: true,
-      unlockedAt: new Date('2026-01-20'),
-    },
-    {
-      id: '2',
-      title: '10 билетов',
-      description: 'Купи 10 лотерейных билетов',
-      icon: '🎰',
-      unlocked: true,
-      unlockedAt: new Date('2026-01-22'),
-    },
-    {
-      id: '3',
-      title: 'Первый выигрыш',
-      description: 'Выиграй свою первую лотерею',
-      icon: '🏆',
-      unlocked: false,
-      progress: 0,
-      total: 1,
-    },
-    {
-      id: '4',
-      title: 'Большой выигрыш',
-      description: 'Выиграй 100+ TON',
-      icon: '💎',
-      unlocked: false,
-      progress: 0,
-      total: 100,
-    },
-    {
-      id: '5',
-      title: '7 дней streak',
-      description: 'Заходи 7 дней подряд',
-      icon: '🔥',
-      unlocked: false,
-      progress: 5,
-      total: 7,
-    },
-    {
-      id: '6',
-      title: 'Пригласи 5 друзей',
-      description: 'Пригласи 5 друзей по реферальной программе',
-      icon: '👥',
-      unlocked: false,
-      progress: 2,
-      total: 5,
-    },
-  ];
+  const quests: any[] = [];
+  const achievements: any[] = [];
 
   const leaderboardEntries: LeaderboardEntry[] = [
     { rank: 1, username: 'CryptoKing', totalWinnings: 15000, level: 'Platinum' },
@@ -172,9 +85,9 @@ function DemoPage() {
 
             <section className="demo-section">
               <h2>🎯 Геймификация</h2>
-              <PlayerLevel levelData={playerLevel} />
-              <StreakCounter currentStreak={currentStreak} streakHistory={streakHistory} />
-              <DailyQuests quests={quests} timeUntilReset={18000} />
+              <PlayerLevel {...playerLevelData} />
+              <StreakCounter currentStreak={currentStreak} longestStreak={longestStreak} />
+              <DailyQuests quests={quests} />
               <AchievementBadges achievements={achievements} />
             </section>
 

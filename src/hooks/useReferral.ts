@@ -1,90 +1,77 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { gamificationClient } from '../lib/api/gamificationClient';
-import type { ReferralStats } from '../lib/api/gamificationClient';
-import { useEffect, useState } from 'react';
+import { gamificationApi } from '../services/gamificationApi';
+import { useState } from 'react';
 
 /**
- * Hook for referral system functionality
+ * Hook for referral system with stats, referrals list, and Telegram share link
  */
 export function useReferral(userId?: string) {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  // Get referral code
-  const { data: referralCode, isLoading: isLoadingCode } = useQuery({
-    queryKey: ['referral', 'code', userId],
-    queryFn: async () => {
-      if (!userId) return null;
-      const response = await gamificationClient.getReferralCode(userId) as { code?: string };
-      return response?.code || null;
-    },
-    enabled: !!userId
-  });
-
   // Get referral stats
-  const { data: referralStats, isLoading: isLoadingStats } = useQuery({
-    queryKey: ['referral', 'stats', userId],
+  const { data: statsData, isLoading: isLoadingStats } = useQuery({
+    queryKey: ['gamification', 'referral', 'stats', userId],
     queryFn: async () => {
-      if (!userId) return null;
-      const response = await gamificationClient.getReferralStats(userId) as { stats?: ReferralStats };
-      return response?.stats || null;
+      const response = await gamificationApi.getReferralStats();
+      return response;
     },
     enabled: !!userId
   });
 
-  // Get referral tree
-  const { data: referralTree, isLoading: isLoadingTree } = useQuery({
-    queryKey: ['referral', 'tree', userId],
+  // Get referrals list
+  const { data: referralsData, isLoading: isLoadingList } = useQuery({
+    queryKey: ['gamification', 'referral', 'list', userId],
     queryFn: async () => {
-      if (!userId) return null;
-      const response = await gamificationClient.getReferralTree(userId) as { tree?: unknown };
-      return response?.tree || null;
+      const response = await gamificationApi.getReferrals();
+      return response;
     },
     enabled: !!userId
   });
+
+  const stats = statsData?.stats || null;
+  const referrals = referralsData?.referrals || [];
 
   // Apply referral code mutation
   const applyCodeMutation = useMutation({
     mutationFn: async (code: string) => {
-      if (!userId) throw new Error('User ID is required');
-      return await gamificationClient.applyReferralCode(userId, code);
+      const response = await gamificationApi.applyReferralCode(code);
+      return response;
     },
     onSuccess: () => {
       // Invalidate referral queries
-      queryClient.invalidateQueries({ queryKey: ['referral'] });
+      queryClient.invalidateQueries({ queryKey: ['gamification', 'referral'] });
+      queryClient.invalidateQueries({ queryKey: ['gamification', 'profile'] });
       setError(null);
     },
     onError: (err: any) => {
-      setError(err.response?.data?.error || err.message || 'Failed to apply referral code');
+      setError(err.message || 'Failed to apply referral code');
     }
   });
 
-  // Clear error when userId changes
-  useEffect(() => {
-    setError(null);
-  }, [userId]);
+  // Get referral code
+  const code = stats?.code || null;
+
+  // Generate Telegram bot share link
+  const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'LotteryTONBot';
+  const shareLink = code 
+    ? `https://t.me/${botUsername.replace('@', '')}?start=${code}`
+    : null;
 
   return {
     // Data
-    referralCode,
-    referralStats,
-    referralTree,
+    stats,
+    referrals,
+    code,
+    shareLink,
     error,
 
     // Loading states
-    isLoading: isLoadingCode || isLoadingStats,
-    isLoadingTree,
+    isLoading: isLoadingStats || isLoadingList,
 
     // Actions
     applyCode: applyCodeMutation.mutate,
     isApplying: applyCodeMutation.isPending,
-
-    // Helpers
-    getReferralLink: (baseUrl?: string) => {
-      if (!referralCode) return null;
-      const base = baseUrl || window.location.origin;
-      return `${base}?ref=${referralCode}`;
-    }
   };
 }
 

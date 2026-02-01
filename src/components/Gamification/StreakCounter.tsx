@@ -4,13 +4,15 @@ import './StreakCounter.css';
 
 interface StreakCounterProps {
   currentStreak: number;
-  streakHistory: boolean[]; // Last 7 days
-  onStreakMilestone?: (days: number) => void;
+  longestStreak: number;
 }
 
-function StreakCounter({ currentStreak, streakHistory }: StreakCounterProps) {
+function StreakCounter({ currentStreak, longestStreak }: StreakCounterProps) {
   const maxStreak = 7;
   const isOnFire = currentStreak >= 3;
+
+  // Generate streak history for the last 7 days
+  const streakHistory = Array.from({ length: maxStreak }, (_, i) => i < currentStreak);
 
   return (
     <motion.div
@@ -40,7 +42,14 @@ function StreakCounter({ currentStreak, streakHistory }: StreakCounterProps) {
               </motion.span>{' '}
               дней подряд с нами!
             </h3>
-            <p className="streak-subtitle">Продолжай в том же духе! 🔥</p>
+            <p className="streak-subtitle">
+              {currentStreak > 0 ? 'Продолжай в том же духе! 🔥' : 'Начни свою серию сегодня! 💪'}
+            </p>
+            {longestStreak > currentStreak && (
+              <p className="longest-streak">
+                Лучшая серия: {longestStreak} дней
+              </p>
+            )}
           </div>
         </div>
 
@@ -80,15 +89,15 @@ function StreakCounter({ currentStreak, streakHistory }: StreakCounterProps) {
           <div className="rewards-grid">
             <div className={`reward-item ${currentStreak >= 7 ? 'unlocked' : ''}`}>
               <span className="reward-icon">🎟️</span>
-              <span className="reward-text">7 дней: +10 TON</span>
+              <span className="reward-text">7 дней: +10 XP</span>
             </div>
             <div className={`reward-item ${currentStreak >= 14 ? 'unlocked' : ''}`}>
               <span className="reward-icon">💎</span>
-              <span className="reward-text">14 дней: +30 TON</span>
+              <span className="reward-text">14 дней: +30 XP</span>
             </div>
             <div className={`reward-item ${currentStreak >= 30 ? 'unlocked' : ''}`}>
               <span className="reward-icon">👑</span>
-              <span className="reward-text">30 дней: +100 TON</span>
+              <span className="reward-text">30 дней: +100 XP</span>
             </div>
           </div>
         </div>

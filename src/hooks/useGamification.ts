@@ -1,52 +1,49 @@
 import { useQuery } from '@tanstack/react-query';
-import { gamificationClient } from '../lib/api/gamificationClient';
-import type { UserProfile } from '../lib/api/gamificationClient';
+import { gamificationApi } from '../services/gamificationApi';
 
 /**
- * Main hook for gamification profile and leaderboard
+ * Main hook for gamification profile data with level, xp, progress calculation
  */
 export function useGamification(userId?: string) {
   // Get complete gamification profile
-  const { data: profile, isLoading: isLoadingProfile } = useQuery({
+  const { data: profileData, isLoading: isLoadingProfile, error } = useQuery({
     queryKey: ['gamification', 'profile', userId],
     queryFn: async () => {
-      if (!userId) return null;
-      const response = await gamificationClient.getProfile(userId) as { profile?: UserProfile };
-      return response?.profile || null;
+      const response = await gamificationApi.getProfile();
+      return response;
     },
     enabled: !!userId
   });
 
-  // Get leaderboard
-  const { data: leaderboard, isLoading: isLoadingLeaderboard } = useQuery({
-    queryKey: ['gamification', 'leaderboard'],
-    queryFn: async () => {
-      const response = await gamificationClient.getLeaderboard('level', 10, userId) as { leaderboard?: unknown[] };
-      return response?.leaderboard || [];
-    }
-  });
+  const profile = profileData?.profile || null;
 
   // Computed values
-  const userLevel = profile?.level || 1;
-  const userXp = profile?.xp || 0;
-  const nextLevelXp = profile?.nextLevelXp || 100;
-  const levelProgress = (userXp / nextLevelXp) * 100;
+  const level = profile?.level || 1;
+  const xp = profile?.xp || 0;
+  const xpToNextLevel = profile?.xpToNextLevel || 100;
+  const totalXp = profile?.totalXp || 0;
+  const progress = xpToNextLevel > 0 ? (xp / xpToNextLevel) * 100 : 0;
 
   return {
     // Profile data
     profile,
-    userLevel,
-    userXp,
-    nextLevelXp,
-    levelProgress,
+    level,
+    xp,
+    xpToNextLevel,
+    totalXp,
+    progress,
 
-    // Leaderboard
-    leaderboard,
+    // VIP status
+    vipStatus: profile?.vipStatus || 'none',
+
+    // Stats
+    totalTickets: profile?.totalTickets || 0,
+    totalWins: profile?.totalWins || 0,
+    totalWinnings: profile?.totalWinnings || 0,
 
     // Loading states
-    isLoading: isLoadingProfile || isLoadingLeaderboard,
-    isLoadingProfile,
-    isLoadingLeaderboard
+    isLoading: isLoadingProfile,
+    error: error as Error | null,
   };
 }
 

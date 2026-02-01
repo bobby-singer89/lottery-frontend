@@ -1,41 +1,48 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { gamificationClient } from '../lib/api/gamificationClient';
-import type { StreakInfo } from '../lib/api/gamificationClient';
+import { gamificationApi } from '../services/gamificationApi';
+import type { CheckInResult } from '../types/gamification';
 import { useState } from 'react';
 
 /**
- * Hook for streak system functionality
+ * Hook for streak data and check-in functionality
  */
 export function useStreak(userId?: string) {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
+  const [checkInResult, setCheckInResult] = useState<CheckInResult | null>(null);
 
   // Get current streak
-  const { data: streak, isLoading } = useQuery({
-    queryKey: ['streak', 'current', userId],
+  const { data: streakData, isLoading } = useQuery({
+    queryKey: ['gamification', 'streak', userId],
     queryFn: async () => {
-      if (!userId) return null;
-      const response = await gamificationClient.getCurrentStreak(userId) as { streak?: StreakInfo };
-      return (response?.streak || null) as StreakInfo | null;
+      const response = await gamificationApi.getStreak();
+      return response;
     },
     enabled: !!userId,
     refetchInterval: 60000 // Refetch every minute to update canCheckIn status
   });
 
+  const streak = streakData?.streak || null;
+
   // Check-in mutation
   const checkInMutation = useMutation({
     mutationFn: async () => {
-      if (!userId) throw new Error('User ID is required');
-      return await gamificationClient.checkIn(userId);
+      const response = await gamificationApi.checkIn();
+      return response;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['streak'] });
-      queryClient.invalidateQueries({ queryKey: ['rewards'] });
+    onSuccess: (data) => {
+      // Store check-in result for UI feedback
+      setCheckInResult(data.result);
+      
+      // Invalidate queries
+      queryClient.invalidateQueries({ queryKey: ['gamification', 'streak'] });
       queryClient.invalidateQueries({ queryKey: ['gamification', 'profile'] });
+      queryClient.invalidateQueries({ queryKey: ['gamification', 'quests'] });
       setError(null);
     },
     onError: (err: any) => {
-      setError(err.response?.data?.error || err.message || 'Failed to check in');
+      setError(err.message || 'Failed to check in');
+      setCheckInResult(null);
     }
   });
 
@@ -44,19 +51,8 @@ export function useStreak(userId?: string) {
   const currentStreak = streak?.currentStreak || 0;
   const longestStreak = streak?.longestStreak || 0;
   const totalCheckIns = streak?.totalCheckIns || 0;
-
-  // Helper to calculate next milestone
-  const getNextMilestone = () => {
-    const milestones = [3, 7, 14, 30, 100];
-    return milestones.find(m => m > currentStreak) || null;
-  };
-
-  // Helper to calculate progress to next milestone
-  const getMilestoneProgress = () => {
-    const nextMilestone = getNextMilestone();
-    if (!nextMilestone) return 100;
-    return (currentStreak / nextMilestone) * 100;
-  };
+  const lastCheckIn = streak?.lastCheckIn || null;
+  const nextMilestone = streak?.nextMilestone || null;
 
   return {
     // Data
@@ -64,8 +60,11 @@ export function useStreak(userId?: string) {
     currentStreak,
     longestStreak,
     totalCheckIns,
+    lastCheckIn,
+    nextMilestone,
     canCheckIn,
     error,
+    checkInResult,
 
     // Loading states
     isLoading,
@@ -73,11 +72,9 @@ export function useStreak(userId?: string) {
     // Actions
     checkIn: checkInMutation.mutate,
     isCheckingIn: checkInMutation.isPending,
-
-    // Helpers
-    getNextMilestone,
-    getMilestoneProgress,
-    isOnStreak: currentStreak > 0
+    
+    // Helper to clear check-in result
+    clearCheckInResult: () => setCheckInResult(null),
   };
 }
 

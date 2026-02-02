@@ -4,19 +4,17 @@
 
 ## 🏗️ Архитектура проекта
 
-Этот проект состоит из двух основных частей:
+Это репозиторий **Frontend** для Weekend Millions lottery.
 
 ### 🎨 Frontend (Vite + React + TypeScript)
 Современное PWA приложение с продвинутыми функциями геймификации, 3D анимациями и Web3 интеграцией.
 
-### ⚙️ Backend (Express + Prisma + PostgreSQL)
-RESTful API сервер с TON blockchain интеграцией, Telegram Bot и JWT авторизацией.
+### Связанные репозитории
+- **Backend**: [lottery-backend](https://github.com/bobby-singer89/lottery-backend) - RESTful API сервер с TON blockchain интеграцией, Telegram Bot и JWT авторизацией
 
 ---
 
 ## 🚀 Быстрый старт
-
-### Frontend
 
 ```bash
 # Установка зависимостей
@@ -29,34 +27,9 @@ npm run dev
 npm run build
 ```
 
-### Backend
+Frontend будет доступен на `http://localhost:5173`
 
-```bash
-cd backend
-
-# Установка зависимостей
-npm install
-
-# Настройка базы данных
-cp ../.env.example ../.env.local
-# Отредактируйте .env.local с вашими настройками
-
-# Генерация Prisma Client
-npm run db:generate
-
-# Запуск миграций
-npm run db:migrate
-
-# Заполнение начальными данными
-npm run db:seed
-
-# Запуск dev сервера
-npm run dev
-```
-
-Backend API будет доступен на `http://localhost:3001`
-
-📖 **Полная документация backend:** См. `backend/README.md`
+📖 **Backend API**: См. [lottery-backend](https://github.com/bobby-singer89/lottery-backend) репозиторий
 
 ---
 
@@ -114,6 +87,8 @@ For real production deployment:
 
 ## 🔐 Backend API
 
+Backend API предоставляется отдельным репозиторием: [lottery-backend](https://github.com/bobby-singer89/lottery-backend)
+
 ### Основные эндпоинты:
 
 **Авторизация:**
@@ -138,7 +113,7 @@ For real production deployment:
 **Здоровье системы:**
 - `GET /api/health` - Health check
 
-📖 **Полная документация API:** См. `backend/README.md`
+📖 **Полная документация API:** См. [lottery-backend](https://github.com/bobby-singer89/lottery-backend) репозиторий
 
 ---
 

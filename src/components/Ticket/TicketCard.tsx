@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import type { PurchasedTicket } from '../../services/ticketApi';
 import './TicketCard.css';
 
@@ -119,6 +120,11 @@ export default function TicketCard({ ticket }: TicketCardProps) {
           Куплен: {new Date(displayDate).toLocaleString('ru-RU')}
         </div>
       )}
+
+      {/* Tiny verify link */}
+      <Link to={`/verify/${ticket.id}`} className="ticket-verify-link">
+        проверить →
+      </Link>
     </motion.div>
   );
 }

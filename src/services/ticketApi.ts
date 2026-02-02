@@ -6,6 +6,7 @@ export interface TicketPurchaseData {
   txHash: string;
   walletAddress: string;
   price: number;
+  currency?: 'TON' | 'USDT';  // Payment currency
 }
 
 export interface PurchasedTicket {
@@ -28,6 +29,44 @@ export interface PurchasedTicket {
 interface GetUserTicketsResponse {
   tickets: PurchasedTicket[];
   count: number;
+}
+
+// Verification API types
+export interface VerificationResult {
+  ticket: {
+    id: string;
+    lotteryId: string;
+    lotteryName: string;
+    numbers: number[];
+    drawDate: string;
+    price: number;
+  };
+  draw: {
+    winningNumbers: number[];
+    drawDate: string;
+  };
+  result: {
+    matchCount: number;
+    matchedNumbers: number[];
+    prize: number;
+    won: boolean;
+  };
+  lottery: {
+    name: string;
+    prizeStructure: {
+      match5: number;
+      match4: number;
+      match3: number;
+      match2: number;
+      match1: number;
+    };
+  };
+  blockchain: {
+    txHash: string;
+    blockNumber: number;
+    timestamp: string;
+    explorerUrl: string;
+  };
 }
 
 export const ticketApi = {
@@ -84,5 +123,22 @@ export const ticketApi = {
     const data: GetUserTicketsResponse = await response.json();
     // API returns { tickets: [...], count: N }, extract tickets array
     return Array.isArray(data.tickets) ? data.tickets : [];
+  },
+
+  // Verify ticket
+  async verifyTicket(ticketId: string): Promise<VerificationResult> {
+    const response = await fetch(`${API_URL}/tickets/${ticketId}/verify`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Failed to verify ticket');
+    }
+
+    return response.json();
   },
 };

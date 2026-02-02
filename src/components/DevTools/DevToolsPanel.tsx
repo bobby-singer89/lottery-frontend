@@ -8,6 +8,8 @@ export default function DevToolsPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isAuthenticated, loginWithTelegram, logout } = useAuth();
   const [viewport, setViewport] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Don't show DevTools if mock auth is not enabled
   if (!isDevToolsEnabled()) return null;
@@ -30,11 +32,24 @@ export default function DevToolsPanel() {
   ];
 
   const handleLogin = async (mockUser: any) => {
-    await loginWithTelegram({
-      ...mockUser,
-      auth_date: Math.floor(Date.now() / 1000),
-      hash: 'dev_hash_' + Date.now()
-    });
+    setIsLoggingIn(true);
+    setLoginError(null);
+    
+    try {
+      const success = await loginWithTelegram({
+        ...mockUser,
+        auth_date: Math.floor(Date.now() / 1000),
+        hash: 'mock_dev_hash_' + crypto.randomUUID()
+      });
+      
+      if (!success) {
+        setLoginError('Login failed');
+      }
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : 'Login failed');
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const changeViewport = (size: 'mobile' | 'tablet' | 'desktop') => {
@@ -82,10 +97,12 @@ export default function DevToolsPanel() {
                     key={mockUser.id}
                     onClick={() => handleLogin(mockUser)}
                     className="btn-login"
+                    disabled={isLoggingIn}
                   >
-                    Login as {mockUser.username}
+                    {isLoggingIn ? 'Logging in...' : `Login as ${mockUser.username}`}
                   </button>
                 ))}
+                {loginError && <p className="login-error" style={{ color: 'red', marginTop: '8px' }}>{loginError}</p>}
               </div>
             )}
           </div>

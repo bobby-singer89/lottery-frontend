@@ -1,8 +1,27 @@
 node_modules/
 dist/
-backend/node_modules/
-backend/dist/
 .env
 .env.local
-*.log
+
+# Backup and temporary files
+*.new
+*.bak
+*.orig
+*.tmp
+*.temp
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories
+.idea/
+.vscode/
+*.swp
+*.swo

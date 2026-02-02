@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Home, Ticket, Clock, User, Gift } from 'lucide-react';
+import { Home, Ticket, Clock, User, Gift, ShieldCheck } from 'lucide-react';
 import './Footer.css';
 
 interface FooterProps {
@@ -12,6 +12,7 @@ function Footer({ activeTab = 'home', onTabChange }: FooterProps) {
     { id: 'home', label: 'Главная', icon: Home },
     { id: 'lotteries', label: 'Лотереи', icon: Ticket },
     { id: 'history', label: 'История', icon: Clock },
+    { id: 'verify', label: 'Проверка', icon: ShieldCheck },
     { id: 'profile', label: 'Профиль', icon: User },
     { id: 'referral', label: 'Реферал', icon: Gift },
   ];

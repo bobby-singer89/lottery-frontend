@@ -5,15 +5,23 @@ import { apiClient, type Lottery } from '../lib/api/client';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
+import CheckInButton from '../components/Gamification/CheckInButton';
+import { useAuth } from '../contexts/AuthContext';
+import { useStreak } from '../hooks/useStreak';
 import './HomePage.css';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [lotteries, setLotteries] = useState<Lottery[]>([]);
   const [exchangeRate, setExchangeRate] = useState<number>(5.2);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT' | null>(null);
+
+  // Gamification hooks
+  const userId = user?.id?.toString();
+  const streak = useStreak(userId);
 
   useEffect(() => {
     loadLotteries();
@@ -142,6 +150,24 @@ export default function HomePage() {
               <h1 className="main-title">WEEKEND MILLIONS</h1>
               <p className="subtitle">Криптовалютная лотерея нового поколения на блокчейне TON</p>
             </header>
+
+            {/* Check-In Banner for Logged-In Users */}
+            {user && userId && !streak.isLoading && streak.canCheckIn !== undefined && (
+              <motion.section
+                className="checkin-banner-section"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <CheckInButton
+                  currentStreak={streak.currentStreak}
+                  canCheckIn={streak.canCheckIn}
+                  isCheckingIn={streak.isCheckingIn}
+                  onCheckIn={streak.checkIn}
+                  checkInResult={streak.checkInResult}
+                />
+              </motion.section>
+            )}
 
             {/* Lotteries Section */}
             <section className="lotteries-section">

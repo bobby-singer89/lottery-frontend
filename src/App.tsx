@@ -25,7 +25,8 @@ import AdminNotifications from './pages/admin/AdminNotifications';
 import MyTicketsPage from './pages/MyTicketsPage';
 import VerifyDrawPage from './pages/VerifyDrawPage';
 import DrawResultsPage from './pages/DrawResultsPage';
-import LandingPage from './pages/LandingPage';
+import VerificationPage from './pages/VerificationPage';
+import FAQPage from './pages/FAQPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
@@ -156,6 +157,9 @@ function MainScreen() {
       case 'history':
         navigate('/history');
         break;
+      case 'verify':
+        navigate('/verify');
+        break;
       case 'profile':
         navigate('/profile');
         break;
@@ -269,8 +273,10 @@ function App() {
               <Route path="/referral" element={<ReferralPage />} />
               <Route path="/swap" element={<SwapPage />} />
               <Route path="/my-tickets" element={<MyTicketsPage />} />
-              <Route path="/verify/:drawId" element={<VerifyDrawPage />} />
+              <Route path="/verify-draw/:drawId" element={<VerifyDrawPage />} />
+              <Route path="/verify/:ticketId?" element={<VerificationPage />} />
               <Route path="/draw/:drawId/results" element={<DrawResultsPage />} />
+              <Route path="/faq" element={<FAQPage />} />
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />

@@ -169,6 +169,43 @@
   border: 2px solid rgba(20, 20, 30, 0.95);
 }
 
+.quest-item.claimable {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.claim-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #df600c 0%, #f45da6 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(244, 93, 166, 0.3);
+}
+
+.claim-button:hover:not(:disabled) {
+  box-shadow: 0 6px 16px rgba(244, 93, 166, 0.5);
+  transform: translateY(-2px);
+}
+
+.claim-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.no-quests {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
 @media (max-width: 640px) {
   .quests-header {
     flex-direction: column;

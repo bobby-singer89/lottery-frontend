@@ -195,11 +195,6 @@ export const gamificationClient = {
     });
   }
 
-  async claimReward(userId: string, rewardId: string) {
-    return request(`/gamification/rewards/${rewardId}/claim`, userId, {
-      method: 'POST'
-    });
-  }
-};
+  
 
 export default gamificationClient;

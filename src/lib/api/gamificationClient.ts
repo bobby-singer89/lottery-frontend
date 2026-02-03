@@ -180,6 +180,21 @@ export const gamificationClient = {
     return request('/gamification/rewards', userId);
   },
 
+   // Rewards
+  async getAvailableRewards(userId: string) {
+    return request('/gamification/rewards', userId);
+  },
+
+  async getClaimedRewards(userId: string, limit: number = 20) {
+    return request(`/gamification/rewards/claimed?limit=${limit}`, userId);
+  },
+
+  async claimReward(userId: string, rewardId: string) {
+    return request(`/gamification/rewards/${rewardId}/claim`, userId, {
+      method: 'POST'
+    });
+  }
+
   async claimReward(userId: string, rewardId: string) {
     return request(`/gamification/rewards/${rewardId}/claim`, userId, {
       method: 'POST'

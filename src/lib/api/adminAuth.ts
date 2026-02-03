@@ -23,70 +23,65 @@ export interface AdminLoginResponse {
 }
 
 /**
- * Admin login function
+ * Admin login function with password authentication
  * 
- * SECURITY NOTE: This is a temporary implementation that accepts any password.
- * The actual authentication is based on the Telegram ID being in the AdminUser table.
- * 
- * TODO: Implement proper password validation in the backend and frontend.
- * For production use, this should be replaced with proper password hashing and verification.
+ * Calls the new /admin/auth/login endpoint that validates passwords
  */
-export async function adminLogin(telegramId: string, _password: string): Promise<AdminLoginResponse> {
+export async function adminLogin(telegramId: string, password: string): Promise<AdminLoginResponse> {
   try {
     // Validate telegramId format (must be numeric)
     if (!/^\d+$/.test(telegramId)) {
       throw new Error('Telegram ID must be a numeric value');
     }
 
-    // Step 1: Call Telegram auth endpoint with admin's telegramId
-    const authResponse = await fetch(`${API_BASE_URL}/auth/telegram`, {
+    // Validate password
+    if (!password || password.length < 1) {
+      throw new Error('Password is required');
+    }
+
+    // Call the new admin auth endpoint with password
+    const authResponse = await fetch(`${API_BASE_URL}/admin/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        id: telegramId,
-        // NOTE: Password is not currently validated by the backend
-        // Authentication is based on telegramId being in AdminUser table
+        telegramId,
+        password,
       }),
     });
 
     if (!authResponse.ok) {
       const error = await authResponse.json().catch(() => ({ error: 'Authentication failed' }));
-      throw new Error(error.error || 'Invalid Telegram ID or authentication failed');
+      
+      // Handle specific error messages
+      if (authResponse.status === 401) {
+        throw new Error('Invalid Telegram ID or password');
+      } else if (authResponse.status === 403) {
+        throw new Error('Admin account is disabled');
+      } else if (authResponse.status === 429) {
+        throw new Error('Too many login attempts. Please wait a few minutes.');
+      }
+      
+      throw new Error(error.error || error.message || 'Authentication failed');
     }
 
-    const authData = await authResponse.json();
+    const data = await authResponse.json();
 
-    // Step 2: Verify admin status
-    const adminCheckResponse = await fetch(`${API_BASE_URL}/admin/check`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${authData.token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!adminCheckResponse.ok) {
-      throw new Error('Admin verification failed');
+    if (!data.success) {
+      throw new Error(data.error || 'Login failed');
     }
 
-    const adminCheckData = await adminCheckResponse.json();
-
-    if (!adminCheckData.success || !adminCheckData.isAdmin) {
-      throw new Error('Access denied: User is not an administrator');
-    }
-
-    // Step 3: Store token (using auth_token for consistency with regular auth)
-    localStorage.setItem('auth_token', authData.token);
+    // Store token
+    localStorage.setItem('auth_token', data.token);
 
     return {
       success: true,
-      token: authData.token,
+      token: data.token,
       user: {
-        ...authData.user,
+        ...data.user,
         isAdmin: true,
-        role: adminCheckData.role || 'admin',
+        role: data.admin?.role || 'admin',
       },
     };
   } catch (error) {
@@ -107,4 +102,48 @@ export function adminLogout(): void {
  */
 export function isAdminLoggedIn(): boolean {
   return !!localStorage.getItem('auth_token');
+}
+
+/**
+ * Set or change admin password
+ * Requires being logged in as admin
+ */
+export async function setAdminPassword(currentPassword: string | null, newPassword: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const token = localStorage.getItem('auth_token');
+    
+    if (!token) {
+      throw new Error('Not authenticated');
+    }
+
+    if (!newPassword || newPassword.length < 8) {
+      throw new Error('Password must be at least 8 characters');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/admin/auth/set-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Failed to set password' }));
+      throw new Error(error.error || error.message || 'Failed to set password');
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      message: data.message || 'Password updated successfully',
+    };
+  } catch (error) {
+    console.error('Set password error:', error);
+    throw error;
+  }
 }

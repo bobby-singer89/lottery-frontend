@@ -38,13 +38,13 @@ export default function BalanceCards() {
   }
 
   function formatAddress(addr: string): string {
-    if (!addr) return '';
+    if (!addr || addr.length < 8) return addr;
     return `${addr.slice(0, 4)}...${addr.slice(-3)}`;
   }
 
   function handleWithdraw() {
-    // TODO: Open withdraw modal
-    console.log('Open withdraw modal');
+    // Withdraw functionality to be implemented in future PR
+    alert('Функция вывода средств будет доступна в ближайшее время');
   }
 
   return (

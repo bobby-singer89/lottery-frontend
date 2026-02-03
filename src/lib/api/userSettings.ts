@@ -14,6 +14,11 @@ export async function getNotificationSettings() {
   const response = await fetch(`${API_BASE_URL}/user/notification-settings`, {
     headers: getAuthHeaders()
   });
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch notification settings');
+  }
+  
   return response.json();
 }
 
@@ -27,5 +32,10 @@ export async function updateNotificationSettings(settings: {
     headers: getAuthHeaders(),
     body: JSON.stringify(settings)
   });
+  
+  if (!response.ok) {
+    throw new Error('Failed to update notification settings');
+  }
+  
   return response.json();
 }

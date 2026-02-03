@@ -17,6 +17,10 @@ export async function getGamificationData() {
     fetch(`${API_BASE_URL}/gamification/achievements`, { headers: getAuthHeaders() })
   ]);
 
+  if (!levelRes.ok || !tasksRes.ok || !achievementsRes.ok) {
+    throw new Error('Failed to fetch gamification data');
+  }
+
   const [levelData, tasksData, achievementsData] = await Promise.all([
     levelRes.json(),
     tasksRes.json(),
@@ -34,6 +38,11 @@ export async function getUserStats() {
   const response = await fetch(`${API_BASE_URL}/user/stats`, {
     headers: getAuthHeaders()
   });
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch user stats');
+  }
+  
   const data = await response.json();
   return data.success ? data.stats : null;
 }
@@ -43,5 +52,10 @@ export async function claimDailyTask(taskId: string) {
     method: 'POST',
     headers: getAuthHeaders()
   });
+  
+  if (!response.ok) {
+    throw new Error('Failed to claim daily task');
+  }
+  
   return response.json();
 }

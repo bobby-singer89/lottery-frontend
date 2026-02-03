@@ -35,6 +35,9 @@ export async function adminLogin(telegramId: string, password: string): Promise<
     }
 
     // Validate password
+    // Note: We accept any non-empty password during login since we're validating
+    // against existing passwords that may have been set with different rules.
+    // The 8-character minimum only applies when setting new passwords.
     if (!password || password.length < 1) {
       throw new Error('Password is required');
     }
@@ -107,6 +110,9 @@ export function isAdminLoggedIn(): boolean {
 /**
  * Set or change admin password
  * Requires being logged in as admin
+ * 
+ * @param currentPassword - Current password for verification, or null for initial password setup
+ * @param newPassword - New password to set (must be at least 8 characters)
  */
 export async function setAdminPassword(currentPassword: string | null, newPassword: string): Promise<{ success: boolean; message: string }> {
   try {

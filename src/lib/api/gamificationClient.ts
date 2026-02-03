@@ -189,6 +189,7 @@ export const gamificationClient = {
       method: 'POST'
     });
   }
+};
   
 
 export default gamificationClient;

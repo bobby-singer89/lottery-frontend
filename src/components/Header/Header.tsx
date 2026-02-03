@@ -9,6 +9,7 @@ import { adminApiClient } from '../../lib/api/adminClient';
 import CurrencyToggleMini from '../CurrencyToggleMini/CurrencyToggleMini';
 import WalletBalance from '../WalletBalance/WalletBalance';
 import NotificationCenter from '../Notifications/NotificationCenter';
+import ProfileModal from '../Profile/ProfileModal';
 import './Header.css';
 
 function Header() {
@@ -16,6 +17,7 @@ function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { user: telegramUser } = useTelegram();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const tonAddress = useTonAddress();
 
   // Check admin status when user is authenticated
@@ -107,7 +109,7 @@ function Header() {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
             >
-              <div className="user-info">
+              <div className="user-info" onClick={() => setIsProfileModalOpen(true)} style={{ cursor: 'pointer' }}>
                 {(user?.photoUrl || telegramUser?.photo_url) ? (
                   <img 
                     src={user?.photoUrl || telegramUser?.photo_url} 
@@ -134,6 +136,20 @@ function Header() {
         </div>
       </div>
       <div className="header-gradient"></div>
+
+      {/* Profile Modal */}
+      {isAuthenticated && user && (
+        <ProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          user={{
+            telegramId: user.id?.toString() || telegramUser?.id?.toString() || '',
+            username: user.username || telegramUser?.username,
+            firstName: user.firstName || telegramUser?.first_name,
+            photoUrl: user.photoUrl || telegramUser?.photo_url
+          }}
+        />
+      )}
     </motion.header>
   );
 }

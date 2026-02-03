@@ -3,13 +3,15 @@ import { updateNotificationSettings } from '../../lib/api/userSettings';
 import SettingsToggle from '../ui/SettingsToggle';
 import './NotificationSettings.css';
 
+interface NotificationSettingsData {
+  drawReminder: boolean;
+  drawResults: boolean;
+  referrals: boolean;
+}
+
 interface NotificationSettingsProps {
-  settings?: {
-    drawReminder: boolean;
-    drawResults: boolean;
-    referrals: boolean;
-  };
-  onChange: (settings: { drawReminder: boolean; drawResults: boolean; referrals: boolean }) => void;
+  settings?: NotificationSettingsData;
+  onChange: (settings: NotificationSettingsData) => void;
   loading: boolean;
 }
 
@@ -20,9 +22,11 @@ export default function NotificationSettings({ settings, onChange, loading }: No
     return <div className="notifications-skeleton">Загрузка...</div>;
   }
 
-  async function handleToggle(key: string, value: boolean) {
+  async function handleToggle(key: keyof NotificationSettingsData, value: boolean) {
+    if (!settings) return;
+    
     // Optimistic update
-    const newSettings = { ...settings, [key]: value };
+    const newSettings: NotificationSettingsData = { ...settings, [key]: value };
     onChange(newSettings);
 
     setSaving(true);

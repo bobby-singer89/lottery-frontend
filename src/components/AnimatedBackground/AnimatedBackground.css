@@ -87,11 +87,9 @@
 
 .particle {
   position: absolute;
-  width: 4px;
-  height: 4px;
-  background: radial-gradient(circle, #f45da6 0%, transparent 70%);
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(244, 93, 166, 0.8);
+  font-size: 20px;
+  opacity: 0.7;
+  filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.5));
 }
 
 /* Light rays */
@@ -143,8 +141,7 @@
   }
 
   .particle {
-    width: 3px;
-    height: 3px;
+    font-size: 16px;
   }
 }
 

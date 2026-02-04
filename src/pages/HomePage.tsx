@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { apiClient, type Lottery } from '../lib/api/client';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
+import AnimatedBenefits from '../components/Benefits/AnimatedBenefits';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import CheckInButton from '../components/Gamification/CheckInButton';
@@ -145,11 +146,16 @@ export default function HomePage() {
         
         <main className="main-content">
           <div className="home-page">
-            {/* Header */}
+            {/* Hero Section - Simplified */}
             <header className="hero-section">
-              <h1 className="main-title">WEEKEND MILLIONS</h1>
+              <h1 className="main-title neon-text">WEEKEND MILLIONS</h1>
               <p className="subtitle">Криптовалютная лотерея нового поколения на блокчейне TON</p>
             </header>
+
+            {/* Animated Benefits Section */}
+            <section className="benefits-section">
+              <AnimatedBenefits />
+            </section>
 
             {/* Check-In Banner for Logged-In Users */}
             {user && userId && !streak.isLoading && streak.canCheckIn !== undefined && (

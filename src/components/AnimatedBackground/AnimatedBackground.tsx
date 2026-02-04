@@ -1,8 +1,11 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../../contexts/ThemeContext';
 import './AnimatedBackground.css';
 
 function AnimatedBackground() {
+  const { themeConfig } = useTheme();
+  
   // Generate random particles once and memoize
   const particles = useMemo(
     () =>
@@ -16,6 +19,20 @@ function AnimatedBackground() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
+  // Get particle character based on theme
+  const getParticleChar = () => {
+    switch (themeConfig.particles) {
+      case 'snowflakes':
+        return '❄️';
+      case 'bats':
+        return '🦇';
+      default:
+        return '💎'; // default particle
+    }
+  };
+
+  const particleChar = getParticleChar();
 
   return (
     <div className="animated-background">
@@ -78,7 +95,7 @@ function AnimatedBackground() {
       {/* Grid pattern */}
       <div className="grid-pattern"></div>
 
-      {/* Falling particles */}
+      {/* Falling particles - theme-based */}
       <div className="particles">
         {particles.map((particle) => (
           <motion.div
@@ -90,7 +107,7 @@ function AnimatedBackground() {
             animate={{
               y: ['0vh', '100vh'],
               opacity: [0, 1, 1, 0],
-              rotate: [0, 360],
+              rotate: themeConfig.particles === 'default' ? [0, 360] : [0, 0],
             }}
             transition={{
               duration: particle.duration,
@@ -98,7 +115,9 @@ function AnimatedBackground() {
               repeat: Infinity,
               ease: 'linear',
             }}
-          />
+          >
+            {particleChar}
+          </motion.div>
         ))}
       </div>
 

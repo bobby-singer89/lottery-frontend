@@ -1,39 +1,41 @@
-.lottery-card {
+.lottery-card-glass {
   position: relative;
   width: 100%;
   min-width: 300px;
   max-width: 380px;
-  background: linear-gradient(135deg, rgba(26, 26, 36, 0.9), rgba(19, 19, 26, 0.9));
-  border: 1px solid rgba(223, 96, 12, 0.3);
-  border-radius: 24px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
   padding: 24px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--neon-glow-primary);
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.lottery-card::before {
+.lottery-card-glass::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(223, 96, 12, 0.05), rgba(244, 93, 166, 0.05));
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(255, 0, 212, 0.05));
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 0;
 }
 
-.lottery-card:hover::before {
+.lottery-card-glass:hover::before {
   opacity: 1;
 }
 
-.lottery-card:hover {
-  border-color: rgba(223, 96, 12, 0.6);
-  box-shadow: 0 20px 60px rgba(223, 96, 12, 0.3);
+.lottery-card-glass:hover {
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.2);
+  transform: translateY(-4px);
 }
 
 .lottery-card-glow {
@@ -42,13 +44,13 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(223, 96, 12, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
 
-.lottery-card:hover .lottery-card-glow {
+.lottery-card-glass:hover .lottery-card-glow {
   opacity: 1;
 }
 
@@ -67,15 +69,16 @@
   justify-content: center;
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, rgba(223, 96, 12, 0.2), rgba(244, 93, 166, 0.2));
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(255, 0, 212, 0.2));
   border-radius: 16px;
-  color: #f45da6;
+  color: var(--neon-primary);
   transition: all 0.3s ease;
+  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
 }
 
-.lottery-card:hover .lottery-icon {
+.lottery-card-glass:hover .lottery-icon {
   transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 8px 24px rgba(244, 93, 166, 0.4);
+  filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.8));
 }
 
 .lottery-title {
@@ -96,9 +99,10 @@
 .lottery-prize {
   margin-bottom: 20px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(223, 96, 12, 0.1), rgba(244, 93, 166, 0.1));
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 0, 212, 0.1));
   border-radius: 12px;
   text-align: center;
+  border: 1px solid rgba(0, 212, 255, 0.2);
 }
 
 .prize-label {
@@ -112,11 +116,12 @@
 .prize-amount {
   font-size: 32px;
   font-weight: 800;
-  background: linear-gradient(135deg, #df600c, #f45da6, #9e0ac7);
+  background: linear-gradient(135deg, var(--neon-primary), var(--neon-secondary), var(--neon-accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1.2;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
 
 .lottery-details {
@@ -134,7 +139,8 @@
 }
 
 .lottery-detail-item svg {
-  color: #f45da6;
+  color: var(--neon-primary);
+  filter: drop-shadow(0 0 4px rgba(0, 212, 255, 0.5));
 }
 
 .lottery-card-footer {
@@ -165,7 +171,7 @@
 }
 
 @media (max-width: 768px) {
-  .lottery-card {
+  .lottery-card-glass {
     min-width: 280px;
     padding: 20px;
   }

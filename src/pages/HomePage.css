@@ -6,13 +6,13 @@
 
 .hero-section {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
+  padding: 2rem 1rem;
 }
 
 .main-title {
   font-size: 3rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.95);
+  font-weight: 800;
   margin-bottom: 1rem;
 }
 
@@ -20,6 +20,13 @@
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.7);
   margin-bottom: 2rem;
+}
+
+/* Benefits Section */
+.benefits-section {
+  margin: 3rem auto;
+  max-width: 1200px;
+  padding: 0 1rem;
 }
 
 .checkin-banner-section {
@@ -56,24 +63,32 @@
 
 /* Lottery card highlighting based on selected currency */
 .lottery-card {
-  background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--neon-glow-primary);
   transition: all 0.3s ease;
+}
+
+.lottery-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.2);
+  transform: translateY(-4px);
 }
 
 .lottery-card.highlighted {
   opacity: 1;
   transform: scale(1);
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--neon-primary);
+  box-shadow: var(--neon-glow-primary-strong);
 }
 
 .lottery-card.dimmed {
-  opacity: 0.4;
+  opacity: 0.5;
   transform: scale(0.97);
   filter: grayscale(30%);
 }

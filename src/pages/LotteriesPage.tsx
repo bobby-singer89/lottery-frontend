@@ -137,8 +137,8 @@ function LotteriesPage() {
                     prizePool={lottery.prizePool}
                     drawDate={lottery.drawDate}
                     ticketPrice={lottery.ticketPrice}
-                    participants={lottery.participants}
                     icon={lottery.icon}
+                    showTitle={lottery.title === 'Weekend Millions'}
                     onBuyTicket={() => handleBuyTicket(lottery.id)}
                   />
                 </motion.div>

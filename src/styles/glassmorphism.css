@@ -1,0 +1,131 @@
+/* Glassmorphism Theme Variables */
+:root {
+  /* Glass Background */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-hover: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: 16px;
+  
+  /* Neon Colors */
+  --neon-primary: #00d4ff;     /* cyan */
+  --neon-secondary: #ff00d4;   /* magenta */
+  --neon-accent: #ff6b35;      /* orange */
+  
+  /* Neon Glows */
+  --neon-glow-primary: 0 0 20px rgba(0, 212, 255, 0.3);
+  --neon-glow-secondary: 0 0 20px rgba(255, 0, 212, 0.3);
+  --neon-glow-accent: 0 0 20px rgba(255, 107, 53, 0.3);
+  
+  /* Stronger glows for hover states */
+  --neon-glow-primary-strong: 0 0 30px rgba(0, 212, 255, 0.5);
+  --neon-glow-secondary-strong: 0 0 30px rgba(255, 0, 212, 0.5);
+  --neon-glow-accent-strong: 0 0 30px rgba(255, 107, 53, 0.5);
+  
+  /* Dark background */
+  --dark-bg: #0a0a0f;
+  --dark-bg-light: rgba(10, 10, 20, 0.8);
+}
+
+/* Base Glass Card Style */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--neon-glow-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: var(--neon-glow-primary-strong);
+  transform: translateY(-4px);
+}
+
+/* Glass Container */
+.glass-container {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+/* Glass Button */
+.glass-btn {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 12px 24px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--neon-glow-primary);
+}
+
+.glass-btn:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--neon-primary);
+  box-shadow: var(--neon-glow-primary-strong);
+}
+
+.glass-btn:active {
+  transform: scale(0.95);
+}
+
+/* Glass Input */
+.glass-input {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--neon-primary);
+  box-shadow: var(--neon-glow-primary);
+}
+
+/* Neon Text */
+.neon-text {
+  color: var(--neon-primary);
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.neon-text-secondary {
+  color: var(--neon-secondary);
+  text-shadow: 0 0 10px rgba(255, 0, 212, 0.5);
+}
+
+.neon-text-accent {
+  color: var(--neon-accent);
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+/* Glass Modal Backdrop */
+.glass-backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Glass Panel (for modals) */
+.glass-panel {
+  background: var(--dark-bg-light);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}

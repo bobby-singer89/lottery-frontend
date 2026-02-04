@@ -4,10 +4,10 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(10, 10, 15, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .header-content {
@@ -55,11 +55,17 @@
   gap: 12px;
   font-size: 1.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #df600c, #f45da6);
+  background: linear-gradient(135deg, var(--neon-primary), var(--neon-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   cursor: pointer;
+  text-shadow: var(--neon-glow-primary);
+  transition: all 0.3s ease;
+}
+
+.header-logo:hover {
+  transform: scale(1.02);
 }
 
 .logo-text {
@@ -99,11 +105,12 @@
   height: 2px;
   background: linear-gradient(90deg, 
     transparent,
-    rgba(223, 96, 12, 0.5) 20%,
-    rgba(244, 93, 166, 0.5) 50%,
-    rgba(158, 10, 199, 0.5) 80%,
+    var(--neon-primary) 20%,
+    var(--neon-secondary) 50%,
+    var(--neon-accent) 80%,
     transparent
   );
+  box-shadow: 0 0 10px var(--neon-primary);
 }
 
 .header-nav {

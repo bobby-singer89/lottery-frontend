@@ -14,6 +14,7 @@ import LotteriesPage from './pages/LotteriesPage';
 import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import ReferralPage from './pages/ReferralPage';
 import SwapPage from './pages/SwapPage';
+import AboutPage from './pages/AboutPage';
 import AdminGuard from './components/Admin/AdminGuard';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -277,6 +278,7 @@ function App() {
                 <Route path="/verify-draw/:drawId" element={<VerifyDrawPage />} />
                 <Route path="/verify/:ticketId?" element={<VerificationPage />} />
                 <Route path="/draw/:drawId/results" element={<DrawResultsPage />} />
+                <Route path="/about" element={<AboutPage />} />
                 <Route path="/faq" element={<FAQPage />} />
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLogin />} />

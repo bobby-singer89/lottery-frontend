@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Home, Ticket, Clock, User, Gift, ShieldCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import NeonIcon from '../Icons/NeonIcon';
 import './Footer.css';
 
 interface FooterProps {
@@ -8,50 +9,77 @@ interface FooterProps {
 }
 
 function Footer({ activeTab = 'home', onTabChange }: FooterProps) {
+  const navigate = useNavigate();
+
   const navItems = [
-    { id: 'home', label: 'Главная', icon: Home },
-    { id: 'lotteries', label: 'Лотереи', icon: Ticket },
-    { id: 'history', label: 'История', icon: Clock },
-    { id: 'verify', label: 'Проверка', icon: ShieldCheck },
-    { id: 'profile', label: 'Профиль', icon: User },
-    { id: 'referral', label: 'Реферал', icon: Gift },
+    { id: 'home', label: 'Главная', icon: 'home' as const },
+    { id: 'archive', label: 'Архив', icon: 'archive' as const },
+    { id: 'about', label: 'О проекте', icon: 'about' as const },
+    { id: 'profile', label: 'Профиль', icon: 'profile' as const },
   ];
 
+  const handleNavClick = (tabId: string) => {
+    onTabChange?.(tabId);
+    
+    switch(tabId) {
+      case 'home':
+        navigate('/');
+        break;
+      case 'archive':
+        navigate('/history');
+        break;
+      case 'about':
+        navigate('/about');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+    }
+  };
+
   return (
-    <motion.footer
-      className="footer-nav"
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-    >
-      <div className="footer-content">
-        {navItems.map((item) => (
-          <motion.button
-            key={item.id}
-            className={`footer-nav-item ${activeTab === item.id ? 'active' : ''}`}
-            onClick={() => onTabChange?.(item.id)}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <motion.div
-              className="footer-icon-wrapper"
-              animate={activeTab === item.id ? { y: [0, -4, 0] } : {}}
-              transition={{ duration: 0.6, repeat: activeTab === item.id ? 3 : 0, repeatDelay: 2 }}
+    <footer className="footer-glass">
+      <motion.div
+        className="footer-nav"
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <div className="footer-content">
+          {navItems.map((item) => (
+            <motion.button
+              key={item.id}
+              className={`footer-nav-item ${activeTab === item.id ? 'active' : ''}`}
+              onClick={() => handleNavClick(item.id)}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <item.icon size={24} />
-            </motion.div>
-            <span className="footer-label">{item.label}</span>
-            {activeTab === item.id && (
-              <motion.div
-                className="footer-active-indicator"
-                layoutId="activeTab"
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              />
-            )}
-          </motion.button>
-        ))}
+              <NeonIcon icon={item.icon} active={activeTab === item.id} size={24} />
+              <span className="footer-label">{item.label}</span>
+              {activeTab === item.id && (
+                <motion.div
+                  className="footer-active-indicator"
+                  layoutId="activeTab"
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+              )}
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Legal Footer Bar */}
+      <div className="footer-legal">
+        <div className="footer-legal-content">
+          <span className="footer-copyright">© 2024 Weekend Millions</span>
+          <div className="footer-links">
+            <a href="/faq" className="footer-link">Правовая информация</a>
+            <span className="footer-separator">|</span>
+            <a href="/faq" className="footer-link">Контакты</a>
+          </div>
+        </div>
       </div>
-    </motion.footer>
+    </footer>
   );
 }
 

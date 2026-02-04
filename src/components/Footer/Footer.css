@@ -1,14 +1,19 @@
-.footer-nav {
+/* Footer Glass Container */
+.footer-glass {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(10, 10, 15, 0.8);
+  background: var(--dark-bg-light);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--glass-border);
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+.footer-nav {
+  width: 100%;
 }
 
 .footer-content {
@@ -68,12 +73,57 @@
   transform: translateX(-50%);
   width: 60%;
   height: 3px;
-  background: linear-gradient(90deg, #df600c, #f45da6, #9e0ac7);
+  background: linear-gradient(90deg, var(--neon-primary), var(--neon-secondary), var(--neon-accent));
   border-radius: 2px 2px 0 0;
+  box-shadow: var(--neon-glow-primary);
 }
 
-.footer-nav-item.active .footer-icon-wrapper {
-  filter: drop-shadow(0 0 8px rgba(223, 96, 12, 0.6));
+.footer-nav-item.active .neon-icon {
+  filter: drop-shadow(0 0 8px var(--neon-primary));
+}
+
+/* Legal Footer Bar */
+.footer-legal {
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px 16px;
+}
+
+.footer-legal-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-copyright {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.footer-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.footer-link {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--neon-primary);
+}
+
+.footer-separator {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
 }
 
 @media (min-width: 768px) {
@@ -101,14 +151,14 @@
   .footer-label {
     font-size: 9px;
   }
-
-  .footer-icon-wrapper {
-    width: 24px;
-    height: 24px;
+  
+  .footer-legal-content {
+    flex-direction: column;
+    text-align: center;
   }
-
-  .footer-icon-wrapper svg {
-    width: 20px;
-    height: 20px;
+  
+  .footer-copyright,
+  .footer-link {
+    font-size: 10px;
   }
 }

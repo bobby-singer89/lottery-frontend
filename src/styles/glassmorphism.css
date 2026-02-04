@@ -7,9 +7,9 @@
   --glass-blur: 16px;
   
   /* Neon Colors */
-  --neon-primary: #00d4ff;     /* cyan */
-  --neon-secondary: #ff00d4;   /* magenta */
-  --neon-accent: #ff6b35;      /* orange */
+  --neon-primary: #00d4ff;
+  --neon-secondary: #ff00d4;
+  --neon-accent: #ff6b35;
   
   /* Neon Glows */
   --neon-glow-primary: 0 0 20px rgba(0, 212, 255, 0.3);

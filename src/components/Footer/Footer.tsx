@@ -73,9 +73,9 @@ function Footer({ activeTab = 'home', onTabChange }: FooterProps) {
         <div className="footer-legal-content">
           <span className="footer-copyright">© 2024 Weekend Millions</span>
           <div className="footer-links">
-            <a href="/faq" className="footer-link">Правовая информация</a>
+            <a href="/legal" className="footer-link">Правовая информация</a>
             <span className="footer-separator">|</span>
-            <a href="/faq" className="footer-link">Контакты</a>
+            <a href="/contact" className="footer-link">Контакты</a>
           </div>
         </div>
       </div>

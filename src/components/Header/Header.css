@@ -60,7 +60,6 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   cursor: pointer;
-  text-shadow: var(--neon-glow-primary);
   transition: all 0.3s ease;
 }
 

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
+import { CONTACT_CONFIG } from '../config/contact';
 import './AboutPage.css';
 
 export default function AboutPage() {
@@ -105,10 +106,10 @@ export default function AboutPage() {
                     Есть вопросы? Свяжитесь с нами:
                   </p>
                   <div className="contact-links">
-                    <a href="https://t.me/weekend_millions" className="contact-link glass-btn" target="_blank" rel="noopener noreferrer">
+                    <a href={CONTACT_CONFIG.telegram} className="contact-link glass-btn" target="_blank" rel="noopener noreferrer">
                       Telegram
                     </a>
-                    <a href="mailto:support@weekendmillions.com" className="contact-link glass-btn">
+                    <a href={`mailto:${CONTACT_CONFIG.email}`} className="contact-link glass-btn">
                       Email
                     </a>
                   </div>

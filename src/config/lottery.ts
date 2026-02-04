@@ -31,7 +31,7 @@ export const WEEKEND_MILLIONS_CONFIG = {
     2: 0.5,
     1: 'free_ticket' as const
   },
-  drawDay: 0, // Sunday (0 = Sunday, 6 = Saturday)
+  drawDay: 0, // Sunday (JavaScript Date: 0=Sunday, 1=Monday, ..., 6=Saturday)
   drawHour: 20, // 20:00 (8 PM)
   drawMinute: 0,
   drawTime: 'Каждое воскресенье в 20:00',

@@ -7,6 +7,7 @@ interface MainLotteryCardProps {
   prizePool?: number;
   ticketPrice?: number;
   participantsCount?: number;
+  maxParticipants?: number;
   drawDate?: Date;
   onBuyTicket?: () => void;
   isLoading?: boolean;
@@ -17,6 +18,7 @@ export default function MainLotteryCard({
   prizePool = 10000,
   ticketPrice = 5,
   participantsCount = 256,
+  maxParticipants = 1000,
   drawDate,
   onBuyTicket,
   isLoading = false,
@@ -28,17 +30,20 @@ export default function MainLotteryCard({
     const now = new Date();
     const next = new Date(now);
     
-    // Set to next Sunday
-    const daysUntilSunday = (7 - now.getDay()) % 7;
-    next.setDate(now.getDate() + (daysUntilSunday === 0 ? 7 : daysUntilSunday));
+    const currentDay = now.getDay();
+    const currentHour = now.getHours();
+    
+    // If it's Sunday (0) and past 20:00, go to next Sunday
+    if (currentDay === 0 && currentHour >= 20) {
+      next.setDate(now.getDate() + 7);
+    } else {
+      // Calculate days until next Sunday
+      const daysUntilSunday = currentDay === 0 ? 0 : 7 - currentDay;
+      next.setDate(now.getDate() + daysUntilSunday);
+    }
     
     // Set time to 20:00
     next.setHours(20, 0, 0, 0);
-    
-    // If it's Sunday and past 20:00, go to next Sunday
-    if (now.getDay() === 0 && now.getHours() >= 20) {
-      next.setDate(next.getDate() + 7);
-    }
     
     return next;
   };
@@ -68,7 +73,6 @@ export default function MainLotteryCard({
     return () => clearInterval(interval);
   }, [drawDate]);
 
-  const maxParticipants = 1000;
   const participantsProgress = (participantsCount / maxParticipants) * 100;
 
   return (

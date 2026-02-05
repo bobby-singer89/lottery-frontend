@@ -37,7 +37,7 @@ export default function Footer({ user, onLogout }: FooterProps) {
   ];
 
   // Calculate XP progress
-  const currentLevel = parseInt(user?.level || '1');
+  const currentLevel = parseInt(user?.level || '1', 10);
   const currentXP = user?.experience || 0;
   const nextLevelXP = currentLevel * 1000; // Simple calculation
   const xpProgress = (currentXP / nextLevelXP) * 100;

@@ -11,7 +11,6 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [currency, setCurrency] = useState<'TON' | 'USDT'>('TON');
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleCurrencyChange = (newCurrency: 'TON' | 'USDT') => {
     setCurrency(newCurrency);
@@ -22,12 +21,8 @@ export default function HomePage() {
   };
 
   const handleBuyTicket = () => {
-    setIsLoading(true);
-    // Navigate to lottery page or open purchase modal
-    setTimeout(() => {
-      navigate('/lottery/weekend-millions');
-      setIsLoading(false);
-    }, 500);
+    // Navigate to lottery page
+    navigate('/lottery/weekend-millions');
   };
 
   return (
@@ -45,7 +40,6 @@ export default function HomePage() {
           <MainLotteryCard
             currency={currency}
             onBuyTicket={handleBuyTicket}
-            isLoading={isLoading}
           />
           <Advantages />
         </main>

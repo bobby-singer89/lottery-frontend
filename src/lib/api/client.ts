@@ -1,6 +1,7 @@
 import { getApiBaseUrl } from '../utils/env';
 import type { PurchasedTicket } from '../../services/ticketApi';
 import { parseApiError } from './errors';
+import { TokenManager } from '../auth/token';
 
 const API_BASE_URL = getApiBaseUrl();
 const DEFAULT_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '10000', 10);
@@ -43,7 +44,8 @@ class ApiClient {
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
-    this.token = localStorage.getItem('auth_token');
+    // Initialize token from TokenManager
+    this.token = TokenManager.getToken();
   }
 
   /**
@@ -51,14 +53,14 @@ class ApiClient {
    */
   setAuthToken(token: string): void {
     this.token = token;
-    localStorage.setItem('auth_token', token);
+    TokenManager.setToken(token);
   }
 
   /**
    * Get current authentication token
    */
   getAuthToken(): string | null {
-    return this.token;
+    return this.token || TokenManager.getToken();
   }
 
   /**
@@ -66,7 +68,7 @@ class ApiClient {
    */
   clearAuthToken(): void {
     this.token = null;
-    localStorage.removeItem('auth_token');
+    TokenManager.clearAll();
   }
 
   /**

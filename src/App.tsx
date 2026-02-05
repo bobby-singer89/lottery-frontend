@@ -27,6 +27,7 @@ import VerifyDrawPage from './pages/VerifyDrawPage';
 import DrawResultsPage from './pages/DrawResultsPage';
 import VerificationPage from './pages/VerificationPage';
 import FAQPage from './pages/FAQPage';
+import LoginPage from './pages/LoginPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
@@ -263,6 +264,7 @@ function App() {
           {ageConfirmed && (
             <Routes>
               <Route path="/" element={<MainScreen />} />
+              <Route path="/login" element={<LoginPage />} />
               <Route path="/demo" element={<DemoPage />} />
               <Route path="/weekend-special" element={<WeekendSpecialPage />} />
               <Route path="/lottery/:slug" element={<WeekendSpecialPage />} />

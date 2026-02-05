@@ -1,231 +1,57 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { apiClient, type Lottery } from '../lib/api/client';
-import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
-import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
-import CheckInButton from '../components/Gamification/CheckInButton';
+import { useNavigate } from 'react-router-dom';
+import { ThemeProvider } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useStreak } from '../hooks/useStreak';
-import './HomePage.css';
+import Header from '../components/ui/Header';
+import Footer from '../components/ui/Footer';
+import MainLotteryCard from '../components/ui/MainLotteryCard';
+import Advantages from '../components/ui/Advantages';
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [lotteries, setLotteries] = useState<Lottery[]>([]);
-  const [exchangeRate, setExchangeRate] = useState<number>(5.2);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('home');
-  const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT' | null>(null);
+  const { user, logout } = useAuth();
+  const [currency, setCurrency] = useState<'TON' | 'USDT'>('TON');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Gamification hooks
-  const userId = user?.id?.toString();
-  const streak = useStreak(userId);
-
-  useEffect(() => {
-    loadLotteries();
-    loadExchangeRate();
-  }, []);
-
-  // Add global currency change listener
-  useEffect(() => {
-    function handleGlobalCurrencyChange(e: Event) {
-      const customEvent = e as CustomEvent<{ currency: 'TON' | 'USDT' }>;
-      const newCurrency = customEvent.detail.currency;
-      
-      console.log('Global currency changed to:', newCurrency);
-      setSelectedCurrency(newCurrency);
-      loadLotteries(newCurrency);
-    }
-
-    window.addEventListener('currencyChange', handleGlobalCurrencyChange);
-    
-    return () => {
-      window.removeEventListener('currencyChange', handleGlobalCurrencyChange);
-    };
-  }, []);
-
-  async function loadLotteries(currency?: 'TON' | 'USDT') {
-    try {
-      setLoading(true);
-      const response = await apiClient.getLotteries();
-      
-      let allLotteries = response.lotteries || [];
-      
-      // If API returns empty, use fallback mock data
-      if (allLotteries.length === 0) {
-        console.warn('No lotteries from API, using fallback data');
-        // Fallback will be handled by SQL migration
-      }
-      
-      // Smart filtering: if currency specified, try to filter
-      if (currency && allLotteries.length > 0) {
-        const filtered = allLotteries.filter((lottery: Lottery) => lottery.currency === currency);
-        
-        // Only apply filter if results exist
-        // Otherwise show ALL lotteries
-        if (filtered.length > 0) {
-          setLotteries(filtered);
-        } else {
-          console.warn(`No ${currency} lotteries found, showing all`);
-          setLotteries(allLotteries);
-        }
-      } else {
-        // No currency filter - show all
-        setLotteries(allLotteries);
-      }
-      
-    } catch (error) {
-      console.error('Failed to load lotteries:', error);
-      // Don't show empty state on error - keep previous lotteries
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadExchangeRate() {
-    try {
-      const response = await apiClient.getExchangeRate('TON', 'USDT');
-      setExchangeRate(response.rate);
-    } catch (error) {
-      console.error('Failed to load exchange rate:', error);
-    }
-  }
-
-  const getCurrencyIcon = (currency: string) => {
-    return currency === 'TON' ? '💎' : '💵';
-  };
-
-
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    switch(tab) {
-      case 'home':
-        navigate('/');
-        break;
-      case 'lotteries':
-        navigate('/lotteries');
-        break;
-      case 'history':
-        navigate('/history');
-        break;
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'referral':
-        navigate('/referral');
-        break;
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="app-root">
-        <AnimatedBackground />
-        <div className="content-wrapper">
-          <Header />
-          <main className="main-content">
-            <div className="home-page">
-              <div className="loading">Загрузка...</div>
-            </div>
-          </main>
-          <Footer activeTab={activeTab} onTabChange={handleTabChange} />
-        </div>
-      </div>
+  const handleCurrencyChange = (newCurrency: 'TON' | 'USDT') => {
+    setCurrency(newCurrency);
+    // Emit global currency change event for other components
+    window.dispatchEvent(
+      new CustomEvent('currencyChange', { detail: { currency: newCurrency } })
     );
-  }
+  };
+
+  const handleBuyTicket = () => {
+    setIsLoading(true);
+    // Navigate to lottery page or open purchase modal
+    setTimeout(() => {
+      navigate('/lottery/weekend-millions');
+      setIsLoading(false);
+    }, 500);
+  };
 
   return (
-    <div className="app-root">
-      <AnimatedBackground />
-      
-      <div className="content-wrapper">
-        <Header />
+    <ThemeProvider>
+      <div className="min-h-screen" style={{ background: 'var(--theme-background-gradient)' }}>
+        <Header
+          onCurrencyChange={handleCurrencyChange}
+          defaultCurrency={currency}
+          showSearch={false}
+          showNotifications={true}
+          notificationCount={0}
+        />
         
-        <main className="main-content">
-          <div className="home-page">
-            {/* Header */}
-            <header className="hero-section">
-              <h1 className="main-title">WEEKEND MILLIONS</h1>
-              <p className="subtitle">Криптовалютная лотерея нового поколения на блокчейне TON</p>
-            </header>
-
-            {/* Check-In Banner for Logged-In Users */}
-            {user && userId && !streak.isLoading && streak.canCheckIn !== undefined && (
-              <motion.section
-                className="checkin-banner-section"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <CheckInButton
-                  currentStreak={streak.currentStreak}
-                  canCheckIn={streak.canCheckIn}
-                  isCheckingIn={streak.isCheckingIn}
-                  onCheckIn={streak.checkIn}
-                  checkInResult={streak.checkInResult}
-                />
-              </motion.section>
-            )}
-
-            {/* Lotteries Section */}
-            <section className="lotteries-section">
-              <h2>Активные лотереи</h2>
-              <div className="lotteries-grid">
-                {lotteries.length > 0 ? (
-                  lotteries.map((lottery, index) => (
-                    <motion.div
-                      key={lottery.id}
-                      className={`lottery-card ${lottery.featured ? 'featured' : ''} ${
-                        selectedCurrency && lottery.currency === selectedCurrency ? 'highlighted' : ''
-                      } ${
-                        selectedCurrency && lottery.currency !== selectedCurrency ? 'dimmed' : ''
-                      }`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <div className="lottery-header">
-                        <h2>{lottery.name}</h2>
-                        <span className="currency-badge">
-                          {getCurrencyIcon(lottery.currency)} {lottery.currency}
-                        </span>
-                      </div>
-
-                      <div className="jackpot">
-                        <span className="label">Джекпот:</span>
-                        <span className="amount">
-                          {getCurrencyIcon(lottery.currency)} {lottery.jackpot.toLocaleString()} {lottery.currency}
-                        </span>
-                        {lottery.currency === 'TON' && (
-                          <span className="equivalent">
-                            ≈ {(lottery.jackpot * exchangeRate).toFixed(0)} USDT
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="ticket-price">
-                        Билет: {lottery.ticketPrice} {lottery.currency}
-                      </div>
-
-                      <Link to={`/lottery/${lottery.slug}`} className="play-btn">
-                        🎲 Играть
-                      </Link>
-                    </motion.div>
-                  ))
-                ) : (
-                  <div className="no-lotteries">
-                    Нет активных лотерей
-                  </div>
-                )}
-              </div>
-            </section>
-          </div>
+        <main className="pt-20 pb-24">
+          <MainLotteryCard
+            currency={currency}
+            onBuyTicket={handleBuyTicket}
+            isLoading={isLoading}
+          />
+          <Advantages />
         </main>
-
-        <Footer activeTab={activeTab} onTabChange={handleTabChange} />
+        
+        <Footer user={user} onLogout={logout} />
       </div>
-    </div>
+    </ThemeProvider>
   );
 }

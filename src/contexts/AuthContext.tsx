@@ -2,22 +2,9 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { apiClient } from '../lib/api/client';
 import { useTelegram } from '../lib/telegram/useTelegram';
 import { isMockAuthEnabled } from '../lib/utils/env';
+import { TokenManager } from '../lib/auth/token';
+import type { User } from '../types/auth';
 import type { TelegramUser } from '../components/TelegramLoginWidget/TelegramLoginWidget';
-
-interface User {
-  id: number;
-  telegramId: number;
-  username?: string;
-  firstName?: string;
-  lastName?: string;
-  photoUrl?: string;
-  tonWallet?: string;
-  level: string;
-  experience: number;
-  referralCode: string;
-  isAdmin?: boolean;
-  role?: string;
-}
 
 interface AuthContextType {
   user: User | null;
@@ -27,6 +14,7 @@ interface AuthContextType {
   logout: () => void;
   connectWallet: (address: string) => Promise<void>;
   loginWithTelegram: (telegramUser: TelegramUser) => Promise<boolean>;
+  refreshToken: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -53,6 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         auth_date: webApp.initDataUnsafe?.auth_date,
         hash: webApp.initDataUnsafe?.hash,
       });
+      TokenManager.setToken(response.token);
       apiClient.setToken(response.token);
       setUser(response.user);
     } catch (error) {
@@ -72,9 +61,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [telegramUser, webApp, user, login]);
 
   const logout = () => {
+    TokenManager.clearAll();
     apiClient.clearToken();
     setUser(null);
   };
+
+  const refreshToken = useCallback(async () => {
+    const currentToken = TokenManager.getToken();
+    
+    if (!currentToken || TokenManager.isTokenExpired(currentToken)) {
+      logout();
+      return;
+    }
+
+    try {
+      // For now, we don't have a refresh endpoint, so just verify the token is still valid
+      // In the future, this should call the /auth/refresh endpoint
+      const profile = await apiClient.getProfile();
+      if (profile.success && profile.user) {
+        setUser(profile.user);
+      }
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      logout();
+    }
+  }, []);
+
+  // Monitor token expiration
+  useEffect(() => {
+    const checkTokenExpiration = () => {
+      const token = TokenManager.getToken();
+      
+      if (token && TokenManager.willExpireSoon(token)) {
+        refreshToken();
+      } else if (token && TokenManager.isTokenExpired(token)) {
+        logout();
+      }
+    };
+
+    // Check immediately
+    checkTokenExpiration();
+
+    // Check every minute
+    const interval = setInterval(checkTokenExpiration, 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [refreshToken]);
 
   const connectWallet = useCallback(async (address: string) => {
     try {
@@ -113,7 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Set mock token
       const mockToken = 'mock_token_' + crypto.randomUUID();
-      localStorage.setItem('auth_token', mockToken);
+      TokenManager.setToken(mockToken);
       localStorage.setItem('user_id', String(telegramUser.id));
       apiClient.setToken(mockToken);
       
@@ -135,6 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       
       if (response.success && response.token) {
+        TokenManager.setToken(response.token);
         apiClient.setToken(response.token);
         setUser(response.user);
         return true;
@@ -156,6 +189,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         connectWallet,
         loginWithTelegram,
+        refreshToken,
       }}
     >
       {children}

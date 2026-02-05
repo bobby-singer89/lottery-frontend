@@ -11,6 +11,7 @@ import DemoPage from './pages/DemoPage';
 import WeekendSpecialPage from './pages/WeekendSpecialPage';
 import ProfilePage from './pages/ProfilePage';
 import LotteriesPage from './pages/LotteriesPage';
+import LotteryDetailPage from './pages/LotteryDetailPage';
 import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import ReferralPage from './pages/ReferralPage';
 import SwapPage from './pages/SwapPage';
@@ -232,7 +233,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/demo" element={<DemoPage />} />
               <Route path="/weekend-special" element={<WeekendSpecialPage />} />
-              <Route path="/lottery/:slug" element={<WeekendSpecialPage />} />
+              <Route path="/lottery/:slug" element={<LotteryDetailPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/lotteries" element={<LotteriesPage />} />
               <Route path="/history" element={<TransactionHistoryPage />} />

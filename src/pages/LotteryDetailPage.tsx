@@ -184,7 +184,7 @@ function LotteryDetailPage() {
                   <Users size={24} />
                 </div>
                 <div className="lottery-detail-info-content">
-                  <p className="lottery-detail-info-label">Участников</p>
+                  <p className="lottery-detail-info-label">Розыгрыш №</p>
                   <p className="lottery-detail-info-value">
                     {nextDraw?.drawNumber || 0}
                   </p>

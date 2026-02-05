@@ -11,6 +11,7 @@ export interface Lottery {
   description?: string;
   active: boolean;
   prizePool: number;
+  currentJackpot?: number; // Alternative field name
   ticketPrice: number;
   drawDate: string;
   participants: number;

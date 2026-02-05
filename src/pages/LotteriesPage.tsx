@@ -5,7 +5,7 @@ import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import LotteryCard from '../components/LotteryCard/LotteryCard';
-import { useLotteries } from '../hooks/useLotteries';
+import { useLotteries, type Lottery } from '../hooks/useLotteries';
 import { SkeletonLoader } from '../components/Animations';
 import './LotteriesPage.css';
 
@@ -48,7 +48,7 @@ function LotteriesPage() {
 
   const handleBuyTicket = (lotteryId: string) => {
     // Navigate to lottery detail page
-    const lottery = lotteriesData?.lotteries?.find((l: any) => l.id === lotteryId || l.slug === lotteryId);
+    const lottery = lotteriesData?.lotteries?.find((l: Lottery) => l.id === lotteryId || l.slug === lotteryId);
     if (lottery?.slug) {
       navigate(`/lottery/${lottery.slug}`);
     } else {
@@ -59,8 +59,8 @@ function LotteriesPage() {
 
   // Transform API data for display
   const displayLotteries = lotteriesData?.lotteries
-    ?.filter((lottery: any) => lottery.active)
-    ?.map((lottery: any) => {
+    ?.filter((lottery: Lottery) => lottery.active)
+    ?.map((lottery: Lottery) => {
       const prizePool = lottery.prizePool || lottery.currentJackpot || 0;
       const ticketPrice = lottery.ticketPrice || 0;
       const currency = lottery.currency || 'TON';
@@ -126,7 +126,7 @@ function LotteriesPage() {
               </div>
             ) : (
               <div className="lotteries-grid">
-                {displayLotteries.map((lottery: any, index: number) => (
+                {displayLotteries.map((lottery, index: number) => (
                   <motion.div
                     key={lottery.id}
                     initial={{ opacity: 0, y: 20 }}

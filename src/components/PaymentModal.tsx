@@ -28,7 +28,10 @@ export function PaymentModal({
   const [selectedCurrency, setSelectedCurrency] = useState<'TON' | 'USDT'>('TON');
   
   const totalAmount = ticketPrice * ticketCount;
-  const tonToUsdtRate = 5.2; // Should be fetched from API in production
+  
+  // TODO: Fetch exchange rate from API - currently using fallback
+  // Consider: apiClient.getExchangeRate('TON', 'USDT') from existing API
+  const tonToUsdtRate = 5.2;
   
   const amounts = {
     TON: totalAmount,

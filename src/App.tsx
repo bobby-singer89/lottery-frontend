@@ -33,7 +33,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
 import DevToolsPanel from './components/DevTools/DevToolsPanel';
-import { useLotteries } from './hooks/useLotteries';
+import { useLotteries, type Lottery } from './hooks/useLotteries';
 import { SkeletonLoader } from './components/Animations';
 import './App.css';
 
@@ -117,13 +117,13 @@ function MainScreen() {
 
   // Map API lotteries to display format based on selected currency
   const displayLotteries = useMemo(() => {
-    if (!lotteriesData?.lotteries || !Array.isArray(lotteriesData.lotteries)) {
+    if (!lotteriesData?.lotteries) {
       return [];
     }
 
     const lotteries = lotteriesData.lotteries
-      .filter((lottery: any) => lottery.active)
-      .map((lottery: any) => {
+      .filter((lottery: Lottery) => lottery.active)
+      .map((lottery: Lottery) => {
         const prizePool = lottery.prizePool || lottery.currentJackpot || 0;
         const ticketPrice = lottery.ticketPrice || 0;
         

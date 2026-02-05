@@ -36,16 +36,12 @@ export function getApiBaseUrl(): string {
 
 /**
  * Check if mock authentication should be enabled
- * Works in dev mode OR when VITE_ENABLE_MOCK_AUTH=true
- * 
- * This allows enabling mock auth on Vercel production for testing
- * by setting the VITE_ENABLE_MOCK_AUTH environment variable.
+ * DISABLED for production testing - requires real Telegram WebApp auth
  */
 export function isMockAuthEnabled(): boolean {
-  return (
-    import.meta.env.DEV || 
-    import.meta.env.VITE_ENABLE_MOCK_AUTH === 'true'
-  );
+  // Temporarily disabled for production testing
+  // To re-enable: return import.meta.env.DEV || import.meta.env.VITE_ENABLE_MOCK_AUTH === 'true';
+  return false;
 }
 
 /**

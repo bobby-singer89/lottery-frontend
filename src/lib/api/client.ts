@@ -1,7 +1,9 @@
 import { getApiBaseUrl } from '../utils/env';
 import type { PurchasedTicket } from '../../services/ticketApi';
+import { parseApiError } from './errors';
 
 const API_BASE_URL = getApiBaseUrl();
+const DEFAULT_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '10000', 10);
 
 interface PaginationResponse {
   page: number;
@@ -37,43 +39,88 @@ export interface Draw {
 class ApiClient {
   private baseURL: string;
   private token: string | null = null;
+  private timeout: number = DEFAULT_TIMEOUT;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
     this.token = localStorage.getItem('auth_token');
   }
 
-  setToken(token: string) {
+  /**
+   * Set authentication token
+   */
+  setAuthToken(token: string): void {
     this.token = token;
     localStorage.setItem('auth_token', token);
   }
 
-  clearToken() {
+  /**
+   * Get current authentication token
+   */
+  getAuthToken(): string | null {
+    return this.token;
+  }
+
+  /**
+   * Clear authentication token
+   */
+  clearAuthToken(): void {
     this.token = null;
     localStorage.removeItem('auth_token');
   }
 
+  /**
+   * Legacy method name - kept for backward compatibility
+   */
+  setToken(token: string) {
+    this.setAuthToken(token);
+  }
+
+  clearToken() {
+    this.clearAuthToken();
+  }
+
+  /**
+   * Make authenticated API request with timeout and error handling
+   */
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...(this.token && { Authorization: `Bearer ${this.token}` }),
-      ...options.headers,
-    };
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
-    const response = await fetch(`${this.baseURL}${endpoint}`, {
-      ...options,
-      headers,
-    });
+    try {
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        ...(this.token && { Authorization: `Bearer ${this.token}` }),
+        ...options.headers,
+      };
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.error || 'API request failed');
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        ...options,
+        headers,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = parseApiError(errorData, response.status);
+        throw error;
+      }
+
+      return response.json();
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      
+      if (error.name === 'AbortError') {
+        throw parseApiError(new Error('Request timeout'), 408);
+      }
+      
+      throw parseApiError(error);
     }
-
-    return response.json();
   }
 
   // Auth endpoints

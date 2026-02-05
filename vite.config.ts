@@ -28,9 +28,12 @@ export default defineConfig({
   define: {
     global: 'globalThis',
     'process.env': JSON.stringify(process.env || {}),
-    // ← Добавляем для TON Connect
+    // Buffer for TON Connect
     'Buffer': 'Buffer',
   },
+
+  // Expose environment variables to the client
+  envPrefix: 'VITE_',
 
   optimizeDeps: {
     include: [

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { applyTheme, getSeasonalTheme, ThemeName } from '../lib/theme';
+import { applyTheme, getSeasonalTheme, type ThemeName } from '../lib/theme';
 
 interface ThemeContextType {
   theme: ThemeName;

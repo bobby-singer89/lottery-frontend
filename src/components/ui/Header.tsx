@@ -7,9 +7,10 @@ interface HeaderProps {
 }
 
 export default function Header({ onCurrencyChange, defaultCurrency = 'TON' }: HeaderProps) {
-  const [currency, setCurrency] = useState<'TON' | 'USDT'>(
-    () => (localStorage.getItem('preferredCurrency') as 'TON' | 'USDT') || defaultCurrency
-  );
+  const [currency, setCurrency] = useState<'TON' | 'USDT'>(() => {
+    const stored = localStorage.getItem('preferredCurrency');
+    return (stored === 'TON' || stored === 'USDT') ? stored : defaultCurrency;
+  });
 
   const handleCurrencyChange = (newCurrency: 'TON' | 'USDT') => {
     setCurrency(newCurrency);

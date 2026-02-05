@@ -11,7 +11,7 @@ interface MainLotteryCardProps {
 function getNextSunday8PM(): Date {
   const now = new Date();
   const dayOfWeek = now.getDay();
-  const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+  const daysUntilSunday = dayOfWeek === 0 ? 7 : 7 - dayOfWeek;
   const nextSunday = new Date(now);
   nextSunday.setDate(now.getDate() + daysUntilSunday);
   nextSunday.setHours(20, 0, 0, 0);

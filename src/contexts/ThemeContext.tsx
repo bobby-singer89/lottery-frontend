@@ -12,8 +12,8 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [themeName, setThemeName] = useState<ThemeName>(() => {
-    const saved = localStorage.getItem('theme') as ThemeName;
-    return saved && themes[saved] ? saved : getSeasonalTheme();
+    const saved = localStorage.getItem('theme');
+    return (saved === 'default' || saved === 'new-year' || saved === 'halloween') ? saved : getSeasonalTheme();
   });
 
   const theme = themes[themeName];

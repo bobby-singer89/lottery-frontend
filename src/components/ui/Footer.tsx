@@ -78,7 +78,7 @@ export default function Footer() {
                     {/* User Info */}
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-2xl font-bold">
-                        {user.firstName?.[0] || user.username?.[0] || 'U'}
+                        {(user.firstName?.trim()?.[0] || user.username?.trim()?.[0] || 'U').toUpperCase()}
                       </div>
                       <div>
                         <p className="font-bold text-lg">{user.firstName || user.username}</p>

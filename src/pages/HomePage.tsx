@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '../contexts/ThemeContext';
-import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/ui/Header';
 import Footer from '../components/ui/Footer';
 import MainLotteryCard from '../components/ui/MainLotteryCard';
@@ -9,10 +8,10 @@ import Advantages from '../components/ui/Advantages';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 
 export default function HomePage() {
-  const [currency, setCurrency] = useState<'TON' | 'USDT'>(
-    () => (localStorage.getItem('preferredCurrency') as 'TON' | 'USDT') || 'TON'
-  );
-  const { isAuthenticated } = useAuth();
+  const [currency, setCurrency] = useState<'TON' | 'USDT'>(() => {
+    const stored = localStorage.getItem('preferredCurrency');
+    return (stored === 'TON' || stored === 'USDT') ? stored : 'TON';
+  });
   const navigate = useNavigate();
 
   // Listen for currency changes from other components
@@ -23,12 +22,7 @@ export default function HomePage() {
   }, []);
 
   const handleBuyTicket = () => {
-    if (!isAuthenticated) {
-      // Will trigger Telegram/TON wallet auth flow
-      navigate('/weekend-special');
-    } else {
-      navigate('/weekend-special');
-    }
+    navigate('/weekend-special');
   };
 
   return (

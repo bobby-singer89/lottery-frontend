@@ -2,10 +2,19 @@
  * Enhanced Telegram Web App initialization utilities
  */
 
-import type { TelegramUser } from '../types/auth';
-import { validateTelegramUser, isAuthDataRecent } from './auth/validation';
+import { isAuthDataRecent } from './auth/validation';
 
-export interface TelegramWebAppUser extends TelegramUser {
+/**
+ * Telegram Web App user data (from window.Telegram.WebApp)
+ * Note: first_name may be optional in raw Telegram data
+ */
+export interface TelegramWebAppUser {
+  id: number;
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+  language_code?: string;
   auth_date?: number;
   hash?: string;
 }
@@ -35,17 +44,29 @@ export function initTelegramWebApp(): TelegramWebAppData | null {
     tg.expand();
 
     // Extract user data
-    const user = tg.initDataUnsafe?.user;
+    const rawUser = tg.initDataUnsafe?.user;
     const authDate = tg.initDataUnsafe?.auth_date;
     const hash = tg.initDataUnsafe?.hash;
     const queryId = tg.initDataUnsafe?.query_id;
 
-    // Validate user data
-    const isValidUser = user ? validateTelegramUser(user) : false;
+    // Build user object with auth data
+    const user: TelegramWebAppUser | null = rawUser ? {
+      ...rawUser,
+      auth_date: authDate,
+      hash: hash,
+    } : null;
+
+    // Validate user data - for our auth type, first_name is required
+    const isValidUser = user ? (
+      typeof user.id === 'number' && 
+      typeof user.first_name === 'string' && 
+      user.first_name.length > 0
+    ) : false;
+    
     const isRecentAuth = authDate ? isAuthDataRecent(authDate) : false;
 
     return {
-      user: user ? { ...user, auth_date: authDate, hash } : null,
+      user,
       authDate: authDate || null,
       hash: hash || null,
       queryId,

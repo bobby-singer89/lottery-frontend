@@ -3,8 +3,7 @@ import { apiClient } from '../lib/api/client';
 import { useTelegram } from '../lib/telegram/useTelegram';
 import { isMockAuthEnabled } from '../lib/utils/env';
 import { TokenManager } from '../lib/auth/token';
-import type { User } from '../types/auth';
-import type { TelegramUser } from '../components/TelegramLoginWidget/TelegramLoginWidget';
+import type { User, TelegramUser } from '../types/auth';
 
 interface AuthContextType {
   user: User | null;

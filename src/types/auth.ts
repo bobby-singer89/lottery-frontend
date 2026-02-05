@@ -2,9 +2,13 @@
  * Authentication-related TypeScript types
  */
 
+/**
+ * Telegram user data from Telegram Web App or Login Widget
+ * Note: first_name is required by Telegram, other fields are optional
+ */
 export interface TelegramUser {
   id: number;
-  first_name?: string;
+  first_name: string;  // Required by Telegram
   last_name?: string;
   username?: string;
   photo_url?: string;

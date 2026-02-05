@@ -44,10 +44,15 @@ export function TelegramAuth({ onSuccess, onError }: TelegramAuthProps) {
 
         setStatus('authenticating');
         
-        // Convert to TelegramLoginWidget format
+        // Convert to TelegramUser format (with required first_name)
+        // If first_name is missing, we can't authenticate
+        if (!telegramData.user.first_name) {
+          throw new Error('User first name is required');
+        }
+        
         const user: TelegramUser = {
           id: telegramData.user.id,
-          first_name: telegramData.user.first_name || '',
+          first_name: telegramData.user.first_name,
           last_name: telegramData.user.last_name,
           username: telegramData.user.username,
           photo_url: telegramData.user.photo_url,

@@ -62,6 +62,8 @@ export function useUser() {
 
   /**
    * Get user level as number
+   * Note: User.level is stored as a string representation of a number
+   * Returns 1 as default if level is not a valid number
    */
   const getLevelNumber = (): number => {
     if (!user) {

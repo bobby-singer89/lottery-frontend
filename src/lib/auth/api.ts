@@ -11,6 +11,7 @@ const API_BASE_URL = getApiBaseUrl();
 
 /**
  * Login with Telegram user data
+ * Note: API expects 'id' as a string, so we convert the number to string
  */
 export async function loginWithTelegram(telegramUser: TelegramUser): Promise<AuthResponse> {
   const response = await fetch(`${API_BASE_URL}/auth/telegram`, {
@@ -19,7 +20,7 @@ export async function loginWithTelegram(telegramUser: TelegramUser): Promise<Aut
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      id: telegramUser.id.toString(),
+      id: telegramUser.id.toString(), // API expects string
       first_name: telegramUser.first_name,
       last_name: telegramUser.last_name,
       username: telegramUser.username,

@@ -114,8 +114,9 @@ export class TokenManager {
 
   /**
    * Decode JWT token payload
+   * Returns TokenPayload or null if decoding fails
    */
-  static decodeToken(token: string): any {
+  static decodeToken(token: string): { userId?: number; telegramId?: number; iat?: number; exp?: number } | null {
     try {
       const parts = token.split('.');
       if (parts.length !== 3) {

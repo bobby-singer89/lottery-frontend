@@ -5,61 +5,25 @@ import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import LotteryCard from '../components/LotteryCard/LotteryCard';
+import { useLotteries, type Lottery } from '../hooks/useLotteries';
+import { SkeletonLoader } from '../components/Animations';
 import './LotteriesPage.css';
 
-// Use the same sample lotteries from App.tsx
-const sampleLotteries = [
-  {
-    id: '1',
-    title: 'Mega Jackpot',
-    prizePool: '10,000 TON',
-    drawDate: '25 января 2026',
-    ticketPrice: '10 TON',
-    participants: 1234,
-    icon: 'trending' as const,
-  },
-  {
-    id: '2',
-    title: 'Weekend Special',
-    prizePool: '5,000 TON',
-    drawDate: '26 января 2026',
-    ticketPrice: '5 TON',
-    participants: 856,
-    icon: 'ticket' as const,
-  },
-  {
-    id: '3',
-    title: 'Daily Draw',
-    prizePool: '1,000 TON',
-    drawDate: '24 января 2026',
-    ticketPrice: '2 TON',
-    participants: 432,
-    icon: 'calendar' as const,
-  },
-  {
-    id: '4',
-    title: 'Golden Lottery',
-    prizePool: '25,000 TON',
-    drawDate: '31 января 2026',
-    ticketPrice: '20 TON',
-    participants: 2156,
-    icon: 'coins' as const,
-  },
-  {
-    id: '5',
-    title: 'Super Prize',
-    prizePool: '15,000 TON',
-    drawDate: '28 января 2026',
-    ticketPrice: '15 TON',
-    participants: 1567,
-    icon: 'trending' as const,
-  },
-];
+// Icon mapping for lottery types
+const getIconForLottery = (name: string): 'ticket' | 'coins' | 'trending' | 'calendar' => {
+  const nameLower = name.toLowerCase();
+  if (nameLower.includes('weekend') || nameLower.includes('special')) return 'ticket';
+  if (nameLower.includes('jackpot') || nameLower.includes('mega') || nameLower.includes('grand')) return 'coins';
+  if (nameLower.includes('flash') || nameLower.includes('lucky')) return 'trending';
+  return 'calendar';
+};
 
 function LotteriesPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('lotteries');
-
+  
+  // Fetch lotteries from API
+  const { data: lotteriesData, isLoading, error } = useLotteries();
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -84,13 +48,33 @@ function LotteriesPage() {
 
   const handleBuyTicket = (lotteryId: string) => {
     // Navigate to lottery detail page
-    if (lotteryId === '2') {
-      navigate('/weekend-special');
+    const lottery = lotteriesData?.lotteries?.find((l: Lottery) => l.id === lotteryId || l.slug === lotteryId);
+    if (lottery?.slug) {
+      navigate(`/lottery/${lottery.slug}`);
     } else {
-      // For other lotteries, navigate to weekend-special as placeholder
+      // Fallback to weekend-special as placeholder
       navigate('/weekend-special');
     }
   };
+
+  // Transform API data for display
+  const displayLotteries = lotteriesData?.lotteries
+    ?.filter((lottery: Lottery) => lottery.active)
+    ?.map((lottery: Lottery) => {
+      const prizePool = lottery.prizePool || lottery.currentJackpot || 0;
+      const ticketPrice = lottery.ticketPrice || 0;
+      const currency = lottery.currency || 'TON';
+      
+      return {
+        id: lottery.id || lottery.slug,
+        title: lottery.name,
+        prizePool: `${prizePool.toLocaleString()} ${currency}`,
+        drawDate: lottery.drawDate ? new Date(lottery.drawDate).toLocaleDateString('ru-RU') : 'Скоро',
+        ticketPrice: `${ticketPrice} ${currency}`,
+        participants: lottery.participants || 0,
+        icon: getIconForLottery(lottery.name),
+      };
+    }) || [];
 
   return (
     <div className="app-root">
@@ -124,26 +108,44 @@ function LotteriesPage() {
               Выберите лотерею и попробуйте свою удачу!
             </motion.p>
 
-            <div className="lotteries-grid">
-              {sampleLotteries.map((lottery, index) => (
-                <motion.div
-                  key={lottery.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + index * 0.1 }}
-                >
-                  <LotteryCard
-                    title={lottery.title}
-                    prizePool={lottery.prizePool}
-                    drawDate={lottery.drawDate}
-                    ticketPrice={lottery.ticketPrice}
-                    participants={lottery.participants}
-                    icon={lottery.icon}
-                    onBuyTicket={() => handleBuyTicket(lottery.id)}
-                  />
-                </motion.div>
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="lotteries-grid">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i}>
+                    <SkeletonLoader type="lottery-card" />
+                  </div>
+                ))}
+              </div>
+            ) : error ? (
+              <div style={{ padding: '2rem', textAlign: 'center', color: '#ff4444' }}>
+                <p>Не удалось загрузить лотереи. Пожалуйста, попробуйте позже.</p>
+              </div>
+            ) : displayLotteries.length === 0 ? (
+              <div style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>
+                <p>В данный момент нет активных лотерей.</p>
+              </div>
+            ) : (
+              <div className="lotteries-grid">
+                {displayLotteries.map((lottery, index: number) => (
+                  <motion.div
+                    key={lottery.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 + index * 0.1 }}
+                  >
+                    <LotteryCard
+                      title={lottery.title}
+                      prizePool={lottery.prizePool}
+                      drawDate={lottery.drawDate}
+                      ticketPrice={lottery.ticketPrice}
+                      participants={lottery.participants}
+                      icon={lottery.icon}
+                      onBuyTicket={() => handleBuyTicket(lottery.id)}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </motion.div>
         </main>
 

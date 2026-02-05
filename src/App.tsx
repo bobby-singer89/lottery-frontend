@@ -11,6 +11,7 @@ import DemoPage from './pages/DemoPage';
 import WeekendSpecialPage from './pages/WeekendSpecialPage';
 import ProfilePage from './pages/ProfilePage';
 import LotteriesPage from './pages/LotteriesPage';
+import LotteryDetailPage from './pages/LotteryDetailPage';
 import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import ReferralPage from './pages/ReferralPage';
 import SwapPage from './pages/SwapPage';
@@ -32,6 +33,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
 import DevToolsPanel from './components/DevTools/DevToolsPanel';
+import { useLotteries, type Lottery } from './hooks/useLotteries';
+import { SkeletonLoader } from './components/Animations';
 import './App.css';
 
 declare global {
@@ -40,75 +43,14 @@ declare global {
   }
 }
 
-// Sample lottery data with BOTH TON and USDT prices
-const sampleLotteries = [
-  {
-    id: '1',
-    title: 'Mega Jackpot',
-    prizePoolTON: '10,000 TON',
-    prizePoolUSDT: '52,000 USDT',
-    drawDate: '25 января 2026',
-    ticketPriceTON: '10 TON',
-    ticketPriceUSDT: '52 USDT',
-    participants: 1234,
-    icon: 'trending' as const,
-  },
-  {
-    id: '2',
-    title: 'Weekend Special',
-    prizePoolTON: '5,075 TON',
-    prizePoolUSDT: '26,390 USDT',
-    drawDate: '26 января 2026',
-    ticketPriceTON: '5 TON',
-    ticketPriceUSDT: '26 USDT',
-    participants: 856,
-    icon: 'ticket' as const,
-  },
-  {
-    id: '3',
-    title: 'Daily Draw',
-    prizePoolTON: '2,000 TON',
-    prizePoolUSDT: '10,400 USDT',
-    drawDate: '24 января 2026',
-    ticketPriceTON: '2 TON',
-    ticketPriceUSDT: '10 USDT',
-    participants: 432,
-    icon: 'calendar' as const,
-  },
-  {
-    id: '4',
-    title: 'Lucky Seven',
-    prizePoolTON: '7,777 TON',
-    prizePoolUSDT: '40,440 USDT',
-    drawDate: '27 января 2026',
-    ticketPriceTON: '7 TON',
-    ticketPriceUSDT: '36 USDT',
-    participants: 777,
-    icon: 'coins' as const,
-  },
-  {
-    id: '5',
-    title: 'Flash Lottery',
-    prizePoolTON: '3,500 TON',
-    prizePoolUSDT: '18,200 USDT',
-    drawDate: '25 января 2026',
-    ticketPriceTON: '3 TON',
-    ticketPriceUSDT: '15 USDT',
-    participants: 521,
-    icon: 'trending' as const,
-  },
-  {
-    id: '6',
-    title: 'Grand Prize',
-    prizePoolTON: '15,000 TON',
-    prizePoolUSDT: '78,000 USDT',
-    drawDate: '28 января 2026',
-    ticketPriceTON: '15 TON',
-    ticketPriceUSDT: '78 USDT',
-    participants: 1500,
-    icon: 'coins' as const,
-  },
-];
+// Icon mapping for lottery types
+const getIconForLottery = (name: string): 'ticket' | 'coins' | 'trending' | 'calendar' => {
+  const nameLower = name.toLowerCase();
+  if (nameLower.includes('weekend') || nameLower.includes('special')) return 'ticket';
+  if (nameLower.includes('jackpot') || nameLower.includes('mega') || nameLower.includes('grand')) return 'coins';
+  if (nameLower.includes('flash') || nameLower.includes('lucky')) return 'trending';
+  return 'calendar';
+};
 
 // Main Screen Component
 function MainScreen() {
@@ -119,6 +61,9 @@ function MainScreen() {
     const saved = localStorage.getItem('preferredCurrency') as 'TON' | 'USDT';
     return saved || 'TON';
   });
+
+  // Fetch lotteries from API
+  const { data: lotteriesData, isLoading, error } = useLotteries();
 
   // Listen for currency changes from mini toggle
   useEffect(() => {
@@ -170,23 +115,34 @@ function MainScreen() {
     }
   };
 
-  // Map lotteries to display format based on selected currency
+  // Map API lotteries to display format based on selected currency
   const displayLotteries = useMemo(() => {
-    const lotteries = sampleLotteries.map(lottery => ({
-      id: lottery.id,
-      title: lottery.title,
-      prizePool: selectedCurrency === 'TON' ? lottery.prizePoolTON : lottery.prizePoolUSDT,
-      drawDate: lottery.drawDate,
-      ticketPrice: selectedCurrency === 'TON' ? lottery.ticketPriceTON : lottery.ticketPriceUSDT,
-      participants: lottery.participants,
-      icon: lottery.icon,
-    }));
+    if (!lotteriesData?.lotteries) {
+      return [];
+    }
+
+    const lotteries = lotteriesData.lotteries
+      .filter((lottery: Lottery) => lottery.active)
+      .map((lottery: Lottery) => {
+        const prizePool = lottery.prizePool || lottery.currentJackpot || 0;
+        const ticketPrice = lottery.ticketPrice || 0;
+        
+        return {
+          id: lottery.id || lottery.slug,
+          title: lottery.name,
+          prizePool: `${prizePool.toLocaleString()} ${selectedCurrency}`,
+          drawDate: lottery.drawDate ? new Date(lottery.drawDate).toLocaleDateString('ru-RU') : 'Скоро',
+          ticketPrice: `${ticketPrice} ${selectedCurrency}`,
+          participants: lottery.participants || 0,
+          icon: getIconForLottery(lottery.name),
+        };
+      });
 
     console.log('💰 Current currency:', selectedCurrency);
     console.log('🎰 Display lotteries:', lotteries.map(l => `${l.title}: ${l.prizePool}`));
     
     return lotteries;
-  }, [selectedCurrency]);
+  }, [lotteriesData, selectedCurrency]);
 
   return (
     <div className="app-root">
@@ -204,10 +160,20 @@ function MainScreen() {
           <Hero />
 
           {/* Lottery Carousel */}
-          <LotteryCarousel
-            lotteries={displayLotteries}
-            onBuyTicket={handleBuyTicket}
-          />
+          {isLoading ? (
+            <div style={{ padding: '2rem' }}>
+              <SkeletonLoader type="lottery-card" count={3} />
+            </div>
+          ) : error ? (
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#ff4444' }}>
+              <p>Не удалось загрузить лотереи. Пожалуйста, попробуйте позже.</p>
+            </div>
+          ) : (
+            <LotteryCarousel
+              lotteries={displayLotteries}
+              onBuyTicket={handleBuyTicket}
+            />
+          )}
         </main>
 
         {/* Footer Navigation */}
@@ -267,7 +233,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/demo" element={<DemoPage />} />
               <Route path="/weekend-special" element={<WeekendSpecialPage />} />
-              <Route path="/lottery/:slug" element={<WeekendSpecialPage />} />
+              <Route path="/lottery/:slug" element={<LotteryDetailPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/lotteries" element={<LotteriesPage />} />
               <Route path="/history" element={<TransactionHistoryPage />} />

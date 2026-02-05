@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { ThemeName, ThemeConfig, themes, getSeasonalTheme, applyTheme } from '../lib/theme';
+import type { ThemeName, ThemeConfig } from '../lib/theme';
+import { themes, getSeasonalTheme, applyTheme } from '../lib/theme';
 
 interface ThemeContextType {
   theme: ThemeConfig;

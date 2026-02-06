@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.ref }}
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -25,7 +25,7 @@ jobs:
         run: npm ci
       
       - name: Run ESLint with auto-fix
-        run: npm run lint -- --fix || true
+        run: npm run lint:fix || true
         
       - name: Run Prettier
         run: npx prettier --write "src/**/*.{ts,tsx,js,jsx,css,json}" || true

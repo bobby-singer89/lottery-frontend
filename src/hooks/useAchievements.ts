@@ -1,52 +1,40 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { gamificationApi } from '../services/gamificationApi';
-import type { AchievementProgress } from '../types/gamification';
+import type { Achievement } from '../types/gamification';
 
-// ... (остальной код)
-
-export function useAchievements(userId?: string) {
+export function useAchievements() {
   const queryClient = useQueryClient();
 
-  // Get all achievements with user's progress
-  const { data: achievementsData, isLoading: isLoadingAchievements, error: achievementsError } = useQuery({
-    queryKey: ['gamification', 'achievements', userId],
-    // ИСПРАВЛЕНИЕ: Используем правильное имя
-    queryFn: gamificationApi.getAchievements,
-    enabled: !!userId,
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['achievements'],
+    queryFn: () => gamificationApi.getMyAchievements(),
   });
 
-  const achievements = achievementsData?.achievements || [];
-
-  // Get specific achievement progress
-  const { data: progressData, isLoading: isLoadingProgress } = useQuery({
-    queryKey: ['gamification', 'achievementProgress', userId],
-    // ИСПРАВЛЕНИЕ: Передаем аргумент, которого не хватало
-    queryFn: () => gamificationApi.getAchievementProgress('some-default-id'), // Вам нужно будет решить, какой ID здесь использовать
-    enabled: false, // Пока отключаем, так как логика не ясна
-  });
-
-  const achievementProgress = progressData?.progress || [];
-
-  // Claim achievement mutation
   const { mutate: claimAchievement, isPending: isClaiming } = useMutation({
     mutationFn: (achievementId: string) => gamificationApi.claimAchievement(achievementId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['gamification', 'achievements', userId] });
+      queryClient.invalidateQueries({ queryKey: ['achievements'] });
+      queryClient.invalidateQueries({ queryKey: ['gamificationProfile'] });
     },
   });
 
-  // ИСПРАВЛЕНИЕ: Безопасный доступ и явный тип
-  const unlockedAchievements = achievements.filter(p => p.unlockedAt);
-  const lockedAchievements = achievements.filter(p => !p.unlockedAt);
+  // Добавляем проверку на data.achievements
+  const achievements = data?.achievements || [];
+
+  // ИСПРАВЛЕНИЕ: Добавляем unlockedAt к типу Achievement, т.к. API его возвращ��ет
+  const unlockedAchievements = achievements.filter((a: Achievement & { unlockedAt: string | null }) => a.unlockedAt);
+  const lockedAchievements = achievements.filter((a: Achievement & { unlockedAt: string | null }) => !a.unlockedAt);
 
   return {
     allAchievements: achievements,
     unlockedAchievements,
     lockedAchievements,
-    achievementProgress,
-    isLoading: isLoadingAchievements || isLoadingProgress,
+    // ИСПРАВЛЕНИЕ: Возвращаем achievementProgress как пустой массив-заглушку. 
+    // Его логика была в другом хуке.
+    achievementProgress: [], 
+    isLoading,
     isClaiming,
-    error: achievementsError,
+    error: error as Error | null,
     claimAchievement,
   };
 }

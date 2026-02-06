@@ -35,20 +35,41 @@ export function getApiBaseUrl(): string {
 }
 
 /**
+ * Check if we're in development mode
+ * In production builds, import.meta.env.MODE is 'production'
+ */
+export function isDevelopment(): boolean {
+  return import.meta.env.MODE === 'development' || import.meta.env.DEV === true;
+}
+
+/**
  * Check if mock authentication should be enabled
  * Only enabled when VITE_ENABLE_MOCK_AUTH is explicitly set to 'true'
+ * AND we're in development mode (never in production)
  * 
  * This prevents automatic mock auth in dev mode and requires explicit
  * configuration to enable mock authentication for testing.
+ * Production builds will NEVER enable mock auth regardless of env var.
  */
 export function isMockAuthEnabled(): boolean {
+  // CRITICAL: Never enable mock auth in production builds
+  if (!isDevelopment()) {
+    return false;
+  }
+  
   return import.meta.env.VITE_ENABLE_MOCK_AUTH === 'true';
 }
 
 /**
  * Check if DevTools should be visible
- * Uses same logic as mock auth - visible when mock auth is enabled
+ * Only visible in development mode when mock auth is enabled
+ * NEVER visible in production builds
  */
 export function isDevToolsEnabled(): boolean {
+  // CRITICAL: Never show dev tools in production builds
+  if (!isDevelopment()) {
+    return false;
+  }
+  
   return isMockAuthEnabled();
 }

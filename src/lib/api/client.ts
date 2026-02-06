@@ -2,6 +2,7 @@ import { getApiBaseUrl } from '../utils/env';
 import type { PurchasedTicket } from '../../services/ticketApi';
 import { parseApiError } from './errors';
 import { TokenManager } from '../auth/token';
+import type { User } from '../../types/auth';
 
 const API_BASE_URL = getApiBaseUrl();
 const DEFAULT_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '10000', 10);
@@ -41,7 +42,7 @@ class ApiClient {
   private baseURL: string;
   private token: string | null = null;
   private timeout: number = DEFAULT_TIMEOUT;
-  private user: any = null;
+  private user: User | null = null;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
@@ -51,7 +52,7 @@ class ApiClient {
     const savedUser = localStorage.getItem('auth_user');
     if (savedUser) {
       try {
-        this.user = JSON.parse(savedUser);
+        this.user = JSON.parse(savedUser) as User;
       } catch (e) {
         console.error('Failed to parse saved user:', e);
       }
@@ -86,7 +87,7 @@ class ApiClient {
   /**
    * Set current user
    */
-  setUser(user: any): void {
+  setUser(user: User): void {
     this.user = user;
     localStorage.setItem('auth_user', JSON.stringify(user));
   }
@@ -94,7 +95,7 @@ class ApiClient {
   /**
    * Get current user
    */
-  getCurrentUser(): any {
+  getCurrentUser(): User | null {
     return this.user;
   }
 
@@ -133,10 +134,13 @@ class ApiClient {
         }
       }
 
-      console.log(`📡 API Request: ${endpoint}`, {
-        hasToken: !!this.token,
-        headers: Object.keys(headers)
-      });
+      // Only log in development mode
+      if (import.meta.env.DEV) {
+        console.log(`📡 API Request: ${endpoint}`, {
+          hasToken: !!this.token,
+          headers: Object.keys(headers)
+        });
+      }
 
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         ...options,

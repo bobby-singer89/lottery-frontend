@@ -103,9 +103,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const bypassAuth = localStorage.getItem('dev_auth_bypass');
       if (bypassAuth === 'true') {
         console.log('🔓 DEV MODE: Auth bypass enabled');
+        const DEV_USER_ID = 999999; // Mock user ID for development testing
         const devUser: User = {
-          id: 999999,
-          telegramId: 999999,
+          id: DEV_USER_ID,
+          telegramId: DEV_USER_ID,
           username: 'dev_user',
           firstName: 'Dev',
           lastName: 'User',
@@ -349,11 +350,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  console.log('🔍 AUTH STATUS CHECK:');
-  console.log('- Component mounted: true');
-  console.log('- isAuthenticated:', !!user);
-  console.log('- isLoading:', isLoading);
-  console.log('- user:', user);
+  // Only log auth status in development mode
+  if (import.meta.env.DEV) {
+    console.log('🔍 AUTH STATUS CHECK:');
+    console.log('- Component mounted: true');
+    console.log('- isAuthenticated:', !!user);
+    console.log('- isLoading:', isLoading);
+    console.log('- user:', user);
+  }
   
   return (
     <>

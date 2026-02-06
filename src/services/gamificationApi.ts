@@ -36,15 +36,18 @@ async function fetchWithAuth<T>(endpoint: string, options: RequestInit = {}): Pr
     }
   }
   
-  console.log('📡 Gamification API Request:', {
-    endpoint,
-    hasToken: !!token,
-    userIdentifier,
-    headers: {
-      'Authorization': token ? 'Bearer ***' : 'NONE',
-      'x-user-id': userIdentifier || 'NONE'
-    }
-  });
+  // Only log in development mode
+  if (import.meta.env.DEV) {
+    console.log('📡 Gamification API Request:', {
+      endpoint,
+      hasToken: !!token,
+      userIdentifier,
+      headers: {
+        'Authorization': token ? 'Bearer ***' : 'NONE',
+        'x-user-id': userIdentifier || 'NONE'
+      }
+    });
+  }
   
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,

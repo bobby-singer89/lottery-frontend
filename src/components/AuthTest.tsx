@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
  * Shows real-time status of Telegram integration and auth state
  * Only visible in development mode
  */
-function AuthTest() {
+export default function AuthTest() {
   const { user: telegramUser, webApp } = useTelegram();
   const { user, isAuthenticated, isLoading } = useAuth();
 
@@ -56,5 +56,3 @@ function AuthTest() {
     </div>
   );
 }
-
-export default AuthTest;

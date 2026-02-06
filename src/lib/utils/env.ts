@@ -36,16 +36,13 @@ export function getApiBaseUrl(): string {
 
 /**
  * Check if mock authentication should be enabled
- * Works in dev mode OR when VITE_ENABLE_MOCK_AUTH=true
+ * Only enabled when VITE_ENABLE_MOCK_AUTH is explicitly set to 'true'
  * 
- * This allows enabling mock auth on Vercel production for testing
- * by setting the VITE_ENABLE_MOCK_AUTH environment variable.
+ * This prevents automatic mock auth in dev mode and requires explicit
+ * configuration to enable mock authentication for testing.
  */
 export function isMockAuthEnabled(): boolean {
-  return (
-    import.meta.env.DEV || 
-    import.meta.env.VITE_ENABLE_MOCK_AUTH === 'true'
-  );
+  return import.meta.env.VITE_ENABLE_MOCK_AUTH === 'true';
 }
 
 /**

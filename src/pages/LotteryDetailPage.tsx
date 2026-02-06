@@ -218,7 +218,7 @@ function LotteryDetailPage() {
                   {Object.entries(lottery.prizeStructure).map(([place, percentage]) => (
                     <div key={place} className="lottery-detail-prize-item">
                       <span className="lottery-detail-prize-place">{place}</span>
-                      <span className="lottery-detail-prize-percentage">{percentage}</span>
+                      <span className="lottery-detail-prize-percentage">{String(percentage)}</span>
                     </div>
                   ))}
                 </div>

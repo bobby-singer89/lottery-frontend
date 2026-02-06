@@ -2,7 +2,8 @@
  * Hook for fetching the list of all lotteries
  */
 import { useQuery } from '@tanstack/react-query';
-import { apiClient, type Lottery } from '../lib/api/client';
+import { apiClient } from '../lib/api/client';
+import type { Lottery } from '../types/api';
 
 interface LotteriesResponse {
   success: boolean;

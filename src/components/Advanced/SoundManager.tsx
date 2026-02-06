@@ -18,8 +18,9 @@ const SoundContext = createContext<SoundContextType | undefined>(undefined);
 
 // Simple Web Audio API sound generator
 const playBeep = (frequency: number, duration: number, volume: number) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const AudioContextClass = window.AudioContext || (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AudioContextClass) return;
+  const audioContext = new AudioContextClass();
   const oscillator = audioContext.createOscillator();
   const gainNode = audioContext.createGain();
 

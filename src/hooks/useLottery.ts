@@ -2,7 +2,8 @@
  * Hook for fetching a single lottery's details
  */
 import { useQuery } from '@tanstack/react-query';
-import { apiClient, type Lottery, type Draw } from '../lib/api/client';
+import { apiClient } from '../lib/api/client';
+import type { Lottery, Draw } from '../types/api';
 
 export type LotteryDetails = Lottery;
 export type NextDraw = Draw;

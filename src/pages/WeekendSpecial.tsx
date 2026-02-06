@@ -3,23 +3,15 @@ import { apiClient } from '../lib/api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useLotteryTransaction } from '../lib/ton/useTonConnect';
 import { useTelegram } from '../lib/telegram/useTelegram';
+import type { Lottery, Draw } from '../types/api';
 
 export default function WeekendSpecial() {
   const { user, isAuthenticated } = useAuth();
   const { buyTicket: sendTonTransaction } = useLotteryTransaction();
   const { webApp } = useTelegram();
   
-  const [lottery, setLottery] = useState<{
-    name: string;
-    description: string;
-    numbersToSelect: number;
-    numbersPool: number;
-    ticketPrice: number;
-    currentJackpot: number;
-    lotteryWallet?: string;
-    prizeStructure: Record<string, number | string>;
-  } | null>(null);
-  const [nextDraw, setNextDraw] = useState<{ scheduledAt: string } | null>(null);
+  const [lottery, setLottery] = useState<Lottery | null>(null);
+  const [nextDraw, setNextDraw] = useState<Draw | null>(null);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [myTickets, setMyTickets] = useState<Array<{
@@ -88,7 +80,7 @@ export default function WeekendSpecial() {
       // 1. Отправляем TON транзакцию
       const txHash = await sendTonTransaction(
         lottery.lotteryWallet || import.meta.env.VITE_LOTTERY_WALLET,
-        lottery.ticketPrice,
+        lottery.ticketPrice.toString(),
         selectedNumbers
       );
 
@@ -203,7 +195,7 @@ export default function WeekendSpecial() {
       <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 mb-6">
         <h2 className="text-white text-xl font-bold mb-4">💎 Призы</h2>
         <div className="space-y-2">
-          {Object.entries(lottery.prizeStructure)
+          {lottery.prizeStructure && Object.entries(lottery.prizeStructure)
             .sort(([a], [b]) => Number(b) - Number(a))
             .map(([matches, prize]) => (
               <div

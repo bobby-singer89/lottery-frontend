@@ -1,23 +1,7 @@
 import { getApiBaseUrl } from '../utils/env';
-import type { User, Lottery, Draw, Ticket } from '../../types/api';
+import type { User, Lottery, Draw, Ticket, AdminStats } from '../../types/api';
 
 const API_BASE_URL = getApiBaseUrl();
-
-interface ActivityItem {
-  id: string;
-  type: string;
-  description: string;
-  timestamp: string;
-  userId?: string;
-}
-
-interface AdminStats {
-  totalUsers: number;
-  totalTickets: number;
-  totalRevenue: number;
-  activeLotteries: number;
-  recentActivity: ActivityItem[];
-}
 
 interface PaginationParams {
   page?: number;

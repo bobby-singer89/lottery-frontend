@@ -50,9 +50,11 @@ export interface Lottery {
   numbersPool: number;
   lotteryWallet: string;
   currentJackpot: number;
+  jackpot?: number;
   prizeStructure?: Record<string, number | string>;
   featured?: boolean;
   isActive?: boolean;
+  rules?: string;
 }
 
 /**

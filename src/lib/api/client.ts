@@ -3,6 +3,7 @@ import type { PurchasedTicket } from '../../services/ticketApi';
 import { parseApiError } from './errors';
 import { TokenManager } from '../auth/token';
 import type { User } from '../../types/auth';
+import type { Lottery, Draw } from '../../types/api';
 
 const API_BASE_URL = getApiBaseUrl();
 const DEFAULT_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '10000', 10);
@@ -12,42 +13,6 @@ interface PaginationResponse {
   limit: number;
   total: number;
   totalPages?: number;
-}
-
-export interface Lottery {
-  id: string;
-  slug: string;
-  name: string;
-  currency: string;
-  ticketPrice: number;
-  jackpot: number;
-  featured: boolean;
-  description?: string;
-  numbersToSelect?: number;
-  numbersPool?: number;
-  currentJackpot?: number;
-  prizeStructure?: Record<string, number | string>;
-  isActive?: boolean;
-  active?: boolean;
-  lotteryWallet?: string;
-  prizePool?: number;
-  drawDate?: string;
-  participants?: number;
-  rules?: string;
-}
-
-export interface Draw {
-  id: string;
-  lotteryId: string;
-  drawNumber: number;
-  scheduledAt: string;
-  status: string;
-  ticketSalesOpen: boolean;
-  ticketSalesClosedAt?: string;
-  dataFinalized?: boolean;
-  dataFinalizedAt?: string;
-  seedHash?: string;
-  winningNumbers?: number[];
 }
 
 class ApiClient {

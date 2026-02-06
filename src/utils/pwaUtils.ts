@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export const registerServiceWorker = async (): Promise<ServiceWorkerRegistration | null> => {
   if ('serviceWorker' in navigator) {
     try {
@@ -39,12 +38,12 @@ export const checkForUpdates = async (): Promise<boolean> => {
 
 export const isPWA = (): boolean => {
   return window.matchMedia('(display-mode: standalone)').matches ||
-         (window.navigator as any).standalone === true ||
+         (window.navigator as { standalone?: boolean }).standalone === true ||
          document.referrer.includes('android-app://');
 };
 
 export const isIOS = (): boolean => {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as { MSStream?: unknown }).MSStream;
 };
 
 export const isAndroid = (): boolean => {

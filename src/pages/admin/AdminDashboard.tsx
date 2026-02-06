@@ -10,23 +10,11 @@ import {
 } from 'lucide-react';
 import AdminLayout from '../../components/Admin/AdminLayout';
 import { adminApiClient } from '../../lib/api/adminClient';
+import type { AdminStats } from '../../types/api';
 import './AdminDashboard.css';
 
-interface ActivityItem {
-  description: string;
-  time: string;
-}
-
-interface Stats {
-  totalUsers: number;
-  totalTickets: number;
-  totalRevenue: number;
-  activeLotteries: number;
-  recentActivity: ActivityItem[];
-}
-
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,7 +62,7 @@ export default function AdminDashboard() {
     },
     {
       title: 'Активных лотерей',
-      value: stats?.activeLotteries || 0,
+      value: stats?.activeDraws || 0,
       icon: Trophy,
       color: '#9e0ac7',
       bgGradient: 'linear-gradient(135deg, rgba(158, 10, 199, 0.2) 0%, rgba(158, 10, 199, 0.05) 100%)',
@@ -147,8 +135,8 @@ export default function AdminDashboard() {
               })}
             </div>
 
-            {/* Recent Activity */}
-            <motion.div
+            {/* Recent Activity - Currently not available in API */}
+            {/* <motion.div
               className="activity-section"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -159,31 +147,11 @@ export default function AdminDashboard() {
                 <Activity size={20} />
               </div>
               <div className="activity-list">
-                {stats.recentActivity && stats.recentActivity.length > 0 ? (
-                  stats.recentActivity.map((activity, index) => (
-                    <motion.div
-                      key={index}
-                      className="activity-item"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.5 + index * 0.05 }}
-                    >
-                      <div className="activity-icon">
-                        <Activity size={16} />
-                      </div>
-                      <div className="activity-content">
-                        <p className="activity-description">{activity.description}</p>
-                        <span className="activity-time">{activity.time}</span>
-                      </div>
-                    </motion.div>
-                  ))
-                ) : (
-                  <div className="no-activity">
-                    <p>Нет последней активности</p>
-                  </div>
-                )}
+                <div className="no-activity">
+                  <p>Нет последней активности</p>
+                </div>
               </div>
-            </motion.div>
+            </motion.div> */}
 
             {/* Quick Actions */}
             <motion.div

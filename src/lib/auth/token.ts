@@ -5,6 +5,8 @@
 
 const TOKEN_KEY = 'auth_token';
 const TOKEN_EXPIRY_KEY = 'token_expiry';
+const USER_ID_KEY = 'user_id';
+const TELEGRAM_ID_KEY = 'telegram_id';
 
 export class TokenManager {
   /**
@@ -21,6 +23,17 @@ export class TokenManager {
         const expiry = this.getTokenExpiry(token);
         if (expiry) {
           localStorage.setItem(TOKEN_EXPIRY_KEY, expiry.toString());
+        }
+      }
+      
+      // Extract and store user IDs from token for gamification API
+      const payload = this.decodeToken(token);
+      if (payload) {
+        if (payload.userId) {
+          localStorage.setItem(USER_ID_KEY, payload.userId.toString());
+        }
+        if (payload.telegramId) {
+          localStorage.setItem(TELEGRAM_ID_KEY, payload.telegramId.toString());
         }
       }
     } catch (error) {
@@ -166,13 +179,54 @@ export class TokenManager {
   }
 
   /**
+   * Get user ID from localStorage
+   */
+  static getUserId(): string | null {
+    try {
+      return localStorage.getItem(USER_ID_KEY);
+    } catch (error) {
+      console.error('Failed to get user ID:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get Telegram ID from localStorage
+   */
+  static getTelegramId(): string | null {
+    try {
+      return localStorage.getItem(TELEGRAM_ID_KEY);
+    } catch (error) {
+      console.error('Failed to get telegram ID:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Set user IDs in localStorage (for manual override if needed)
+   */
+  static setUserIds(userId?: number, telegramId?: number): void {
+    try {
+      if (userId) {
+        localStorage.setItem(USER_ID_KEY, userId.toString());
+      }
+      if (telegramId) {
+        localStorage.setItem(TELEGRAM_ID_KEY, telegramId.toString());
+      }
+    } catch (error) {
+      console.error('Failed to set user IDs:', error);
+    }
+  }
+
+  /**
    * Clear all auth-related data
    */
   static clearAll(): void {
     this.removeToken();
     // Clear any other auth-related items
     try {
-      localStorage.removeItem('user_id');
+      localStorage.removeItem(USER_ID_KEY);
+      localStorage.removeItem(TELEGRAM_ID_KEY);
     } catch (error) {
       console.error('Failed to clear auth data:', error);
     }

@@ -78,6 +78,7 @@ export interface Achievement {
   requirement: number;
   rewardXp: number;
   rewardTickets: number;
+  unlockedAt: string | null; 
 }
 
 export interface UserAchievement {

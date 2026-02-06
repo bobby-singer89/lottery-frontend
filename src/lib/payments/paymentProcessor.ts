@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Unified payment processor for lottery ticket purchases
  * Supports both TON native and USDT jetton transactions

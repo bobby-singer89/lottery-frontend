@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { gamificationApi } from '../services/gamificationApi';
-import type { Achievement } from '../types/gamification';
+import type { Achievement, UserAchievement } from '../types/gamification';
 
 export function useAchievements(userId?: string) {
   const queryClient = useQueryClient();
@@ -24,6 +24,17 @@ export function useAchievements(userId?: string) {
   const unlockedAchievements = achievements.filter((a: Achievement) => a.unlockedAt);
   const lockedAchievements = achievements.filter((a: Achievement) => !a.unlockedAt);
 
+  // Add a function to get achievement progress
+  const getAchievementProgress = (achievementId: string) => {
+    const achievement = achievements.find((a: Achievement) => a.id === achievementId);
+    if (!achievement) return null;
+    return {
+      current: achievement.unlockedAt ? achievement.requirement : 0,
+      target: achievement.requirement,
+      percentage: achievement.unlockedAt ? 100 : 0,
+    };
+  };
+
   return {
     allAchievements: achievements,
     unlockedAchievements,
@@ -32,5 +43,21 @@ export function useAchievements(userId?: string) {
     isClaiming,
     error: error as Error | null,
     claimAchievement,
+    progress: achievements.map((a: Achievement) => ({
+      achievement: a,
+      current: a.unlockedAt ? a.requirement : 0,
+      target: a.requirement,
+      percentage: a.unlockedAt ? 100 : 0,
+      unlocked: !!a.unlockedAt,
+      currentValue: a.unlockedAt ? a.requirement : 0,
+      userAchievement: (a.unlockedAt ? {
+        id: a.id,
+        achievement: a,
+        unlockedAt: a.unlockedAt,
+        claimed: false,
+        claimedAt: null,
+      } : null) as UserAchievement | null,
+    })),
+    getAchievementProgress,
   };
 }

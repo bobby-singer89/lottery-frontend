@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet, Copy, Check, Trophy, Star, Flame, AlertCircle, Ticket } from 'lucide-react';

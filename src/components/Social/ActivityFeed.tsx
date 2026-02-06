@@ -49,12 +49,13 @@ const generateMockEvent = (): ActivityEvent => {
       description = `выиграл ${amount.toLocaleString('ru-RU')} TON в ${lottery}`;
       icon = '🏆';
       break;
-    case 'purchase':
+    case 'purchase': {
       const tickets = Math.floor(Math.random() * 10) + 1;
       description = `купил ${tickets} билет${tickets > 1 ? 'а' : ''} на ${lottery}`;
       icon = '🎫';
       break;
-    case 'achievement':
+    }
+    case 'achievement': {
       const achievements = [
         'Первый выигрыш',
         'Коллекционер',
@@ -66,16 +67,19 @@ const generateMockEvent = (): ActivityEvent => {
       description = `получил достижение '${achievement}'`;
       icon = '🎖️';
       break;
-    case 'streak':
+    }
+    case 'streak': {
       const days = Math.floor(Math.random() * 50) + 7;
       description = `достиг ${days} дней streak!`;
       icon = '🔥';
       break;
-    case 'referral':
+    }
+    case 'referral': {
       const refs = Math.floor(Math.random() * 20) + 5;
       description = `пригласил ${refs} друзей`;
       icon = '👥';
       break;
+    }
   }
 
   return {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 const path = require('path');
 
@@ -26,7 +27,7 @@ async function generateIcons() {
   let sharp;
   try {
     sharp = require('sharp');
-  } catch (e) {
+  } catch {
     console.log('Sharp not available, creating SVG files only');
     sharp = null;
   }

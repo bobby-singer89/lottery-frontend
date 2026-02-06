@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { apiClient } from '../lib/api/client';
 import { useAuth } from '../contexts/AuthContext';

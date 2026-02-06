@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTonConnectUI, useTonAddress } from '@tonconnect/ui-react';

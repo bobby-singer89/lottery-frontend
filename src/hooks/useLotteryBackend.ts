@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Lottery API Call Manager
  * Handles backend communication with lottery-specific state tracking

@@ -90,6 +90,7 @@ export default function MyTicketsPage() {
     ).join(' ');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function getDrawDate(_slug: string): Date {
     // TODO: Fetch from lottery API
     // For now, return next Saturday

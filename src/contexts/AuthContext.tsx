@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Ensure user IDs are stored for gamification API
             TokenManager.setUserIds(profile.user.id, profile.user.telegramId);
           }
-        } catch (error) {
+        } catch {
           // Clear invalid token
           TokenManager.clearAll();
           apiClient.clearToken();
@@ -234,7 +234,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       return false;
-    } catch (error) {
+    } catch {
       return false;
     }
   };

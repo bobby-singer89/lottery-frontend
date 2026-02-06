@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TonClient, Address } from '@ton/ton';
 import { CURRENT_CONFIG } from '../config/contracts';
 

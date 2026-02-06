@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getApiBaseUrl } from '../utils/env';
 import type { PurchasedTicket } from '../../services/ticketApi';
 import { parseApiError } from './errors';

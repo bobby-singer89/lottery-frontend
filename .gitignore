@@ -3,6 +3,9 @@ dist/
 .env
 .env.local
 
+# TypeScript build info
+*.tsbuildinfo
+
 # Backup and temporary files
 *.new
 *.bak

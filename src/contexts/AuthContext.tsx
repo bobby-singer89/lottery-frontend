@@ -86,11 +86,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       apiClient.setToken(response.token);
       apiClient.setUser(response.user);
       setUser(response.user);
-      // Store user ID for gamification API
-      localStorage.setItem('user_id', response.user.id.toString());
-      if (response.user.telegramId) {
-        localStorage.setItem('telegram_id', response.user.telegramId.toString());
-      }
+      // Ensure user IDs are stored for gamification API
+      TokenManager.setUserIds(response.user.id, response.user.telegramId);
       return response.user;
     }
     
@@ -137,11 +134,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const profile = await apiClient.getProfile();
           if (profile.success && profile.user) {
             setUser(profile.user);
-            // Store user ID for gamification API
-            localStorage.setItem('user_id', profile.user.id.toString());
-            if (profile.user.telegramId) {
-              localStorage.setItem('telegram_id', profile.user.telegramId.toString());
-            }
+            // Ensure user IDs are stored for gamification API
+            TokenManager.setUserIds(profile.user.id, profile.user.telegramId);
             console.log('✅ User session restored:', profile.user.username || profile.user.firstName);
           }
         } catch (error) {
@@ -333,11 +327,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         apiClient.setToken(response.token);
         apiClient.setUser(response.user);
         setUser(response.user);
-        // Store user ID for gamification API
-        localStorage.setItem('user_id', response.user.id.toString());
-        if (response.user.telegramId) {
-          localStorage.setItem('telegram_id', response.user.telegramId.toString());
-        }
+        // Ensure user IDs are stored for gamification API
+        TokenManager.setUserIds(response.user.id, response.user.telegramId);
         console.log('✅ API login successful:', response.user.username || response.user.firstName);
         return true;
       }

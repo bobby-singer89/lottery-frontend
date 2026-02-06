@@ -8,6 +8,8 @@ import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackgro
 import { useUserHistory, type HistoryFilters } from '../hooks/useUserHistory';
 import './TransactionHistoryPage.css';
 
+type TransactionStatus = 'completed' | 'pending' | 'paid';
+
 export default function TransactionHistoryPage() {
   const navigate = useNavigate();
   const userAddress = useTonAddress();
@@ -45,6 +47,15 @@ export default function TransactionHistoryPage() {
       win: 'Выигрыш',
     };
     return names[type];
+  }
+
+  function getStatusLabel(status: TransactionStatus): string {
+    const labels: Record<TransactionStatus, string> = {
+      completed: '✅ Успешно',
+      paid: '✅ Успешно',
+      pending: '⏳ Ожидание',
+    };
+    return labels[status];
   }
 
   function getTonExplorerLink(txHash: string): string {
@@ -162,7 +173,7 @@ export default function TransactionHistoryPage() {
                           {tx.type === 'win' ? '+' : '-'}{tx.amount.toFixed(2)} {tx.currency}
                         </div>
                         <div className="tx-status">
-                          {tx.status === 'completed' || tx.status === 'paid' ? '✅ Успешно' : '⏳ Ожидание'}
+                          {getStatusLabel(tx.status)}
                         </div>
                       </div>
 

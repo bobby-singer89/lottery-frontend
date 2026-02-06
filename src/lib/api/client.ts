@@ -237,7 +237,29 @@ class ApiClient {
   async getUserStats() {
     return this.request<{
       success: boolean;
-      stats: any;
+      stats: {
+        userId: string;
+        totalTicketsBought: number;
+        totalSpent: {
+          ton: number;
+          usdt: number;
+        };
+        totalWins: number;
+        totalWinnings: {
+          ton: number;
+          usdt: number;
+        };
+        currentBalance: {
+          ton: number;
+          usdt: number;
+        };
+        winRate: number;
+        favoriteNumbers: number[];
+        memberSince: string;
+        lastActivity: string;
+        currentStreak: number;
+        bestStreak: number;
+      };
     }>('/user/stats');
   }
 
@@ -255,8 +277,25 @@ class ApiClient {
     
     return this.request<{
       success: boolean;
-      history: any[];
-      pagination: any;
+      history: Array<{
+        id: string;
+        type: 'purchase' | 'win';
+        lotteryId: string;
+        lotteryName: string;
+        amount: number;
+        currency: 'TON' | 'USDT';
+        numbers: number[];
+        status: 'completed' | 'pending' | 'paid';
+        createdAt: string;
+        txHash: string;
+        prize?: number;
+      }>;
+      pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+      };
     }>(endpoint);
   }
 

@@ -135,21 +135,28 @@ class ApiClient {
     auth_date?: number;
     hash?: string;
   }) {
+    // Debug: Log API call details
+    const requestBody = {
+      id: telegramUser.id.toString(),
+      first_name: telegramUser.first_name,
+      last_name: telegramUser.last_name,
+      username: telegramUser.username,
+      photo_url: telegramUser.photo_url,
+      auth_date: telegramUser.auth_date,
+      hash: telegramUser.hash,
+    };
+    
+    console.log('📡 API CALL DEBUG:');
+    console.log('endpoint:', '/api/auth/telegram');
+    console.log('request body:', requestBody);
+    
     return this.request<{
       success: boolean;
       token: string;
       user: any;
     }>('/api/auth/telegram', {
       method: 'POST',
-      body: JSON.stringify({
-        id: telegramUser.id.toString(),
-        first_name: telegramUser.first_name,
-        last_name: telegramUser.last_name,
-        username: telegramUser.username,
-        photo_url: telegramUser.photo_url,
-        auth_date: telegramUser.auth_date,
-        hash: telegramUser.hash,
-      }),
+      body: JSON.stringify(requestBody),
     });
   }
 

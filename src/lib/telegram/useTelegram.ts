@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { isMockAuthEnabled } from '../utils/env';
 
 interface TelegramUser {
   id: number;
@@ -66,62 +65,24 @@ export function useTelegram() {
     
     if (tg) {
       // Real Telegram WebApp
+      console.log('✅ Telegram WebApp detected - initializing');
       tg.ready();
       tg.expand();
       setWebApp(tg);
-      setUser(tg.initDataUnsafe.user || null);
-    } else if (isMockAuthEnabled()) {
-      // DEV MODE OR MOCK ENABLED: Mock Telegram data
-      console.log('🔧 MOCK MODE: Using mock Telegram user');
       
-      const mockUser: TelegramUser = {
-        id: 432735601,
-        first_name: 'Yury',
-        last_name: 'Gorbenko',
-        username: 'GorbenkoYury',
-        photo_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Yury'
-      };
-      
-      const mockWebApp: TelegramWebApp = {
-        initData: '',
-        initDataUnsafe: {
-          user: mockUser,
-          auth_date: Math.floor(Date.now() / 1000),
-          hash: 'mock_dev_hash_' + Date.now()
-        },
-        ready: () => console.log('Mock WebApp ready'),
-        expand: () => console.log('Mock WebApp expanded'),
-        close: () => console.log('Mock WebApp closed'),
-        MainButton: {
-          text: '',
-          color: '#000',
-          textColor: '#fff',
-          isVisible: false,
-          isActive: false,
-          show: () => {},
-          hide: () => {},
-          enable: () => {},
-          disable: () => {},
-          setText: (_text: string) => {},
-          onClick: (_callback: () => void) => {},
-          offClick: (_callback: () => void) => {}
-        },
-        BackButton: {
-          isVisible: false,
-          show: () => {},
-          hide: () => {},
-          onClick: (_callback: () => void) => {},
-          offClick: (_callback: () => void) => {}
-        },
-        HapticFeedback: {
-          impactOccurred: (_style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => {},
-          notificationOccurred: (_type: 'error' | 'success' | 'warning') => {},
-          selectionChanged: () => {}
-        }
-      };
-      
-      setWebApp(mockWebApp);
-      setUser(mockUser);
+      const telegramUser = tg.initDataUnsafe.user;
+      if (telegramUser) {
+        console.log('✅ Telegram user found:', telegramUser.username || telegramUser.first_name);
+        setUser(telegramUser);
+      } else {
+        console.warn('⚠️ Telegram WebApp available but no user data');
+        setUser(null);
+      }
+    } else {
+      // Not in Telegram WebApp environment
+      console.log('ℹ️ Not running in Telegram WebApp');
+      setWebApp(null);
+      setUser(null);
     }
   }, []);
 

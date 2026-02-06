@@ -41,11 +41,21 @@ class ApiClient {
   private baseURL: string;
   private token: string | null = null;
   private timeout: number = DEFAULT_TIMEOUT;
+  private user: any = null;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
     // Initialize token from TokenManager
     this.token = TokenManager.getToken();
+    // Initialize user from localStorage if available
+    const savedUser = localStorage.getItem('auth_user');
+    if (savedUser) {
+      try {
+        this.user = JSON.parse(savedUser);
+      } catch (e) {
+        console.error('Failed to parse saved user:', e);
+      }
+    }
   }
 
   /**
@@ -68,7 +78,24 @@ class ApiClient {
    */
   clearAuthToken(): void {
     this.token = null;
+    this.user = null;
     TokenManager.clearAll();
+    localStorage.removeItem('auth_user');
+  }
+
+  /**
+   * Set current user
+   */
+  setUser(user: any): void {
+    this.user = user;
+    localStorage.setItem('auth_user', JSON.stringify(user));
+  }
+
+  /**
+   * Get current user
+   */
+  getCurrentUser(): any {
+    return this.user;
   }
 
   /**
@@ -93,15 +120,30 @@ class ApiClient {
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
     try {
-      const headers: HeadersInit = {
+      const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         ...(this.token && { Authorization: `Bearer ${this.token}` }),
-        ...options.headers,
       };
+
+      // Add x-user-id for gamification endpoints
+      if (endpoint.includes('/gamification')) {
+        const user = this.getCurrentUser();
+        if (user?.id) {
+          headers['x-user-id'] = user.id.toString();
+        }
+      }
+
+      console.log(`📡 API Request: ${endpoint}`, {
+        hasToken: !!this.token,
+        headers: Object.keys(headers)
+      });
 
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         ...options,
-        headers,
+        headers: {
+          ...headers,
+          ...options.headers,
+        },
         signal: controller.signal,
       });
 
@@ -150,7 +192,7 @@ class ApiClient {
     console.log('endpoint:', '/api/auth/telegram');
     console.log('request body:', requestBody);
     
-    return this.request<{
+    const response = await this.request<{
       success: boolean;
       token: string;
       user: any;
@@ -158,6 +200,13 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(requestBody),
     });
+    
+    // Store user for future API calls
+    if (response.success && response.user) {
+      this.setUser(response.user);
+    }
+    
+    return response;
   }
 
   async connectWallet(tonWallet: string, telegramData?: {
@@ -166,10 +215,17 @@ class ApiClient {
     last_name?: string;
     photo_url?: string;
   }) {
-    return this.request<{ success: boolean; user: any }>('/api/auth/connect-wallet', {
+    const response = await this.request<{ success: boolean; user: any }>('/api/auth/connect-wallet', {
       method: 'POST',
       body: JSON.stringify({ tonWallet, ...telegramData }),
     });
+    
+    // Store user for future API calls
+    if (response.success && response.user) {
+      this.setUser(response.user);
+    }
+    
+    return response;
   }
 
   // Lottery endpoints
@@ -225,10 +281,17 @@ class ApiClient {
 
   // User endpoints
   async getProfile() {
-    return this.request<{
+    const response = await this.request<{
       success: boolean;
       user: any;
     }>('/api/user/profile');
+    
+    // Store user for future API calls
+    if (response.success && response.user) {
+      this.setUser(response.user);
+    }
+    
+    return response;
   }
 
   async updateProfile(data: any) {

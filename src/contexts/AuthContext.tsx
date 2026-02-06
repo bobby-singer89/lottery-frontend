@@ -17,7 +17,50 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Debug Component - Shows in top-right corner during development
+function AuthDebugComponent() {
+  const { user, isAuthenticated, isLoading } = useContext(AuthContext)!;
+  const { user: telegramUser } = useTelegram();
+  
+  // Only show in development
+  if (import.meta.env.PROD) {
+    return null;
+  }
+
+  console.log('🔍 AUTH DEBUG Component Rendering');
+  
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      right: 0,
+      background: 'red',
+      padding: '10px',
+      zIndex: 9999,
+      color: 'white',
+      fontSize: '12px',
+      fontFamily: 'monospace',
+      borderRadius: '0 0 0 8px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+      minWidth: '250px'
+    }}>
+      <h3 style={{ margin: '0 0 8px 0' }}>🔍 AUTH DEBUG</h3>
+      <p style={{ margin: '2px 0' }}>Component Loaded: <strong>YES</strong></p>
+      <p style={{ margin: '2px 0' }}>isAuthenticated: {isAuthenticated ? '✅ true' : '❌ false'}</p>
+      <p style={{ margin: '2px 0' }}>isLoading: {isLoading ? '⏳ true' : '✅ false'}</p>
+      <p style={{ margin: '2px 0' }}>User: {user ? `✅ ${user.username || user.firstName}` : '❌ null'}</p>
+      <p style={{ margin: '2px 0' }}>User ID: {user?.id || 'N/A'}</p>
+      <p style={{ margin: '2px 0' }}>Telegram User: {telegramUser ? '✅ YES' : '❌ NO'}</p>
+      <p style={{ margin: '2px 0', fontSize: '10px', opacity: 0.8 }}>
+        Token: {TokenManager.getToken() ? '✅ EXISTS' : '❌ NONE'}
+      </p>
+    </div>
+  );
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  console.log('🔄 AuthProvider mounted');
+  
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { user: telegramUser, webApp } = useTelegram();
@@ -41,16 +84,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (response.success && response.token) {
       TokenManager.setToken(response.token);
       apiClient.setToken(response.token);
+      apiClient.setUser(response.user);
       setUser(response.user);
+      // Store user ID for gamification API
+      localStorage.setItem('user_id', response.user.id.toString());
+      if (response.user.telegramId) {
+        localStorage.setItem('telegram_id', response.user.telegramId.toString());
+      }
       return response.user;
     }
     
     return null;
   }, []);
 
+  // Emergency auth bypass for development
+  useEffect(() => {
+    if (import.meta.env.DEV && !user && !isLoading) {
+      const bypassAuth = localStorage.getItem('dev_auth_bypass');
+      if (bypassAuth === 'true') {
+        console.log('🔓 DEV MODE: Auth bypass enabled');
+        const devUser: User = {
+          id: 999999,
+          telegramId: 999999,
+          username: 'dev_user',
+          firstName: 'Dev',
+          lastName: 'User',
+          level: '1',
+          experience: 0,
+          referralCode: 'DEV999',
+        };
+        setUser(devUser);
+        apiClient.setUser(devUser);
+        console.log('✅ DEV MODE: Mock user set:', devUser);
+      }
+    }
+  }, [user, isLoading]);
+
   // Initialize auth state from localStorage on mount
   useEffect(() => {
     const initializeAuth = async () => {
+      console.log('🔄 Initializing authentication...');
       const token = TokenManager.getToken();
       
       if (token && !TokenManager.isTokenExpired(token)) {
@@ -63,6 +136,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const profile = await apiClient.getProfile();
           if (profile.success && profile.user) {
             setUser(profile.user);
+            // Store user ID for gamification API
+            localStorage.setItem('user_id', profile.user.id.toString());
+            if (profile.user.telegramId) {
+              localStorage.setItem('telegram_id', profile.user.telegramId.toString());
+            }
             console.log('✅ User session restored:', profile.user.username || profile.user.firstName);
           }
         } catch (error) {
@@ -164,6 +242,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     TokenManager.clearAll();
     apiClient.clearToken();
     setUser(null);
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('telegram_id');
   };
 
   const refreshToken = useCallback(async () => {
@@ -220,6 +300,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       const response = await apiClient.connectWallet(address, telegramData);
       setUser(response.user);
+      // Store user ID for gamification API
+      localStorage.setItem('user_id', response.user.id.toString());
+      if (response.user.telegramId) {
+        localStorage.setItem('telegram_id', response.user.telegramId.toString());
+      }
     } catch (error) {
       console.error('Connect wallet failed:', error);
       throw error;
@@ -245,7 +330,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.success && response.token) {
         TokenManager.setToken(response.token);
         apiClient.setToken(response.token);
+        apiClient.setUser(response.user);
         setUser(response.user);
+        // Store user ID for gamification API
+        localStorage.setItem('user_id', response.user.id.toString());
+        if (response.user.telegramId) {
+          localStorage.setItem('telegram_id', response.user.telegramId.toString());
+        }
         console.log('✅ API login successful:', response.user.username || response.user.firstName);
         return true;
       }
@@ -258,21 +349,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  console.log('🔍 AUTH STATUS CHECK:');
+  console.log('- Component mounted: true');
+  console.log('- isAuthenticated:', !!user);
+  console.log('- isLoading:', isLoading);
+  console.log('- user:', user);
+  
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        logout,
-        connectWallet,
-        loginWithTelegram,
-        refreshToken,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <>
+      <AuthDebugComponent />
+      <AuthContext.Provider
+        value={{
+          user,
+          isAuthenticated: !!user,
+          isLoading,
+          login,
+          logout,
+          connectWallet,
+          loginWithTelegram,
+          refreshToken,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    </>
   );
 }
 

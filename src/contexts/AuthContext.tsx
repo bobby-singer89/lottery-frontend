@@ -23,6 +23,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const { user: telegramUser, webApp } = useTelegram();
 
+  // Helper function to perform Telegram login
+  const performTelegramLogin = useCallback(async (tgUser: typeof telegramUser, tgWebApp: typeof webApp) => {
+    if (!tgUser || !tgWebApp) {
+      return null;
+    }
+
+    const response = await apiClient.loginTelegram({
+      id: tgUser.id,
+      first_name: tgUser.first_name,
+      last_name: tgUser.last_name,
+      username: tgUser.username,
+      photo_url: tgUser.photo_url,
+      auth_date: tgWebApp.initDataUnsafe?.auth_date,
+      hash: tgWebApp.initDataUnsafe?.hash,
+    });
+    
+    if (response.success && response.token) {
+      TokenManager.setToken(response.token);
+      apiClient.setToken(response.token);
+      setUser(response.user);
+      return response.user;
+    }
+    
+    return null;
+  }, []);
+
   // Initialize auth state from localStorage on mount
   useEffect(() => {
     const initializeAuth = async () => {
@@ -41,7 +67,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log('✅ User session restored:', profile.user.username || profile.user.firstName);
           }
         } catch (error) {
-          console.error('Failed to restore session:', error);
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          console.error('Failed to restore session - API error:', errorMessage);
           // Clear invalid token
           TokenManager.clearAll();
           apiClient.clearToken();
@@ -70,30 +97,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('🔄 Attempting Telegram auto-login for:', telegramUser.username || telegramUser.first_name);
         
         try {
-          const response = await apiClient.loginTelegram({
-            id: telegramUser.id,
-            first_name: telegramUser.first_name,
-            last_name: telegramUser.last_name,
-            username: telegramUser.username,
-            photo_url: telegramUser.photo_url,
-            auth_date: webApp.initDataUnsafe?.auth_date,
-            hash: webApp.initDataUnsafe?.hash,
-          });
-          
-          if (response.success && response.token) {
-            TokenManager.setToken(response.token);
-            apiClient.setToken(response.token);
-            setUser(response.user);
-            console.log('✅ Auto-login successful:', response.user.username || response.user.firstName);
+          const loggedInUser = await performTelegramLogin(telegramUser, webApp);
+          if (loggedInUser) {
+            console.log('✅ Auto-login successful:', loggedInUser.username || loggedInUser.firstName);
+          } else {
+            console.warn('⚠️ Auto-login failed - no user returned');
           }
         } catch (error) {
-          console.error('❌ Auto-login failed:', error);
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          console.error('❌ Auto-login failed:', errorMessage);
         }
       }
     };
 
     attemptTelegramLogin();
-  }, [telegramUser, webApp, user, isLoading]);
+  }, [telegramUser, webApp, user, isLoading, performTelegramLogin]);
 
   const login = useCallback(async () => {
     if (!telegramUser || !webApp) {
@@ -104,28 +122,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       setIsLoading(true);
-      const response = await apiClient.loginTelegram({
-        id: telegramUser.id,
-        first_name: telegramUser.first_name,
-        last_name: telegramUser.last_name,
-        username: telegramUser.username,
-        photo_url: telegramUser.photo_url,
-        auth_date: webApp.initDataUnsafe?.auth_date,
-        hash: webApp.initDataUnsafe?.hash,
-      });
-      
-      if (response.success && response.token) {
-        TokenManager.setToken(response.token);
-        apiClient.setToken(response.token);
-        setUser(response.user);
-        console.log('✅ Login successful:', response.user.username || response.user.firstName);
+      const loggedInUser = await performTelegramLogin(telegramUser, webApp);
+      if (loggedInUser) {
+        console.log('✅ Manual login successful:', loggedInUser.username || loggedInUser.firstName);
+      } else {
+        console.warn('⚠️ Manual login failed - no user returned');
       }
     } catch (error) {
-      console.error('❌ Login failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('❌ Manual login failed:', errorMessage);
     } finally {
       setIsLoading(false);
     }
-  }, [telegramUser, webApp]);
+  }, [telegramUser, webApp, performTelegramLogin]);
 
   const logout = () => {
     TokenManager.clearAll();

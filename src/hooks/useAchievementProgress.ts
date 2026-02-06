@@ -4,34 +4,34 @@ import { useAchievements } from './useAchievements';
 export function useAchievementProgress(achievementId: string) {
   const { allAchievements, isLoading, error } = useAchievements();
 
-  const { progress, progressPercentage, isCompleted } = useMemo(() => {
-    // ИСПРАВЛЕНИЕ: Логика получения прогресса для конкретного ачивмента
-    // Этот хук должен работать с данными из useAchievements
+  const progressData = useMemo(() => {
     const achievement = allAchievements.find(a => a.id === achievementId);
     
-    // Вместо progressData ищем нужный прогресс в данных
-    // Это заглушка, т.к. реальные данные о прогрессе должны приходить с API
-    // Для исправления сборки вернем базовые значения
-    const currentProgress = achievement ? 50 : 0; // Пример
-    const target = achievement ? 100 : 0; // Пример
-
-    const percentage = target > 0 ? (currentProgress / target) * 100 : 0;
-    const completed = currentProgress >= target;
+    if (!achievement) {
+      return null;
+    }
+    
+    // Get progress based on whether achievement is unlocked
+    const currentProgress = achievement.unlockedAt ? achievement.requirement : 0;
+    const unlocked = !!achievement.unlockedAt;
 
     return {
-      progress: {
-        current: currentProgress,
-        target: target,
-      },
-      progressPercentage: percentage,
-      isCompleted: completed,
+      achievement,
+      currentValue: currentProgress,
+      unlocked,
     };
   }, [allAchievements, achievementId]);
 
+  const progressPercentage = progressData 
+    ? (progressData.achievement.requirement > 0 
+        ? (progressData.currentValue / progressData.achievement.requirement) * 100 
+        : 0)
+    : 0;
+
   return {
-    progress,
+    progress: progressData,
     progressPercentage,
-    isCompleted,
+    isCompleted: progressData?.unlocked || false,
     isLoading,
     error,
   };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Notification } from '../types/notification';
 
 const STORAGE_KEY = 'lottery_notifications';

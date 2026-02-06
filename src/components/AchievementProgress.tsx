@@ -8,7 +8,7 @@ interface AchievementProgressProps {
 }
 
 function AchievementProgress({ achievementId, showDetails = true }: AchievementProgressProps) {
-  const { data: progress, isLoading, error } = useAchievementProgress(achievementId);
+  const { progress, progressPercentage, isLoading, error } = useAchievementProgress(achievementId);
 
   if (isLoading) {
     return (
@@ -27,9 +27,6 @@ function AchievementProgress({ achievementId, showDetails = true }: AchievementP
   }
 
   const achievement = progress.achievement;
-  const progressPercentage = achievement.requirement > 0
-    ? (progress.currentValue / achievement.requirement) * 100
-    : 0;
 
   return (
     <div className="achievement-progress-component">

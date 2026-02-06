@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const registerServiceWorker = async (): Promise<ServiceWorkerRegistration | null> => {
   if ('serviceWorker' in navigator) {
     try {

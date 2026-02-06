@@ -45,7 +45,6 @@ function CountdownTimer({ targetDate, onComplete }: CountdownTimerProps) {
     };
 
     // Initial calculation - this is intentional and not a cascading render
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTimeLeft(calculateTimeLeft());
 
     const timer = setInterval(() => {

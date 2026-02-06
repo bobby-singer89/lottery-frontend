@@ -7,7 +7,7 @@ import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import confetti from 'canvas-confetti';
-import type { AchievementCategory, AchievementProgress } from '../types/gamification';
+import type { AchievementCategory } from '../types/gamification';
 import './AchievementsPage.css';
 
 const categoryIcons: Record<AchievementCategory, { icon: typeof Trophy; label: string }> = {
@@ -30,20 +30,20 @@ function AchievementsPage() {
   const { progress, isLoading, claimAchievement, isClaiming, error } = useAchievements(userId);
   
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | 'all'>('all');
-  const [selectedAchievement, setSelectedAchievement] = useState<AchievementProgress | null>(null);
+  const [selectedAchievement, setSelectedAchievement] = useState<typeof progress[number] | null>(null);
   const [showFilter, setShowFilter] = useState(false);
 
   // Filter achievements by category
   const filteredAchievements = selectedCategory === 'all' 
     ? progress 
-    : progress.filter(p => p.achievement.category === selectedCategory);
+    : progress.filter((p: typeof progress[number]) => p.achievement.category === selectedCategory);
 
   // Calculate stats
-  const unlockedCount = progress.filter(p => p.unlocked).length;
+  const unlockedCount = progress.filter((p: typeof progress[number]) => p.unlocked).length;
   const totalCount = progress.length;
   const progressPercentage = totalCount > 0 ? (unlockedCount / totalCount) * 100 : 0;
 
-  const handleAchievementClick = (achievementProgress: AchievementProgress) => {
+  const handleAchievementClick = (achievementProgress: typeof progress[number]) => {
     setSelectedAchievement(achievementProgress);
     
     if (achievementProgress.unlocked) {
@@ -178,7 +178,7 @@ function AchievementsPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            {filteredAchievements.map((achievementProgress, index) => {
+            {filteredAchievements.map((achievementProgress: typeof progress[number], index: number) => {
               const achievement = achievementProgress.achievement;
               const canClaim = achievementProgress.unlocked && 
                              achievementProgress.userAchievement && 

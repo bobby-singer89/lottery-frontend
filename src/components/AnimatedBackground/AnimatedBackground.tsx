@@ -13,7 +13,6 @@ function AnimatedBackground() {
         duration: 10 + Math.random() * 10,
       })),
     // Empty deps array is intentional - we only want to generate particles once
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

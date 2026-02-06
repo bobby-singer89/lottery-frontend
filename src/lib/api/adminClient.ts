@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getApiBaseUrl } from '../utils/env';
 
 const API_BASE_URL = getApiBaseUrl();

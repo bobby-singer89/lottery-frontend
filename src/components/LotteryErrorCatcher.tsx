@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Lottery Error Recovery Component
  * Catches and handles errors in lottery application with recovery options

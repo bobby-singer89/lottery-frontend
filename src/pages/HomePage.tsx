@@ -51,7 +51,7 @@ export default function HomePage() {
       setLoading(true);
       const response = await apiClient.getLotteries();
       
-      let allLotteries = response.lotteries || [];
+      const allLotteries = response.lotteries || [];
       
       // If API returns empty, use fallback mock data
       if (allLotteries.length === 0) {

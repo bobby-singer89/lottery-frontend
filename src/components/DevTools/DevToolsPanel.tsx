@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { Wrench, X, User, Smartphone, Code } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';

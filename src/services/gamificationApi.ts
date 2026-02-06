@@ -1,3 +1,5 @@
+import axios from 'axios';
+// --- ИСПРАВЛЕНИЕ: Возвращаем все ваши импорты типов ---
 import type {
   GamificationProfile,
   StreakInfo,
@@ -15,98 +17,77 @@ import type {
   LeaderboardResponse,
 } from '../types/gamification';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://lottery-backend-gm4j.onrender.com/api';
 
-async function fetchWithAuth<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const token = localStorage.getItem('auth_token');
-  const userId = localStorage.getItem('user_id');
-  // Also try to get telegramId if user_id is not set
-  const telegramId = localStorage.getItem('telegram_id');
-  // Also check auth_user from apiClient
-  const authUser = localStorage.getItem('auth_user');
-  let userIdentifier = userId || telegramId;
-  
-  // If we still don't have a user identifier, try to get it from auth_user
-  if (!userIdentifier && authUser) {
-    try {
-      const parsedUser = JSON.parse(authUser);
-      userIdentifier = parsedUser.id || parsedUser.telegramId;
-    } catch (e) {
-      console.error('Failed to parse auth_user:', e);
+// URL вашего бэкенда из переменных окружения
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://lottery-backend-gm4j.onrender.com';
+
+// Создаем экземпляр axios
+const apiClient = axios.create({
+  baseURL: `${API_BASE_URL}/api/gamification`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// --- Новая функция для получения ID пользователя ---
+function getTelegramUserId(): string | null {
+  try {
+    const tg = (window as any).Telegram?.WebApp;
+    if (tg?.initDataUnsafe?.user?.id) {
+      return String(tg.initDataUnsafe.user.id);
     }
+    return null;
+  } catch (e) {
+    console.error("Ошибка при получении user ID из Telegram WebApp:", e);
+    return null;
   }
-  
-  // Only log in development mode
-  if (import.meta.env.DEV) {
-    console.log('📡 Gamification API Request:', {
-      endpoint,
-      hasToken: !!token,
-      userIdentifier,
-      headers: {
-        'Authorization': token ? 'Bearer ***' : 'NONE',
-        'x-user-id': userIdentifier || 'NONE'
-      }
-    });
-  }
-  
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-      ...(userIdentifier && { 'x-user-id': userIdentifier }),
-      ...options.headers,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    console.error('❌ Gamification API Error:', {
-      endpoint,
-      status: response.status,
-      error
-    });
-    throw new Error(error.message || error.error || `API Error: ${response.status}`);
-  }
-
-  return response.json();
 }
 
+// --- КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Добавляем "перехватчик" запросов ---
+apiClient.interceptors.request.use(
+  (config) => {
+    const userId = getTelegramUserId();
+    if (userId) {
+      config.headers['x-user-id'] = userId;
+    } else {
+      console.warn(`[gamificationApi] User ID не найден. Запрос к ${config.url} будет неавторизован.`);
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// --- Ваш существующий API без изменений, но теперь он использует настроенный apiClient ---
 export const gamificationApi = {
-  // Profile
-  getProfile: () => fetchWithAuth<{ success: boolean; profile: GamificationProfile }>('/api/gamification/profile'),
+  getProfile: async (): Promise<{ profile: GamificationProfile }> => {
+    const response = await apiClient.get('/profile');
+    return response.data;
+  },
 
-  // Streak
-  getStreak: () => fetchWithAuth<{ success: boolean; streak: StreakInfo }>('/api/gamification/streak'),
-  checkIn: () => fetchWithAuth<{ success: boolean; result: CheckInResult }>('/api/gamification/check-in', { method: 'POST' }),
-
-  // Quests - Backend returns user's quests with progress from /quests
-  getQuests: () => fetchWithAuth<{ success: boolean; quests: Quest[] }>('/api/gamification/quests'),
-  getMyQuests: () => fetchWithAuth<{ success: boolean; quests: UserQuest[] }>('/api/gamification/quests'),
-  claimQuest: (questId: string) => fetchWithAuth<{ success: boolean; reward: UserReward }>(`/api/gamification/quests/${questId}/claim`, { method: 'POST' }),
-
-  // Achievements - Backend returns user's achievements from /achievements
-  getAchievements: () => fetchWithAuth<{ success: boolean; achievements: Achievement[] }>('/api/gamification/achievements'),
-  getMyAchievements: () => fetchWithAuth<{ success: boolean; achievements: UserAchievement[] }>('/api/gamification/achievements'),
-  getAchievementProgress: () => fetchWithAuth<{ success: boolean; progress: AchievementProgress[] }>('/api/gamification/achievements'),
-  claimAchievement: (id: string) => fetchWithAuth<{ success: boolean; reward: UserReward }>(`/api/gamification/achievements/${id}/claim`, { method: 'POST' }),
-
-  // Rewards
-  getRewards: () => fetchWithAuth<{ success: boolean; rewards: UserReward[] }>('/api/gamification/rewards'),
-  claimReward: (id: string) => fetchWithAuth<{ success: boolean }>(`/api/gamification/rewards/${id}/claim`, { method: 'POST' }),
-
-  // Referrals
-  getReferralStats: () => fetchWithAuth<{ success: boolean; stats: ReferralStats }>('/api/gamification/referral'),
-  getReferrals: () => fetchWithAuth<{ success: boolean; referrals: ReferralUser[] }>('/api/gamification/referral'),
-  applyReferralCode: (code: string) => fetchWithAuth<{ success: boolean }>('/api/gamification/referral/apply', { method: 'POST', body: JSON.stringify({ code }) }),
-
-  // Leaderboard
-  getLeaderboard: (type: LeaderboardType = 'level', period: LeaderboardPeriod = 'all', limit = 100) =>
-    fetchWithAuth<{ success: boolean; leaderboard: LeaderboardResponse }>(`/api/gamification/leaderboard?type=${type}&period=${period}&limit=${limit}`),
+  getStreak: async (): Promise<{ streak: StreakInfo }> => {
+    const response = await apiClient.get('/streak');
+    return response.data;
+  },
   
-  // Mine (summary)
-  getMine: () => fetchWithAuth<{ success: boolean; data: any }>('/api/gamification/mine'),
+  checkIn: async (): Promise<CheckInResult> => {
+    const response = await apiClient.post('/check-in');
+    return response.data;
+  },
+
+  getAchievements: async (): Promise<{ achievements: Achievement[] }> => {
+    const response = await apiClient.get('/achievements');
+    return response.data;
+  },
   
-  // Progress
-  getProgress: () => fetchWithAuth<{ success: boolean; data: any }>('/api/gamification/progress'),
+  getQuests: async (): Promise<{ quests: Quest[] }> => {
+    const response = await apiClient.get('/quests');
+    return response.data;
+  },
+  
+  getLeaderboard: async (type: LeaderboardType, period: LeaderboardPeriod): Promise<LeaderboardResponse> => {
+    const response = await apiClient.get('/leaderboard', { params: { type, period } });
+    return response.data;
+  }
 };

@@ -17,50 +17,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Debug Component - Shows in top-right corner during development
-function AuthDebugComponent() {
-  const { user, isAuthenticated, isLoading } = useContext(AuthContext)!;
-  const { user: telegramUser } = useTelegram();
-  
-  // Only show in development
-  if (import.meta.env.PROD) {
-    return null;
-  }
-
-  console.log('🔍 AUTH DEBUG Component Rendering');
-  
-  return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      right: 0,
-      background: 'red',
-      padding: '10px',
-      zIndex: 9999,
-      color: 'white',
-      fontSize: '12px',
-      fontFamily: 'monospace',
-      borderRadius: '0 0 0 8px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-      minWidth: '250px'
-    }}>
-      <h3 style={{ margin: '0 0 8px 0' }}>🔍 AUTH DEBUG</h3>
-      <p style={{ margin: '2px 0' }}>Component Loaded: <strong>YES</strong></p>
-      <p style={{ margin: '2px 0' }}>isAuthenticated: {isAuthenticated ? '✅ true' : '❌ false'}</p>
-      <p style={{ margin: '2px 0' }}>isLoading: {isLoading ? '⏳ true' : '✅ false'}</p>
-      <p style={{ margin: '2px 0' }}>User: {user ? `✅ ${user.username || user.firstName}` : '❌ null'}</p>
-      <p style={{ margin: '2px 0' }}>User ID: {user?.id || 'N/A'}</p>
-      <p style={{ margin: '2px 0' }}>Telegram User: {telegramUser ? '✅ YES' : '❌ NO'}</p>
-      <p style={{ margin: '2px 0', fontSize: '10px', opacity: 0.8 }}>
-        Token: {TokenManager.getToken() ? '✅ EXISTS' : '❌ NONE'}
-      </p>
-    </div>
-  );
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  console.log('🔄 AuthProvider mounted');
-  
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { user: telegramUser, webApp } = useTelegram();
@@ -94,39 +51,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return null;
   }, []);
 
-  // Emergency auth bypass for development
-  useEffect(() => {
-    if (import.meta.env.DEV && !user && !isLoading) {
-      const bypassAuth = localStorage.getItem('dev_auth_bypass');
-      if (bypassAuth === 'true') {
-        console.log('🔓 DEV MODE: Auth bypass enabled');
-        const DEV_USER_ID = 999999; // Mock user ID for development testing
-        const devUser: User = {
-          id: DEV_USER_ID,
-          telegramId: DEV_USER_ID,
-          username: 'dev_user',
-          firstName: 'Dev',
-          lastName: 'User',
-          level: '1',
-          experience: 0,
-          referralCode: 'DEV999',
-        };
-        setUser(devUser);
-        apiClient.setUser(devUser);
-        console.log('✅ DEV MODE: Mock user set:', devUser);
-      }
-    }
-  }, [user, isLoading]);
-
   // Initialize auth state from localStorage on mount
   useEffect(() => {
     const initializeAuth = async () => {
-      console.log('🔄 Initializing authentication...');
       const token = TokenManager.getToken();
       
       if (token && !TokenManager.isTokenExpired(token)) {
         // Token exists and is valid - restore user session
-        console.log('✅ Valid token found - restoring session');
         apiClient.setToken(token);
         
         try {
@@ -136,18 +67,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(profile.user);
             // Ensure user IDs are stored for gamification API
             TokenManager.setUserIds(profile.user.id, profile.user.telegramId);
-            console.log('✅ User session restored:', profile.user.username || profile.user.firstName);
           }
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          console.error('Failed to restore session - API error:', errorMessage);
           // Clear invalid token
           TokenManager.clearAll();
           apiClient.clearToken();
         }
       } else if (token) {
         // Token exists but is expired
-        console.log('⚠️ Token expired - clearing');
         TokenManager.clearAll();
         apiClient.clearToken();
       }
@@ -161,23 +88,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Auto-login with Telegram user when available
   useEffect(() => {
     const attemptTelegramLogin = async () => {
-      // Debug: Log current auth state
-      console.log('🔍 AUTH DEBUG:');
-      console.log('telegramUser:', telegramUser);
-      console.log('webApp:', webApp);
-      console.log('user:', user);
-      console.log('isLoading:', isLoading);
-      console.log('isAuthenticated:', !!user);
-      
-      // Only auto-login if:
-      // 1. We have a Telegram user from the WebApp
-      // 2. We're not already authenticated
-      // 3. We're not currently loading
+      // Only auto-login if we have a Telegram user and we're not already authenticated
       if (telegramUser && webApp && !user && !isLoading) {
-        console.log('🔄 Attempting Telegram auto-login for:', telegramUser.username || telegramUser.first_name);
-        
-        // Validate auth date is recent (within 24 hours) before making API call
-        // This prevents unnecessary API calls with stale data
+        // Validate auth date is recent (within 24 hours)
         const authDate = webApp.initDataUnsafe?.auth_date;
         if (authDate) {
           const now = Math.floor(Date.now() / 1000);
@@ -185,24 +98,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const isRecent = (now - authDate) < oneDay;
           
           if (!isRecent) {
-            console.warn('⚠️ Auth data is too old (>24 hours) - skipping auto-login');
             return;
           }
         } else {
-          console.warn('⚠️ No auth_date available - skipping auto-login');
           return;
         }
         
         try {
-          const loggedInUser = await performTelegramLogin(telegramUser, webApp);
-          if (loggedInUser) {
-            console.log('✅ Auto-login successful:', loggedInUser.username || loggedInUser.firstName);
-          } else {
-            console.warn('⚠️ Auto-login failed - no user returned');
-          }
+          await performTelegramLogin(telegramUser, webApp);
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          console.error('❌ Auto-login failed:', errorMessage);
+          // Silent fail - user can manually login if needed
         }
       }
     };
@@ -212,22 +117,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async () => {
     if (!telegramUser || !webApp) {
-      console.warn('⚠️ Cannot login - Telegram user or WebApp not available');
       setIsLoading(false);
       return;
     }
 
     try {
       setIsLoading(true);
-      const loggedInUser = await performTelegramLogin(telegramUser, webApp);
-      if (loggedInUser) {
-        console.log('✅ Manual login successful:', loggedInUser.username || loggedInUser.firstName);
-      } else {
-        console.warn('⚠️ Manual login failed - no user returned');
-      }
+      await performTelegramLogin(telegramUser, webApp);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('❌ Manual login failed:', errorMessage);
+      // Silent fail
     } finally {
       setIsLoading(false);
     }
@@ -307,11 +205,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [telegramUser]);
 
   const loginWithTelegram = async (telegramUser: TelegramUser): Promise<boolean> => {
-    console.log('🔐 loginWithTelegram called for:', telegramUser.username || telegramUser.first_name);
-    
     // Production: Real API call for Telegram auth
     try {
-      console.log('🌐 Calling API for Telegram authentication');
       const response = await apiClient.loginTelegram({
         id: telegramUser.id,
         first_name: telegramUser.first_name,
@@ -329,31 +224,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(response.user);
         // Ensure user IDs are stored for gamification API
         TokenManager.setUserIds(response.user.id, response.user.telegramId);
-        console.log('✅ API login successful:', response.user.username || response.user.firstName);
         return true;
       }
       
-      console.warn('⚠️ API login failed - no token in response');
       return false;
     } catch (error) {
-      console.error('❌ Telegram auth failed:', error);
       return false;
     }
   };
 
-  // Only log auth status in development mode
-  if (import.meta.env.DEV) {
-    console.log('🔍 AUTH STATUS CHECK:');
-    console.log('- Component mounted: true');
-    console.log('- isAuthenticated:', !!user);
-    console.log('- isLoading:', isLoading);
-    console.log('- user:', user);
-  }
   
   return (
-    <>
-      <AuthDebugComponent />
-      <AuthContext.Provider
+    <AuthContext.Provider
         value={{
           user,
           isAuthenticated: !!user,
@@ -367,7 +249,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       >
         {children}
       </AuthContext.Provider>
-    </>
   );
 }
 

@@ -35,7 +35,6 @@ import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
 import DevToolsPanel from './components/DevTools/DevToolsPanel';
-import AuthTest from './components/AuthTest';
 import { useLotteries, type Lottery } from './hooks/useLotteries';
 import { SkeletonLoader } from './components/Animations';
 import './App.css';
@@ -74,12 +73,6 @@ function MainScreen() {
       const customEvent = e as CustomEvent<{ currency: 'TON' | 'USDT' }>;
       const newCurrency = customEvent.detail.currency;
       
-      console.group('📱 MainScreen Currency Update');
-      console.log('Previous:', selectedCurrency);
-      console.log('New:', newCurrency);
-      console.log('Will update displayLotteries');
-      console.groupEnd();
-      
       setSelectedCurrency(newCurrency);
     }
 
@@ -90,7 +83,6 @@ function MainScreen() {
   }, []);
 
   const handleBuyTicket = (lotteryId: string) => {
-    console.log('Buying ticket for:', lotteryId);
     navigate(`/lottery/${lotteryId}`);
   };
 
@@ -140,9 +132,6 @@ function MainScreen() {
           icon: getIconForLottery(lottery.name),
         };
       });
-
-    console.log('💰 Current currency:', selectedCurrency);
-    console.log('🎰 Display lotteries:', lotteries.map(l => `${l.title}: ${l.prizePool}`));
     
     return lotteries;
   }, [lotteriesData, selectedCurrency]);
@@ -228,7 +217,6 @@ function App() {
     <TonConnectUIProvider manifestUrl="https://raw.githubusercontent.com/bobby-singer89/lottery-frontend/main/public/tonconnect-manifest.json">
       <AuthProvider>
         <WalletConnectionHandler />
-        <AuthTest />
         <SoundProvider>
           {!ageConfirmed && <AgeGate onConfirm={handleAgeConfirm} />}
           {ageConfirmed && (

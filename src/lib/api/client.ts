@@ -134,14 +134,6 @@ class ApiClient {
         }
       }
 
-      // Only log in development mode
-      if (import.meta.env.DEV) {
-        console.log(`📡 API Request: ${endpoint}`, {
-          hasToken: !!this.token,
-          headers: Object.keys(headers)
-        });
-      }
-
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         ...options,
         headers: {
@@ -181,7 +173,6 @@ class ApiClient {
     auth_date?: number;
     hash?: string;
   }) {
-    // Debug: Log API call details
     const requestBody = {
       id: telegramUser.id.toString(),
       first_name: telegramUser.first_name,
@@ -191,10 +182,6 @@ class ApiClient {
       auth_date: telegramUser.auth_date,
       hash: telegramUser.hash,
     };
-    
-    console.log('📡 API CALL DEBUG:');
-    console.log('endpoint:', '/api/auth/telegram');
-    console.log('request body:', requestBody);
     
     const response = await this.request<{
       success: boolean;

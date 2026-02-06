@@ -204,6 +204,7 @@ export class TokenManager {
 
   /**
    * Set user IDs in localStorage (for manual override if needed)
+   * At least one ID should be provided for this to have any effect
    */
   static setUserIds(userId?: number, telegramId?: number): void {
     try {

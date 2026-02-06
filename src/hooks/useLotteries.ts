@@ -2,22 +2,7 @@
  * Hook for fetching the list of all lotteries
  */
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '../lib/api/client';
-
-export interface Lottery {
-  id: string;
-  slug: string;
-  name: string;
-  description?: string;
-  active: boolean;
-  prizePool: number;
-  currentJackpot?: number; // Alternative field name
-  ticketPrice: number;
-  drawDate: string;
-  participants: number;
-  currency: 'TON' | 'USDT';
-  featured?: boolean;
-}
+import { apiClient, type Lottery } from '../lib/api/client';
 
 interface LotteriesResponse {
   success: boolean;
@@ -35,3 +20,5 @@ export function useLotteries() {
     retry: 2,
   });
 }
+
+export type { Lottery };

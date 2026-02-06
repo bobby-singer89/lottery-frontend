@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from 'react';
 
 export interface CartTicket {
@@ -38,9 +37,8 @@ export function useTicketCart(pricePerTicket: number): UseTicketCart {
     try {
       const stored = localStorage.getItem(CART_STORAGE_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored);
-        // Convert date strings back to Date objects
-        return parsed.map((ticket: any) => ({
+        const parsed = JSON.parse(stored) as Array<Omit<CartTicket, 'addedAt'> & { addedAt: string }>;
+        return parsed.map((ticket) => ({
           ...ticket,
           addedAt: new Date(ticket.addedAt)
         }));

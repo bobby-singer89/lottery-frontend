@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
@@ -13,6 +12,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  type TooltipProps,
 } from 'recharts';
 import './WinningsChart.css';
 
@@ -63,13 +63,13 @@ const aggregateData = (data: WinningData[]) => {
 };
 
 // Custom tooltip
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     return (
       <div className="chart-tooltip">
         <p className="tooltip-label">{payload[0].payload.date}</p>
         <p className="tooltip-value">
-          {payload[0].value.toLocaleString('ru-RU')} TON
+          {payload[0].value?.toLocaleString('ru-RU')} TON
         </p>
       </div>
     );

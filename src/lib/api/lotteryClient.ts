@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { apiClient } from './client';
 
 export interface BuyTicketRequest {
@@ -88,7 +87,15 @@ class LotteryClient {
   /**
    * Get user's tickets for a lottery
    */
-  async getMyTickets(slug: string, page = 1, limit = 20): Promise<{ tickets: Ticket[]; pagination: any }> {
+  async getMyTickets(slug: string, page = 1, limit = 20): Promise<{ 
+    tickets: Ticket[]; 
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages?: number;
+    }
+  }> {
     const response = await apiClient.getMyTickets(slug, page, limit);
     return {
       tickets: response.tickets,
@@ -99,11 +106,11 @@ class LotteryClient {
   /**
    * Get lottery information
    */
-  async getLotteryInfo(slug: string): Promise<{ lottery: LotteryInfo; nextDraw: NextDraw }> {
+  async getLotteryInfo(slug: string): Promise<{ lottery: LotteryInfo; nextDraw: NextDraw | null }> {
     const response = await apiClient.getLotteryInfo(slug);
     return {
-      lottery: response.lottery,
-      nextDraw: response.nextDraw
+      lottery: response.lottery as LotteryInfo,
+      nextDraw: response.nextDraw as NextDraw | null
     };
   }
 }

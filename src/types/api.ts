@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * API Type Definitions
  * 
@@ -9,7 +8,7 @@
 /**
  * Generic API Response wrapper
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -271,7 +270,7 @@ export interface SwapQuote {
 }
 
 export interface SwapTransaction {
-  transaction: any;
+  transaction: unknown;
   quote: SwapQuote;
   minOutput: string;
   estimatedGas: string;
@@ -295,7 +294,7 @@ export interface ApiError {
   error: string;
   message: string;
   statusCode?: number;
-  details?: any;
+  details?: unknown;
 }
 
 /**

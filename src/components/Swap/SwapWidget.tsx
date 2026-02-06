@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTonConnectUI, useTonAddress } from '@tonconnect/ui-react';
+import type { SendTransactionRequest } from '@tonconnect/sdk';
 import { apiClient } from '../../lib/api/client';
 import './SwapWidget.css';
 
@@ -27,7 +27,15 @@ export default function SwapWidget() {
   const [rate, setRate] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [swapping, setSwapping] = useState(false);
-  const [quote, setQuote] = useState<any>(null);
+  const [quote, setQuote] = useState<{
+    from: string;
+    to: string;
+    amount: number;
+    estimatedOutput: number;
+    rate: number;
+    priceImpact: number;
+    fee: number;
+  } | null>(null);
 
   // Load quote when amount changes
   useEffect(() => {
@@ -50,7 +58,7 @@ export default function SwapWidget() {
       );
 
       setQuote(response.quote);
-      setToAmount(response.quote.toAmount);
+      setToAmount(response.quote.estimatedOutput.toString());
       setRate(response.quote.rate);
     } catch (error) {
       console.error('Failed to load quote:', error);
@@ -81,7 +89,7 @@ export default function SwapWidget() {
       console.log('Swap transaction:', response.transaction);
 
       // Execute via TON Connect
-      const result = await tonConnectUI.sendTransaction(response.transaction);
+      const result = await tonConnectUI.sendTransaction(response.transaction as SendTransactionRequest);
 
       if (result.boc) {
         alert(`✅ Обмен выполнен!\n\nВы получите примерно ${toAmount} ${toToken.symbol}\n\nПроверьте ваш кошелёк через несколько секунд.`);
@@ -91,14 +99,14 @@ export default function SwapWidget() {
         setToAmount('0');
         setQuote(null);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Swap failed:', error);
       
-      if (error.message?.includes('cancel')) {
-        alert('Обмен отменён');
-      } else {
-        alert(`Ошибка при обмене: ${error.message || 'Неизвестная ошибка'}`);
-      }
+      const errorMessage = error instanceof Error && error.message?.includes('cancel')
+        ? 'Обмен отменён'
+        : `Ошибка при обмене: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`;
+      
+      alert(errorMessage);
     } finally {
       setSwapping(false);
     }
@@ -192,7 +200,7 @@ export default function SwapWidget() {
           </div>
           <div className="detail-row">
             <span>Мин. получите:</span>
-            <span>{quote.minimumReceived} {toToken.symbol}</span>
+            <span>{(quote.estimatedOutput * 0.995).toFixed(2)} {toToken.symbol}</span>
           </div>
           {quote.priceImpact > 1 && (
             <div className="detail-row warning">

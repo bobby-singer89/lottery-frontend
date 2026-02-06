@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getApiBaseUrl } from '../utils/env';
 import type { PurchasedTicket } from '../../services/ticketApi';
 import { parseApiError } from './errors';
@@ -23,6 +22,18 @@ export interface Lottery {
   ticketPrice: number;
   jackpot: number;
   featured: boolean;
+  description?: string;
+  numbersToSelect?: number;
+  numbersPool?: number;
+  currentJackpot?: number;
+  prizeStructure?: Record<string, number | string>;
+  isActive?: boolean;
+  active?: boolean;
+  lotteryWallet?: string;
+  prizePool?: number;
+  drawDate?: string;
+  participants?: number;
+  rules?: string;
 }
 
 export interface Draw {
@@ -153,10 +164,10 @@ class ApiClient {
       }
 
       return response.json();
-    } catch (error: any) {
+    } catch (error: unknown) {
       clearTimeout(timeoutId);
       
-      if (error.name === 'AbortError') {
+      if (error instanceof Error && error.name === 'AbortError') {
         throw parseApiError(new Error('Request timeout'), 408);
       }
       
@@ -187,7 +198,7 @@ class ApiClient {
     const response = await this.request<{
       success: boolean;
       token: string;
-      user: any;
+      user: User;
     }>('/api/auth/telegram', {
       method: 'POST',
       body: JSON.stringify(requestBody),
@@ -207,7 +218,7 @@ class ApiClient {
     last_name?: string;
     photo_url?: string;
   }) {
-    const response = await this.request<{ success: boolean; user: any }>('/api/auth/connect-wallet', {
+    const response = await this.request<{ success: boolean; user: User }>('/api/auth/connect-wallet', {
       method: 'POST',
       body: JSON.stringify({ tonWallet, ...telegramData }),
     });
@@ -224,22 +235,22 @@ class ApiClient {
   async getLotteryList() {
     return this.request<{
       success: boolean;
-      lotteries: any[];
+      lotteries: Lottery[];
     }>('/api/lottery/list');
   }
 
   async getLotteryInfo(slug: string) {
     return this.request<{
       success: boolean;
-      lottery: any;
-      nextDraw: any;
+      lottery: Lottery;
+      nextDraw: Draw | null;
     }>(`/api/lottery/${slug}/info`);
   }
 
   async buyTicket(slug: string, numbers: number[], txHash: string) {
     return this.request<{
       success: boolean;
-      ticket: any;
+      ticket: PurchasedTicket;
     }>(`/api/lottery/${slug}/buy-ticket`, {
       method: 'POST',
       body: JSON.stringify({ numbers, txHash }),
@@ -267,7 +278,7 @@ class ApiClient {
   async getCurrentDraw() {
     return this.request<{
       success: boolean;
-      draw: any;
+      draw: Draw | null;
     }>('/api/draws/current');
   }
 
@@ -275,7 +286,7 @@ class ApiClient {
   async getProfile() {
     const response = await this.request<{
       success: boolean;
-      user: any;
+      user: User;
     }>('/api/user/profile');
     
     // Store user for future API calls
@@ -286,10 +297,10 @@ class ApiClient {
     return response;
   }
 
-  async updateProfile(data: any) {
+  async updateProfile(data: Partial<User>) {
     return this.request<{
       success: boolean;
-      user: any;
+      user: User;
     }>('/api/user/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -325,7 +336,14 @@ class ApiClient {
     }>('/api/user/stats');
   }
 
-  async getUserHistory(filters?: any) {
+  async getUserHistory(filters?: {
+    page?: number;
+    limit?: number;
+    type?: string;
+    lotteryId?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }) {
     const params = new URLSearchParams();
     if (filters?.page) params.append('page', filters.page.toString());
     if (filters?.limit) params.append('limit', filters.limit.toString());
@@ -395,7 +413,18 @@ class ApiClient {
 
   // Swap endpoints
   async getSwapQuote(from: string, to: string, amount: number) {
-    return this.request<{ success: boolean; quote: any }>(
+    return this.request<{ 
+      success: boolean; 
+      quote: {
+        from: string;
+        to: string;
+        amount: number;
+        estimatedOutput: number;
+        rate: number;
+        priceImpact: number;
+        fee: number;
+      }
+    }>(
       `/api/swap/quote?from=${from}&to=${to}&amount=${amount}`
     );
   }
@@ -409,8 +438,16 @@ class ApiClient {
   }) {
     return this.request<{
       success: boolean;
-      transaction: any;
-      quote: any;
+      transaction: unknown;
+      quote: {
+        from: string;
+        to: string;
+        amount: number;
+        estimatedOutput: number;
+        rate: number;
+        priceImpact: number;
+        fee: number;
+      };
       minOutput: string;
       estimatedGas: string;
     }>('/api/swap/build-transaction', {
@@ -421,7 +458,15 @@ class ApiClient {
   }
 
   async getSupportedTokens() {
-    return this.request<{ success: boolean; tokens: any[] }>('/api/swap/tokens');
+    return this.request<{ 
+      success: boolean; 
+      tokens: Array<{
+        symbol: string;
+        name: string;
+        decimals: number;
+        address: string;
+      }>
+    }>('/api/swap/tokens');
   }
 
   async getSwapRate(from: string, to: string) {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { gamificationClient } from '../lib/api/gamificationClient';
 import type { Reward } from '../lib/api/gamificationClient';
@@ -44,8 +43,15 @@ export function useRewards(userId?: string) {
       queryClient.invalidateQueries({ queryKey: ['gamification', 'profile'] });
       setError(null);
     },
-    onError: (err: any) => {
-      setError(err.response?.data?.error || err.message || 'Failed to claim reward');
+    onError: (err: unknown) => {
+      let errorMessage = 'Failed to claim reward';
+      if (err && typeof err === 'object' && 'response' in err) {
+        const response = (err as { response?: { data?: { error?: string } } }).response;
+        errorMessage = response?.data?.error || errorMessage;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
     }
   });
 

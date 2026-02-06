@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Lottery Error Recovery Component
  * Catches and handles errors in lottery application with recovery options
  */
 
-import { Component, type ReactNode } from 'react';
+import { Component, type ReactNode, type ErrorInfo } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -26,7 +25,7 @@ export class LotteryErrorCatcher extends Component<Props, State> {
     return { caughtError: error, errorContext: error.message };
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('[Lottery App Error]', error, errorInfo);
   }
 

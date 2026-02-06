@@ -36,10 +36,10 @@ export function getApiBaseUrl(): string {
 
 /**
  * Check if we're in development mode
- * In production builds, import.meta.env.MODE is 'production'
+ * In production builds, import.meta.env.DEV is false
  */
 export function isDevelopment(): boolean {
-  return import.meta.env.MODE === 'development' || import.meta.env.DEV === true;
+  return import.meta.env.DEV;
 }
 
 /**

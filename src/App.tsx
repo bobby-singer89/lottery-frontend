@@ -35,6 +35,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
 import DevToolsPanel from './components/DevTools/DevToolsPanel';
+import AuthTest from './components/AuthTest';
 import { useLotteries, type Lottery } from './hooks/useLotteries';
 import { SkeletonLoader } from './components/Animations';
 import './App.css';
@@ -227,6 +228,7 @@ function App() {
     <TonConnectUIProvider manifestUrl="https://raw.githubusercontent.com/bobby-singer89/lottery-frontend/main/public/tonconnect-manifest.json">
       <AuthProvider>
         <WalletConnectionHandler />
+        <AuthTest />
         <SoundProvider>
           {!ageConfirmed && <AgeGate onConfirm={handleAgeConfirm} />}
           {ageConfirmed && (

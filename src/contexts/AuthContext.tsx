@@ -88,6 +88,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Auto-login with Telegram user when available
   useEffect(() => {
     const attemptTelegramLogin = async () => {
+      // Debug: Log current auth state
+      console.log('🔍 AUTH DEBUG:');
+      console.log('telegramUser:', telegramUser);
+      console.log('webApp:', webApp);
+      console.log('user:', user);
+      console.log('isLoading:', isLoading);
+      console.log('isAuthenticated:', !!user);
+      
       // Only auto-login if:
       // 1. We have a Telegram user from the WebApp
       // 2. We're not already authenticated

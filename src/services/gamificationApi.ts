@@ -13,26 +13,51 @@ import type {
   StreakInfo,
   UserReward,
 } from '../types/gamification';
+import { TokenManager } from '../lib/auth/token';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api/gamification`,
   headers: { 'Content-Type': 'application/json' },
 });
 
-function getTelegramUserId(): string | null {
+// Helper function to get user identification
+function getUserIdForApi(): string | null {
+  // Priority 1: stored user_id (CUID from database after login)
+  const storedUserId = TokenManager.getUserId();
+  if (storedUserId) {
+    return storedUserId;
+  }
+  
+  // Priority 2: stored telegram_id 
+  const telegramId = TokenManager.getTelegramId();
+  if (telegramId) {
+    return telegramId;
+  }
+  
+  // Priority 3: directly from Telegram WebApp
   try {
     const tg = (window as any).Telegram?.WebApp;
     return tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : null;
   } catch (e) {
-    console.error("Ошибка при получении user ID из Telegram WebApp:", e);
+    console.error("Error getting Telegram user ID:", e);
     return null;
   }
 }
 
 apiClient.interceptors.request.use(
   (config) => {
-    const userId = getTelegramUserId();
-    if (userId) config.headers['x-user-id'] = userId;
+    // Try JWT token first
+    const token = TokenManager.getToken();
+    if (token && !TokenManager.isTokenExpired(token)) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    // Also add x-user-id header for backend compatibility
+    const userId = getUserIdForApi();
+    if (userId) {
+      config.headers['x-user-id'] = userId;
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHaptic } from '../../hooks/useHaptic';
@@ -65,8 +64,13 @@ export const AIChatbot = () => {
   useEffect(() => {
     const savedMessages = localStorage.getItem('chatbot_messages');
     if (savedMessages) {
-      const parsed = JSON.parse(savedMessages);
-      setMessages(parsed.map((m: any) => ({
+      const parsed = JSON.parse(savedMessages) as Array<{
+        id: string;
+        text: string;
+        sender: 'bot' | 'user';
+        timestamp: string;
+      }>;
+      setMessages(parsed.map((m) => ({
         ...m,
         timestamp: new Date(m.timestamp)
       })));

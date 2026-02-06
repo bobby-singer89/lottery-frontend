@@ -14,9 +14,9 @@ import { adminApiClient } from '../../lib/api/adminClient';
 import './AdminNotifications.css';
 
 interface NotificationHistory {
-  id: number;
+  id: string;
   message: string;
-  recipient: string;
+  recipient?: string;
   recipientType: 'all' | 'user';
   status: 'sent' | 'failed';
   createdAt: string;
@@ -50,7 +50,16 @@ export default function AdminNotifications() {
       setError(null);
       const response = await adminApiClient.getNotifications({ limit: 20 });
       if (response.success) {
-        setNotifications(response.notifications);
+        // Cast NotificationData to NotificationHistory with proper mapping
+        const mapped = response.notifications.map(notif => ({
+          id: notif.id,
+          message: notif.message,
+          recipient: notif.userId?.toString() || undefined,
+          recipientType: notif.broadcast ? 'all' as const : 'user' as const,
+          status: notif.status === 'sent' ? 'sent' as const : 'failed' as const,
+          createdAt: notif.createdAt,
+        }));
+        setNotifications(mapped);
       }
     } catch (err) {
       console.error('Failed to fetch notifications:', err);

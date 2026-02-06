@@ -11,16 +11,11 @@ import {
 } from 'lucide-react';
 import AdminLayout from '../../components/Admin/AdminLayout';
 import { adminApiClient } from '../../lib/api/adminClient';
+import type { User as ApiUser } from '../../types/api';
 import './AdminUsers.css';
 
-interface User {
-  id: number;
-  username: string;
-  telegramId: string;
-  walletAddress?: string;
-  balance: number;
-  level: number;
-  ticketsCount: number;
+interface User extends ApiUser {
+  ticketsCount?: number;
   avatarUrl?: string;
 }
 
@@ -62,7 +57,15 @@ export default function AdminUsers() {
       });
       
       if (response.success) {
-        setUsers(response.users);
+        // Map API users to local User type with ticketsCount
+        const mappedUsers = response.users.map(user => ({
+          ...user,
+          ticketsCount: user.totalTickets || 0,
+          avatarUrl: user.photoUrl,
+          username: user.username || user.firstName || '',
+          telegramId: user.telegramId || '',
+        } as User));
+        setUsers(mappedUsers);
         setPagination(response.pagination);
       }
     } catch (err) {
@@ -74,7 +77,7 @@ export default function AdminUsers() {
   };
 
   const handleUserClick = (user: User) => {
-    alert(`Детали пользователя:\n\nID: ${user.id}\nИмя: ${user.username}\nTelegram ID: ${user.telegramId}\nКошелек: ${user.walletAddress || 'Не подключен'}\nБаланс: ${user.balance} TON\nУровень: ${user.level}\nБилеты: ${user.ticketsCount}`);
+    alert(`Детали пользователя:\n\nID: ${user.id}\nИмя: ${user.username}\nTelegram ID: ${user.telegramId}\nКошелек: ${user.walletAddress || 'Не подключен'}\nБаланс: ${user.balance} TON\nУровень: ${user.level || 'N/A'}\nБилеты: ${user.ticketsCount || 0}`);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -200,7 +203,7 @@ export default function AdminUsers() {
                         <div className="user-info">
                           <div className="user-avatar">
                             {user.avatarUrl ? (
-                              <img src={user.avatarUrl} alt={user.username} />
+                              <img src={user.avatarUrl || ''} alt={user.username} />
                             ) : (
                               <Users size={20} />
                             )}
@@ -229,12 +232,12 @@ export default function AdminUsers() {
                         <span className="balance">{user.balance.toFixed(2)}</span>
                       </td>
                       <td>
-                        <span className={`level-badge level-${user.level}`}>
-                          Уровень {user.level}
+                        <span className={`level-badge level-${user.level || 1}`}>
+                          Уровень {user.level || 1}
                         </span>
                       </td>
                       <td>
-                        <span className="tickets-count">{user.ticketsCount}</span>
+                        <span className="tickets-count">{user.ticketsCount || 0}</span>
                       </td>
                     </motion.tr>
                   ))}

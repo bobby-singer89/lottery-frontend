@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Unified payment processor for lottery ticket purchases
  * Supports both TON native and USDT jetton transactions
@@ -20,11 +18,9 @@ interface TransactionOutcome {
 }
 
 export class LotteryPaymentProcessor {
-  // private _walletConnection: any; // Reserved for future implementation
   private currentUserAddress: string | null;
 
-  constructor(_connection: any, userAddr: string | null) {
-    // this._walletConnection = connection; // Reserved for future implementation
+  constructor(_connection: unknown, userAddr: string | null) {
     this.currentUserAddress = userAddr;
   }
 
@@ -43,12 +39,13 @@ export class LotteryPaymentProcessor {
       } else {
         return await this.handleJettonTransfer(config);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Payment processing error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown payment error';
       return {
         transactionId: '',
         wasSuccessful: false,
-        errorDetails: err.message || 'Unknown payment error'
+        errorDetails: errorMessage
       };
     }
   }

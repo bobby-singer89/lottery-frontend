@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { Wrench, X, User, Smartphone, Code } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -15,7 +14,15 @@ export default function DevToolsPanel() {
   // Don't show DevTools if mock auth is not enabled
   if (!isDevToolsEnabled()) return null;
 
-  const mockUsers = [
+  interface MockUser {
+    id: number;
+    first_name: string;
+    last_name: string;
+    username: string;
+    photo_url: string;
+  }
+
+  const mockUsers: MockUser[] = [
     {
       id: 432735601,
       first_name: 'Yury',
@@ -32,7 +39,7 @@ export default function DevToolsPanel() {
     }
   ];
 
-  const handleLogin = async (mockUser: any) => {
+  const handleLogin = async (mockUser: MockUser) => {
     setIsLoggingIn(true);
     setLoginError(null);
     

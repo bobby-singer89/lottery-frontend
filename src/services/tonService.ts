@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TonClient, Address } from '@ton/ton';
 import { CURRENT_CONFIG } from '../config/contracts';
 
@@ -65,10 +64,18 @@ export async function verifyTransaction(
   }
 }
 
+interface TransactionDetails {
+  hash: string;
+  from: string;
+  to: string;
+  value: string;
+  timestamp: number;
+}
+
 /**
  * Get transaction details
  */
-export async function getTransactionDetails(txHash: string): Promise<any> {
+export async function getTransactionDetails(txHash: string): Promise<TransactionDetails | null> {
   try {
     // TODO: Implement transaction query via TON API
     console.log(`📜 Getting transaction details: ${txHash}`);

@@ -3,34 +3,15 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../lib/api/client';
+import type { Lottery, Draw } from '../types/api';
 
-export interface LotteryDetails {
-  id: string;
-  slug: string;
-  name: string;
-  description?: string;
-  rules?: string;
-  numbersToSelect: number;
-  numbersPool: number;
-  ticketPrice: number;
-  currentJackpot: number;
-  prizeStructure: Record<string, number | string>;
-  isActive: boolean;
-  currency: 'TON' | 'USDT';
-  lotteryWallet: string;
-}
-
-export interface NextDraw {
-  id: string;
-  scheduledAt: string;
-  status: string;
-  drawNumber?: number;
-}
+export type LotteryDetails = Lottery;
+export type NextDraw = Draw;
 
 interface LotteryResponse {
   success: boolean;
-  lottery: LotteryDetails;
-  nextDraw: NextDraw;
+  lottery: Lottery;
+  nextDraw: Draw | null;
 }
 
 export function useLottery(slug: string) {

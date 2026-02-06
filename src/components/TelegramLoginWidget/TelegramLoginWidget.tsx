@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef } from 'react';
 
 interface TelegramLoginWidgetProps {
@@ -34,7 +33,7 @@ export default function TelegramLoginWidget({
 
   useEffect(() => {
     // Set up callback function globally
-    (window as any).onTelegramAuth = (user: TelegramUser) => {
+    (window as { onTelegramAuth?: (user: TelegramUser) => void }).onTelegramAuth = (user: TelegramUser) => {
       onAuth(user);
     };
 
@@ -61,7 +60,7 @@ export default function TelegramLoginWidget({
     }
 
     return () => {
-      delete (window as any).onTelegramAuth;
+      delete (window as { onTelegramAuth?: (user: TelegramUser) => void }).onTelegramAuth;
     };
   }, [botName, buttonSize, cornerRadius, requestAccess, usePic, lang, onAuth]);
 

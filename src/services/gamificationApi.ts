@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 import type {
@@ -13,6 +12,7 @@ import type {
   ReferralUser,
   StreakInfo,
   UserReward,
+  UserQuest,
 } from '../types/gamification';
 import { TokenManager } from '../lib/auth/token';
 
@@ -37,8 +37,18 @@ function getUserIdForApi(): string | null {
   
   // Priority 3: directly from Telegram WebApp
   try {
-    const tg = (window as any).Telegram?.WebApp;
-    return tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : null;
+    const win = window as typeof window & {
+      Telegram?: {
+        WebApp?: {
+          initDataUnsafe?: {
+            user?: {
+              id: number;
+            };
+          };
+        };
+      };
+    };
+    return win.Telegram?.WebApp?.initDataUnsafe?.user?.id ? String(win.Telegram.WebApp.initDataUnsafe.user.id) : null;
   } catch (e) {
     console.error("Error getting Telegram user ID:", e);
     return null;
@@ -80,7 +90,7 @@ export const gamificationApi = {
     apiClient.post(`/achievements/${achievementId}/claim`).then(res => res.data),
 
   // Quests
-  getMyQuests: (): Promise<{ quests: any[] }> => apiClient.get('/quests').then(res => res.data),
+  getMyQuests: (): Promise<{ quests: UserQuest[] }> => apiClient.get('/quests').then(res => res.data),
   claimQuest: (questId: string): Promise<{ reward: UserReward }> => 
     apiClient.post(`/quests/${questId}/claim`).then(res => res.data),
 

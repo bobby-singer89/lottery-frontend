@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -51,8 +50,8 @@ export default function VerifyDrawPage() {
       
       const result = await response.json();
       setData(result);
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to load verification data';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load verification data';
       console.error('Verification load error:', err);
       setError(errorMessage);
     } finally {

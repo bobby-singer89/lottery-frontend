@@ -11,19 +11,8 @@ import {
 } from 'lucide-react';
 import AdminLayout from '../../components/Admin/AdminLayout';
 import { adminApiClient } from '../../lib/api/adminClient';
+import type { Lottery } from '../../types/api';
 import './AdminLotteries.css';
-
-interface Lottery {
-  id: number;
-  name: string;
-  description: string;
-  ticketPrice: number;
-  jackpot: number;
-  nextDraw: string;
-  isActive: boolean;
-  numbersCount: number;
-  numbersMax: number;
-}
 
 export default function AdminLotteries() {
   const [lotteries, setLotteries] = useState<Lottery[]>([]);
@@ -52,14 +41,14 @@ export default function AdminLotteries() {
 
   const handleToggleLottery = async (lottery: Lottery) => {
     try {
-      const response = await adminApiClient.updateLottery(lottery.id, {
-        isActive: !lottery.isActive,
+      const response = await adminApiClient.updateLottery(parseInt(lottery.id), {
+        active: !lottery.active,
       });
       
       if (response.success) {
         setLotteries(prev => 
           prev.map(l => 
-            l.id === lottery.id ? { ...l, isActive: !l.isActive } : l
+            l.id === lottery.id ? { ...l, active: !l.active } : l
           )
         );
       }
@@ -70,7 +59,7 @@ export default function AdminLotteries() {
   };
 
   const handleEditLottery = (lottery: Lottery) => {
-    alert(`Редактирование лотереи:\n\nID: ${lottery.id}\nНазвание: ${lottery.name}\nЦена билета: ${lottery.ticketPrice} TON\nДжекпот: ${lottery.jackpot} TON\nСледующий розыгрыш: ${new Date(lottery.nextDraw).toLocaleString('ru-RU')}`);
+    alert(`Редактирование лотереи:\n\nID: ${lottery.id}\nНазвание: ${lottery.name}\nЦена билета: ${lottery.ticketPrice} TON\nДжекпот: ${lottery.currentJackpot} TON\nСледующий розыгрыш: ${new Date(lottery.drawDate).toLocaleString('ru-RU')}`);
   };
 
   const handleCreateLottery = () => {
@@ -142,7 +131,7 @@ export default function AdminLotteries() {
             {lotteries.map((lottery, index) => (
               <motion.div
                 key={lottery.id}
-                className={`lottery-card ${lottery.isActive ? 'active' : 'inactive'}`}
+                className={`lottery-card ${lottery.active ? 'active' : 'inactive'}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -151,8 +140,8 @@ export default function AdminLotteries() {
                   <div className="lottery-icon">
                     <Trophy size={24} />
                   </div>
-                  <div className={`lottery-status ${lottery.isActive ? 'active' : 'inactive'}`}>
-                    {lottery.isActive ? 'Активна' : 'Неактивна'}
+                  <div className={`lottery-status ${lottery.active ? 'active' : 'inactive'}`}>
+                    {lottery.active ? 'Активна' : 'Неактивна'}
                   </div>
                 </div>
 
@@ -173,7 +162,7 @@ export default function AdminLotteries() {
                       <Trophy size={16} className="icon-jackpot" />
                       <div className="info-content">
                         <span className="info-label">Джекпот</span>
-                        <span className="info-value jackpot">{lottery.jackpot} TON</span>
+                        <span className="info-value jackpot">{lottery.currentJackpot} TON</span>
                       </div>
                     </div>
 
@@ -181,13 +170,13 @@ export default function AdminLotteries() {
                       <Calendar size={16} />
                       <div className="info-content">
                         <span className="info-label">Следующий розыгрыш</span>
-                        <span className="info-value">{formatDate(lottery.nextDraw)}</span>
+                        <span className="info-value">{formatDate(lottery.drawDate)}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="lottery-numbers">
-                    Выбрать {lottery.numbersCount} из {lottery.numbersMax} чисел
+                    Выбрать {lottery.numbersToSelect} из {lottery.numbersPool} чисел
                   </div>
                 </div>
 
@@ -200,11 +189,11 @@ export default function AdminLotteries() {
                     Редактировать
                   </button>
                   <button
-                    className={`toggle-btn ${lottery.isActive ? 'active' : 'inactive'}`}
+                    className={`toggle-btn ${lottery.active ? 'active' : 'inactive'}`}
                     onClick={() => handleToggleLottery(lottery)}
                   >
                     <Power size={16} />
-                    {lottery.isActive ? 'Отключить' : 'Включить'}
+                    {lottery.active ? 'Отключить' : 'Включить'}
                   </button>
                 </div>
               </motion.div>

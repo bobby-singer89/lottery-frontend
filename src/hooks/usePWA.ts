@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -14,7 +13,7 @@ export const usePWA = () => {
 
   useEffect(() => {
     const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                  (window.navigator as any).standalone ||
+                  (window.navigator as { standalone?: boolean }).standalone ||
                   document.referrer.includes('android-app://');
     
     setIsInstalled(isPWA);

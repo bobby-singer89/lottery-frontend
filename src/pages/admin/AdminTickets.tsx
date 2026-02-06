@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
@@ -12,17 +11,18 @@ import {
 } from 'lucide-react';
 import AdminLayout from '../../components/Admin/AdminLayout';
 import { adminApiClient } from '../../lib/api/adminClient';
+import type { Lottery } from '../../types/api';
 import './AdminTickets.css';
 
 interface TicketData {
-  id: number;
+  id: string;
   ticketId: string;
-  userId: number;
-  username: string;
-  lotteryId: number;
-  lotteryName: string;
+  userId?: string;
+  username?: string;
+  lotteryId?: string;
+  lotteryName?: string;
   numbers: number[];
-  status: 'active' | 'won' | 'lost';
+  status: 'active' | 'won' | 'lost' | 'pending';
   prize?: number;
   purchaseDate: string;
 }
@@ -41,7 +41,7 @@ export default function AdminTickets() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'active' | 'won' | 'lost' | ''>('');
   const [selectedLottery, setSelectedLottery] = useState<string>('');
-  const [lotteries, setLotteries] = useState<any[]>([]);
+  const [lotteries, setLotteries] = useState<Lottery[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
     limit: 15,
@@ -68,6 +68,8 @@ export default function AdminTickets() {
     }
   };
 
+  const VALID_STATUSES = new Set(['active', 'won', 'lost']);
+
   const fetchTickets = async () => {
     try {
       setLoading(true);
@@ -76,12 +78,25 @@ export default function AdminTickets() {
         page: pagination.page,
         limit: pagination.limit,
         ticketId: searchQuery || undefined,
-        status: statusFilter || undefined,
+        status: VALID_STATUSES.has(statusFilter) ? statusFilter as 'active' | 'won' | 'lost' : undefined,
         lotteryId: selectedLottery ? parseInt(selectedLottery) : undefined,
       });
       
       if (response.success) {
-        setTickets(response.tickets);
+        // Map ApiTicket to TicketData
+        const mappedTickets = response.tickets.map(ticket => ({
+          id: ticket.id,
+          ticketId: ticket.ticketNumber || ticket.id,
+          userId: ticket.userId,
+          username: 'User', // API doesn't provide username, we'll display generic text
+          lotteryId: ticket.lotteryId,
+          lotteryName: ticket.lotterySlug || 'Lottery',
+          numbers: ticket.numbers,
+          status: ticket.status as 'active' | 'won' | 'lost' | 'pending',
+          prize: ticket.prizeAmount,
+          purchaseDate: ticket.purchasedAt,
+        } as TicketData));
+        setTickets(mappedTickets);
         setPagination(response.pagination);
       }
     } catch (err) {

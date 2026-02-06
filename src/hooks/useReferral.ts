@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { gamificationApi } from '../services/gamificationApi';
 import { useState } from 'react';
@@ -45,8 +44,9 @@ export function useReferral(userId?: string) {
       queryClient.invalidateQueries({ queryKey: ['gamification', 'profile'] });
       setError(null);
     },
-    onError: (err: any) => {
-      setError(err.message || 'Failed to apply referral code');
+    onError: (err: unknown) => {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to apply referral code';
+      setError(errorMessage);
     }
   });
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -53,9 +52,9 @@ export default function DrawResultsPage() {
 
       setDraw(data.draw);
       setWinnersByTier(data.winnersByTier);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to fetch draw results:', err);
-      setError(err.message || 'Failed to load draw results');
+      setError(err instanceof Error ? err.message : 'Failed to load draw results');
     } finally {
       setLoading(false);
     }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { apiClient, type Lottery } from '../lib/api/client';
+import { apiClient } from '../lib/api/client';
+import type { Lottery } from '../types/api';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
@@ -196,11 +197,11 @@ export default function HomePage() {
                       <div className="jackpot">
                         <span className="label">Джекпот:</span>
                         <span className="amount">
-                          {getCurrencyIcon(lottery.currency)} {lottery.jackpot.toLocaleString()} {lottery.currency}
+                          {getCurrencyIcon(lottery.currency)} {(lottery.jackpot || lottery.currentJackpot || 0).toLocaleString()} {lottery.currency}
                         </span>
                         {lottery.currency === 'TON' && (
                           <span className="equivalent">
-                            ≈ {(lottery.jackpot * exchangeRate).toFixed(0)} USDT
+                            ≈ {((lottery.jackpot || lottery.currentJackpot || 0) * exchangeRate).toFixed(0)} USDT
                           </span>
                         )}
                       </div>

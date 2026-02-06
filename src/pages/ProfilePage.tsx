@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet, Copy, Check, Trophy, Star, Flame, AlertCircle, Ticket } from 'lucide-react';
@@ -98,7 +97,7 @@ function ProfilePage() {
         const response = await apiClient.getProfile();
         
         if (!isCancelled && response.success) {
-          setProfileData(response as any); // TODO: Type the API response properly
+          setProfileData(response as unknown as UserProfile);
         }
       } catch (error) {
         console.error('Failed to load profile:', error);

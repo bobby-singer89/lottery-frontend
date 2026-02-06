@@ -1,19 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getApiBaseUrl } from '../utils/env';
+import type { User, Lottery, Draw, Ticket, AdminStats } from '../../types/api';
 
 const API_BASE_URL = getApiBaseUrl();
-
-interface AdminStats {
-  totalUsers: number;
-  totalTickets: number;
-  totalRevenue: number;
-  activeLotteries: number;
-  recentActivity: any[];
-}
 
 interface PaginationParams {
   page?: number;
   limit?: number;
+}
+
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 interface UserFilters extends PaginationParams {
@@ -27,6 +26,22 @@ interface TicketFilters extends PaginationParams {
   userId?: number;
   status?: 'active' | 'won' | 'lost';
   ticketId?: string;
+}
+
+interface NotificationData {
+  id: string;
+  message: string;
+  userId?: number;
+  broadcast?: boolean;
+  createdAt: string;
+  status: string;
+}
+
+export interface WinnerInfo {
+  userId: string;
+  ticketId: string;
+  prize: number;
+  matchedNumbers: number;
 }
 
 class AdminApiClient {
@@ -96,20 +111,15 @@ class AdminApiClient {
     const query = params.toString() ? `?${params.toString()}` : '';
     return this.request<{
       success: boolean;
-      users: any[];
-      pagination: {
-        page: number;
-        limit: number;
-        total: number;
-        totalPages: number;
-      };
+      users: User[];
+      pagination: PaginationInfo;
     }>(`/api/admin/users${query}`);
   }
 
   async getUserDetails(id: number) {
     return this.request<{
       success: boolean;
-      user: any;
+      user: User;
     }>(`/api/admin/users/${id}`);
   }
 
@@ -117,24 +127,24 @@ class AdminApiClient {
   async getLotteries() {
     return this.request<{
       success: boolean;
-      lotteries: any[];
+      lotteries: Lottery[];
     }>('/api/admin/lotteries');
   }
 
-  async updateLottery(id: number, data: any) {
+  async updateLottery(id: number, data: Partial<Lottery>) {
     return this.request<{
       success: boolean;
-      lottery: any;
+      lottery: Lottery;
     }>(`/api/admin/lotteries/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   }
 
-  async createLottery(data: any) {
+  async createLottery(data: Omit<Lottery, 'id'>) {
     return this.request<{
       success: boolean;
-      lottery: any;
+      lottery: Lottery;
     }>('/api/admin/lotteries', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -150,15 +160,15 @@ class AdminApiClient {
     const query = params.toString() ? `?${params.toString()}` : '';
     return this.request<{
       success: boolean;
-      draws: any[];
-      pagination?: any;
+      draws: Draw[];
+      pagination?: PaginationInfo;
     }>(`/api/admin/draws${query}`);
   }
 
-  async createDraw(data: any) {
+  async createDraw(data: Partial<Draw>) {
     return this.request<{
       success: boolean;
-      draw: any;
+      draw: Draw;
     }>('/api/admin/draws', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -168,8 +178,8 @@ class AdminApiClient {
   async executeDraw(id: number) {
     return this.request<{
       success: boolean;
-      draw: any;
-      winners: any[];
+      draw: Draw;
+      winners: WinnerInfo[];
     }>(`/api/admin/draws/${id}/execute`, {
       method: 'POST',
     });
@@ -188,8 +198,8 @@ class AdminApiClient {
     const query = params.toString() ? `?${params.toString()}` : '';
     return this.request<{
       success: boolean;
-      tickets: any[];
-      pagination: any;
+      tickets: Ticket[];
+      pagination: PaginationInfo;
     }>(`/api/admin/tickets${query}`);
   }
 
@@ -201,7 +211,7 @@ class AdminApiClient {
   }) {
     return this.request<{
       success: boolean;
-      notification: any;
+      notification: NotificationData;
     }>('/api/admin/notifications', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -216,8 +226,8 @@ class AdminApiClient {
     const query = params.toString() ? `?${params.toString()}` : '';
     return this.request<{
       success: boolean;
-      notifications: any[];
-      pagination?: any;
+      notifications: NotificationData[];
+      pagination?: PaginationInfo;
     }>(`/api/admin/notifications${query}`);
   }
 }

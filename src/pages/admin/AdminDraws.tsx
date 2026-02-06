@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
@@ -13,24 +12,22 @@ import {
 } from 'lucide-react';
 import AdminLayout from '../../components/Admin/AdminLayout';
 import { adminApiClient } from '../../lib/api/adminClient';
+import type { Draw } from '../../types/api';
+import type { WinnerInfo } from '../../lib/api/adminClient';
 import './AdminDraws.css';
 
-interface Draw {
-  id: number;
-  lotteryId: number;
-  lotteryName: string;
-  drawDate: string;
-  status: 'scheduled' | 'completed' | 'cancelled';
-  winningNumbers?: number[];
+interface DrawWithExtras extends Draw {
+  lotteryName?: string;
+  drawDate?: string;
   winnersCount?: number;
-  winners?: any[];
+  winners?: WinnerInfo[];
 }
 
 export default function AdminDraws() {
-  const [draws, setDraws] = useState<Draw[]>([]);
+  const [draws, setDraws] = useState<DrawWithExtras[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedDrawId, setExpandedDrawId] = useState<number | null>(null);
+  const [expandedDrawId, setExpandedDrawId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDraws();
@@ -56,15 +53,15 @@ export default function AdminDraws() {
     alert('Создание нового розыгрыша...\n\nЭта функция будет доступна в следующей версии.');
   };
 
-  const handleExecuteDraw = async (draw: Draw) => {
-    if (!confirm(`Выполнить розыгрыш #${draw.id} для лотереи "${draw.lotteryName}"?`)) {
+  const handleExecuteDraw = async (draw: DrawWithExtras) => {
+    if (!confirm(`Выполнить розыгрыш #${draw.id} для лотереи "${draw.lotteryName || 'Unknown'}"?`)) {
       return;
     }
 
     try {
-      const response = await adminApiClient.executeDraw(draw.id);
+      const response = await adminApiClient.executeDraw(Number(draw.id));
       if (response.success) {
-        alert(`Розыгрыш выполнен успешно!\n\nВыигрышные номера: ${response.draw.winningNumbers.join(', ')}\nПобедители: ${response.winners.length}`);
+        alert(`Розыгрыш выполнен успешно!\n\nВыигрышные номера: ${response.draw.winningNumbers?.join(', ') || 'N/A'}\nПобедители: ${response.winners.length}`);
         fetchDraws();
       }
     } catch (err) {
@@ -73,7 +70,7 @@ export default function AdminDraws() {
     }
   };
 
-  const toggleDrawDetails = (drawId: number) => {
+  const toggleDrawDetails = (drawId: string) => {
     setExpandedDrawId(expandedDrawId === drawId ? null : drawId);
   };
 
@@ -191,13 +188,13 @@ export default function AdminDraws() {
                       <td>
                         <div className="lottery-info">
                           <Trophy size={16} />
-                          <span>{draw.lotteryName}</span>
+                          <span>{draw.lotteryName || 'Unknown'}</span>
                         </div>
                       </td>
                       <td>
                         <div className="date-info">
                           <Calendar size={16} />
-                          <span>{formatDate(draw.drawDate)}</span>
+                          <span>{formatDate(draw.drawDate || draw.scheduledAt)}</span>
                         </div>
                       </td>
                       <td>
@@ -219,7 +216,7 @@ export default function AdminDraws() {
                       </td>
                       <td>
                         <div className="draw-actions">
-                          {draw.status === 'scheduled' && (
+                          {draw.status === 'pending' && (
                             <button
                               className="execute-btn"
                               onClick={() => handleExecuteDraw(draw)}
@@ -272,9 +269,9 @@ export default function AdminDraws() {
                               <div className="details-section">
                                 <h4>Победители ({draw.winners.length})</h4>
                                 <div className="winners-list">
-                                  {draw.winners.map((winner, idx) => (
+                                  {draw.winners.map((winner: WinnerInfo, idx: number) => (
                                     <div key={idx} className="winner-item">
-                                      <span className="winner-name">{winner.username}</span>
+                                      <span className="winner-name">{winner.userId}</span>
                                       <span className="winner-prize">{winner.prize} TON</span>
                                     </div>
                                   ))}

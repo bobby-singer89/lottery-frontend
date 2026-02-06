@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Enhanced Telegram Web App initialization utilities
  */
@@ -203,7 +202,7 @@ export function isTelegramWebApp(): boolean {
  */
 export function getTelegramWebAppVersion(): string | null {
   const tg = window.Telegram?.WebApp;
-  return tg ? (tg as any).version || null : null;
+  return tg ? (tg as { version?: string }).version || null : null;
 }
 
 /**

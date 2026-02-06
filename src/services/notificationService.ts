@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Notification } from '../types/notification';
 
 const STORAGE_KEY = 'lottery_notifications';
@@ -89,9 +88,8 @@ class NotificationService {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored);
-        // Convert timestamp strings back to Date objects
-        return parsed.map((n: any) => ({
+        const parsed = JSON.parse(stored) as Array<Omit<Notification, 'timestamp'> & { timestamp: string }>;
+        return parsed.map((n) => ({
           ...n,
           timestamp: new Date(n.timestamp)
         }));

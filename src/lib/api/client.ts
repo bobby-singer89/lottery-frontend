@@ -234,6 +234,32 @@ class ApiClient {
     });
   }
 
+  async getUserStats() {
+    return this.request<{
+      success: boolean;
+      stats: any;
+    }>('/user/stats');
+  }
+
+  async getUserHistory(filters?: any) {
+    const params = new URLSearchParams();
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    if (filters?.type && filters.type !== 'all') params.append('type', filters.type);
+    if (filters?.lotteryId) params.append('lotteryId', filters.lotteryId);
+    if (filters?.dateFrom) params.append('dateFrom', filters.dateFrom);
+    if (filters?.dateTo) params.append('dateTo', filters.dateTo);
+    
+    const queryString = params.toString();
+    const endpoint = queryString ? `/user/history?${queryString}` : '/user/history';
+    
+    return this.request<{
+      success: boolean;
+      history: any[];
+      pagination: any;
+    }>(endpoint);
+  }
+
   // Public endpoints
   async getLotteries() {
     try {

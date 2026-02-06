@@ -5,127 +5,44 @@ import { motion } from 'framer-motion';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import AnimatedBackground from '../components/AnimatedBackground/AnimatedBackground';
+import { useUserHistory, type HistoryFilters } from '../hooks/useUserHistory';
 import './TransactionHistoryPage.css';
-
-type TransactionType = 'ticket_purchase' | 'prize_payout' | 'swap' | 'deposit' | 'withdrawal';
-type TransactionStatus = 'pending' | 'success' | 'failed';
-
-interface Transaction {
-  id: string;
-  type: TransactionType;
-  amount: number;
-  currency: 'TON' | 'USDT';
-  description: string;
-  txHash: string;
-  status: TransactionStatus;
-  timestamp: Date;
-  details?: any;
-}
 
 export default function TransactionHistoryPage() {
   const navigate = useNavigate();
   const userAddress = useTonAddress();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [filter, setFilter] = useState<'all' | TransactionType>('all');
-  const [isLoading, setIsLoading] = useState(true);
+  const [filterType, setFilterType] = useState<'all' | 'purchase' | 'win'>('all');
+  const [page, setPage] = useState(1);
+  
+  // Phase 4: Use real API hook
+  const filters: HistoryFilters = {
+    page,
+    limit: 20,
+    type: filterType,
+  };
+  
+  const { data: historyData, isLoading, error } = useUserHistory(userAddress ? filters : undefined);
 
+  // Reset page when filter changes
   useEffect(() => {
-    if (userAddress) {
-      loadTransactions();
-    } else {
-      setTransactions([]);
-      setIsLoading(false);
-    }
-  }, [userAddress]);
+    setPage(1);
+  }, [filterType]);
 
-  async function loadTransactions() {
-    if (!userAddress) return;
+  const transactions = historyData?.history || [];
+  const pagination = historyData?.pagination;
 
-    setIsLoading(true);
-
-    try {
-      // TODO: Implement real API call
-      // const data = await transactionApi.getUserTransactions(userAddress);
-      
-      // Mock data for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setTransactions(getMockTransactions());
-      
-      console.log(`📊 Loaded transactions for ${userAddress}`);
-    } catch (err) {
-      console.error('Failed to load transactions:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  function getMockTransactions(): Transaction[] {
-    return [
-      {
-        id: '1',
-        type: 'ticket_purchase',
-        amount: -1,
-        currency: 'TON',
-        description: 'Weekend Special #12345',
-        txHash: '0xabc123def456',
-        status: 'success',
-        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-      },
-      {
-        id: '2',
-        type: 'swap',
-        amount: -5,
-        currency: 'TON',
-        description: '5 TON → 26 USDT',
-        txHash: '0xdef456ghi789',
-        status: 'success',
-        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      },
-      {
-        id: '3',
-        type: 'prize_payout',
-        amount: 50,
-        currency: 'TON',
-        description: 'Mega Jackpot #10001',
-        txHash: '0xghi789jkl012',
-        status: 'success',
-        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-      },
-      {
-        id: '4',
-        type: 'ticket_purchase',
-        amount: -10,
-        currency: 'TON',
-        description: 'Mega Jackpot #10002',
-        txHash: '0xjkl012mno345',
-        status: 'success',
-        timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-      },
-    ];
-  }
-
-  const filteredTransactions = transactions.filter(tx => 
-    filter === 'all' || tx.type === filter
-  );
-
-  function getTypeIcon(type: TransactionType): string {
-    const icons: Record<TransactionType, string> = {
-      ticket_purchase: '🎫',
-      prize_payout: '🎉',
-      swap: '🔄',
-      deposit: '⬇️',
-      withdrawal: '⬆️',
+  function getTypeIcon(type: 'purchase' | 'win'): string {
+    const icons = {
+      purchase: '🎫',
+      win: '🎉',
     };
     return icons[type];
   }
 
-  function getTypeName(type: TransactionType): string {
-    const names: Record<TransactionType, string> = {
-      ticket_purchase: 'Покупка билета',
-      prize_payout: 'Выигрыш',
-      swap: 'Обмен',
-      deposit: 'Пополнение',
-      withdrawal: 'Вывод',
+  function getTypeName(type: 'purchase' | 'win'): string {
+    const names = {
+      purchase: 'Покупка билета',
+      win: 'Выигрыш',
     };
     return names[type];
   }
@@ -173,28 +90,22 @@ export default function TransactionHistoryPage() {
             <>
               <div className="filter-tabs">
                 <button
-                  className={filter === 'all' ? 'active' : ''}
-                  onClick={() => setFilter('all')}
+                  className={filterType === 'all' ? 'active' : ''}
+                  onClick={() => setFilterType('all')}
                 >
                   Все
                 </button>
                 <button
-                  className={filter === 'ticket_purchase' ? 'active' : ''}
-                  onClick={() => setFilter('ticket_purchase')}
+                  className={filterType === 'purchase' ? 'active' : ''}
+                  onClick={() => setFilterType('purchase')}
                 >
                   🎫 Покупки
                 </button>
                 <button
-                  className={filter === 'prize_payout' ? 'active' : ''}
-                  onClick={() => setFilter('prize_payout')}
+                  className={filterType === 'win' ? 'active' : ''}
+                  onClick={() => setFilterType('win')}
                 >
                   🎉 Выигрыши
-                </button>
-                <button
-                  className={filter === 'swap' ? 'active' : ''}
-                  onClick={() => setFilter('swap')}
-                >
-                  🔄 Обмен
                 </button>
               </div>
 
@@ -203,7 +114,13 @@ export default function TransactionHistoryPage() {
                   <div className="spinner"></div>
                   <p>Загрузка транзакций...</p>
                 </div>
-              ) : filteredTransactions.length === 0 ? (
+              ) : error ? (
+                <div className="empty-state">
+                  <div className="empty-icon">⚠️</div>
+                  <h2>Ошибка загрузки</h2>
+                  <p>Не удалось загрузить историю транзакций</p>
+                </div>
+              ) : transactions.length === 0 ? (
                 <div className="empty-state">
                   <div className="empty-icon">📜</div>
                   <h2>Нет транзакций</h2>
@@ -211,7 +128,7 @@ export default function TransactionHistoryPage() {
                 </div>
               ) : (
                 <div className="transactions-list">
-                  {filteredTransactions.map((tx, index) => (
+                  {transactions.map((tx, index) => (
                     <motion.div
                       key={tx.id}
                       className={`transaction-item ${tx.type}`}
@@ -228,21 +145,24 @@ export default function TransactionHistoryPage() {
                           {getTypeName(tx.type)}
                         </div>
                         <div className="tx-description">
-                          {tx.description}
+                          {tx.lotteryName}
+                        </div>
+                        <div className="tx-numbers">
+                          {tx.numbers.map((num, idx) => (
+                            <span key={idx} className="number-badge">{num}</span>
+                          ))}
                         </div>
                         <div className="tx-date">
-                          {formatDate(tx.timestamp)}
+                          {formatDate(new Date(tx.createdAt))}
                         </div>
                       </div>
 
                       <div className="tx-amount">
-                        <div className={`amount ${tx.amount > 0 ? 'positive' : 'negative'}`}>
-                          {tx.amount > 0 ? '+' : ''}{tx.amount.toFixed(2)} {tx.currency}
+                        <div className={`amount ${tx.type === 'win' ? 'positive' : 'negative'}`}>
+                          {tx.type === 'win' ? '+' : '-'}{tx.amount.toFixed(2)} {tx.currency}
                         </div>
                         <div className="tx-status">
-                          {tx.status === 'success' ? '✅ Успешно' : 
-                           tx.status === 'pending' ? '⏳ Ожидание' : 
-                           '❌ Ошибка'}
+                          {tx.status === 'completed' || tx.status === 'paid' ? '✅ Успешно' : '⏳ Ожидание'}
                         </div>
                       </div>
 
@@ -257,6 +177,29 @@ export default function TransactionHistoryPage() {
                       </a>
                     </motion.div>
                   ))}
+                  
+                  {/* Pagination */}
+                  {pagination && pagination.totalPages > 1 && (
+                    <div className="pagination">
+                      <button
+                        disabled={page === 1}
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        className="pagination-btn"
+                      >
+                        ← Назад
+                      </button>
+                      <span className="pagination-info">
+                        Страница {page} из {pagination.totalPages}
+                      </span>
+                      <button
+                        disabled={page === pagination.totalPages}
+                        onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                        className="pagination-btn"
+                      >
+                        Вперёд →
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </>

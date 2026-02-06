@@ -27,9 +27,7 @@ export default defineConfig({
 
   define: {
     global: 'globalThis',
-    'process.env': JSON.stringify(process.env || {}),
-    // Buffer for TON Connect
-    'Buffer': 'Buffer',
+    'process.env': JSON.stringify({}),
   },
 
   // Expose environment variables to the client
@@ -41,8 +39,12 @@ export default defineConfig({
       'process',
       '@tonconnect/ui-react',
       '@ton/ton',
-      'ton-core',
     ],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis'
+      }
+    }
   },
 
   build: {

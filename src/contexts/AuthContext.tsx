@@ -68,7 +68,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // 3. We're not currently loading
       if (telegramUser && webApp && !user && !isLoading) {
         console.log('🔄 Attempting Telegram auto-login for:', telegramUser.username || telegramUser.first_name);
-        await login();
+        
+        try {
+          const response = await apiClient.loginTelegram({
+            id: telegramUser.id,
+            first_name: telegramUser.first_name,
+            last_name: telegramUser.last_name,
+            username: telegramUser.username,
+            photo_url: telegramUser.photo_url,
+            auth_date: webApp.initDataUnsafe?.auth_date,
+            hash: webApp.initDataUnsafe?.hash,
+          });
+          
+          if (response.success && response.token) {
+            TokenManager.setToken(response.token);
+            apiClient.setToken(response.token);
+            setUser(response.user);
+            console.log('✅ Auto-login successful:', response.user.username || response.user.firstName);
+          }
+        } catch (error) {
+          console.error('❌ Auto-login failed:', error);
+        }
       }
     };
 

@@ -42,6 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       TokenManager.setToken(response.token);
       apiClient.setToken(response.token);
       setUser(response.user);
+      // Ensure user IDs are stored for gamification API
+      TokenManager.setUserIds(response.user.id, response.user.telegramId);
       return response.user;
     }
     
@@ -63,6 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const profile = await apiClient.getProfile();
           if (profile.success && profile.user) {
             setUser(profile.user);
+            // Ensure user IDs are stored for gamification API
+            TokenManager.setUserIds(profile.user.id, profile.user.telegramId);
             console.log('✅ User session restored:', profile.user.username || profile.user.firstName);
           }
         } catch (error) {
@@ -246,6 +250,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         TokenManager.setToken(response.token);
         apiClient.setToken(response.token);
         setUser(response.user);
+        // Ensure user IDs are stored for gamification API
+        TokenManager.setUserIds(response.user.id, response.user.telegramId);
         console.log('✅ API login successful:', response.user.username || response.user.firstName);
         return true;
       }

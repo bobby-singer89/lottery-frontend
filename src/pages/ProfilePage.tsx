@@ -19,6 +19,7 @@ import { useGamification } from '../hooks/useGamification';
 import { useStreak } from '../hooks/useStreak';
 import { useQuests } from '../hooks/useQuests';
 import { useAchievements } from '../hooks/useAchievements';
+import { useUserStats } from '../hooks/useUserStats';
 import './ProfilePage.css';
 
 interface UserProfile {
@@ -78,6 +79,9 @@ function ProfilePage() {
   const quests = useQuests(userId);
   const achievements = useAchievements(userId);
 
+  // User stats hook - Phase 4
+  const { data: userStatsData, isLoading: isLoadingStats } = useUserStats();
+
   // Fetch user profile data
   useEffect(() => {
     let isCancelled = false;
@@ -119,6 +123,8 @@ function ProfilePage() {
   }, [user]);
 
   // Profile display data (fallback to Telegram data if API data not available)
+  // Phase 4: Integrate with useUserStats for real-time statistics
+  const stats = userStatsData?.stats;
   const userProfileDisplay = {
     name: profileData?.user?.firstName || user?.firstName || user?.username || telegramUser?.first_name || telegramUser?.username || 'Player',
     avatar: profileData?.user?.photoUrl || user?.photoUrl || telegramUser?.photo_url,
@@ -128,15 +134,17 @@ function ProfilePage() {
     level: profileData?.statistics?.currentLevel || (user?.level ? parseInt(user.level, 10) : 1),
     xp: profileData?.statistics?.experiencePoints || user?.experience || 0,
     maxXp: (profileData?.statistics?.currentLevel || 1) * 1000, // Calculate max XP based on level
-    streak: profileData?.statistics?.streakDays || 0,
-    totalSpent: profileData?.statistics?.totalSpent || '0',
-    totalWon: profileData?.statistics?.totalWon || '0',
+    streak: stats?.currentStreak || profileData?.statistics?.streakDays || 0,
+    totalSpent: stats?.totalSpent?.ton?.toString() || profileData?.statistics?.totalSpent || '0',
+    totalWon: stats?.totalWinnings?.ton?.toString() || profileData?.statistics?.totalWon || '0',
     referralCode: profileData?.user?.referralCode || user?.referralCode || 'N/A',
-    totalTickets: profileData?.statistics?.ticketsCount || 0,
+    totalTickets: stats?.totalTicketsBought || profileData?.statistics?.ticketsCount || 0,
     activeTickets: profileData?.statistics?.activeTicketsCount || 0,
-    wonTickets: profileData?.statistics?.wonTicketsCount || 0,
+    wonTickets: stats?.totalWins || profileData?.statistics?.wonTicketsCount || 0,
     referredUsers: profileData?.statistics?.referredUsers || 0,
     referralEarnings: profileData?.statistics?.referralEarnings || '0',
+    winRate: stats?.winRate || 0,
+    favoriteNumbers: stats?.favoriteNumbers || [],
   };
 
 
@@ -223,7 +231,7 @@ function ProfilePage() {
                 <p>Пожалуйста, войдите в систему, чтобы просмотреть ваш профиль.</p>
               </div>
             </motion.div>
-          ) : isLoadingProfile ? (
+          ) : (isLoadingProfile || isLoadingStats) ? (
             // Loading state
             <motion.div
               className="profile-container"
@@ -549,6 +557,13 @@ function ProfilePage() {
                 onClick={() => navigate('/history')}
               >
                 История транзакций →
+              </button>
+              
+              <button 
+                className="profile-action-btn"
+                onClick={() => navigate('/settings')}
+              >
+                ⚙️ Настройки →
               </button>
             </motion.div>
 

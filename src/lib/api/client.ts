@@ -234,6 +234,71 @@ class ApiClient {
     });
   }
 
+  async getUserStats() {
+    return this.request<{
+      success: boolean;
+      stats: {
+        userId: string;
+        totalTicketsBought: number;
+        totalSpent: {
+          ton: number;
+          usdt: number;
+        };
+        totalWins: number;
+        totalWinnings: {
+          ton: number;
+          usdt: number;
+        };
+        currentBalance: {
+          ton: number;
+          usdt: number;
+        };
+        winRate: number;
+        favoriteNumbers: number[];
+        memberSince: string;
+        lastActivity: string;
+        currentStreak: number;
+        bestStreak: number;
+      };
+    }>('/user/stats');
+  }
+
+  async getUserHistory(filters?: any) {
+    const params = new URLSearchParams();
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    if (filters?.type && filters.type !== 'all') params.append('type', filters.type);
+    if (filters?.lotteryId) params.append('lotteryId', filters.lotteryId);
+    if (filters?.dateFrom) params.append('dateFrom', filters.dateFrom);
+    if (filters?.dateTo) params.append('dateTo', filters.dateTo);
+    
+    const queryString = params.toString();
+    const endpoint = queryString ? `/user/history?${queryString}` : '/user/history';
+    
+    return this.request<{
+      success: boolean;
+      history: Array<{
+        id: string;
+        type: 'purchase' | 'win';
+        lotteryId: string;
+        lotteryName: string;
+        amount: number;
+        currency: 'TON' | 'USDT';
+        numbers: number[];
+        status: 'completed' | 'pending' | 'paid';
+        createdAt: string;
+        txHash: string;
+        prize?: number;
+      }>;
+      pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+      };
+    }>(endpoint);
+  }
+
   // Public endpoints
   async getLotteries() {
     try {

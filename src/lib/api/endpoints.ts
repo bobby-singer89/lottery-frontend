@@ -10,110 +10,110 @@ export const API_ENDPOINTS = {
    * Authentication endpoints
    */
   AUTH: {
-    LOGIN: '/auth/login',
-    REGISTER: '/auth/register',
-    LOGOUT: '/auth/logout',
-    TELEGRAM: '/auth/telegram',
-    CONNECT_WALLET: '/auth/connect-wallet',
-    REFRESH: '/auth/refresh',
+    LOGIN: '/api/auth/login',
+    REGISTER: '/api/auth/register',
+    LOGOUT: '/api/auth/logout',
+    TELEGRAM: '/api/auth/telegram',
+    CONNECT_WALLET: '/api/auth/connect-wallet',
+    REFRESH: '/api/auth/refresh',
   },
 
   /**
    * Lottery endpoints
    */
   LOTTERY: {
-    LIST: '/lottery/list',
-    DETAILS: (slug: string) => `/lottery/${slug}`,
-    INFO: (slug: string) => `/lottery/${slug}/info`,
-    BUY_TICKET: (slug: string) => `/lottery/${slug}/buy-ticket`,
-    MY_TICKETS: (slug: string) => `/lottery/${slug}/my-tickets`,
-    CURRENT_DRAW: (slug: string) => `/lottery/${slug}/current-draw`,
+    LIST: '/api/lottery/list',
+    DETAILS: (slug: string) => `/api/lottery/${slug}`,
+    INFO: (slug: string) => `/api/lottery/${slug}/info`,
+    BUY_TICKET: (slug: string) => `/api/lottery/${slug}/buy-ticket`,
+    MY_TICKETS: (slug: string) => `/api/lottery/${slug}/my-tickets`,
+    CURRENT_DRAW: (slug: string) => `/api/lottery/${slug}/current-draw`,
   },
 
   /**
    * Public endpoints (no auth required)
    */
   PUBLIC: {
-    LOTTERIES: '/public/lotteries',
-    LOTTERY_INFO: (slug: string) => `/public/lottery/${slug}`,
-    CURRENT_DRAW: (slug: string) => `/public/lottery/${slug}/current-draw`,
-    EXCHANGE_RATES: (from: string, to: string) => `/public/exchange-rates/${from}/${to}`,
+    LOTTERIES: '/api/public/lotteries',
+    LOTTERY_INFO: (slug: string) => `/api/public/lottery/${slug}`,
+    CURRENT_DRAW: (slug: string) => `/api/public/lottery/${slug}/current-draw`,
+    EXCHANGE_RATES: (from: string, to: string) => `/api/public/exchange-rates/${from}/${to}`,
   },
 
   /**
    * Ticket endpoints
    */
   TICKETS: {
-    MY_TICKETS: '/tickets/my-tickets',
-    DETAILS: (id: string) => `/tickets/${id}`,
-    VERIFY: (id: string) => `/tickets/${id}/verify`,
+    MY_TICKETS: '/api/tickets/my-tickets',
+    DETAILS: (id: string) => `/api/tickets/${id}`,
+    VERIFY: (id: string) => `/api/tickets/${id}/verify`,
   },
 
   /**
    * Draw endpoints
    */
   DRAWS: {
-    CURRENT: '/draws/current',
-    DETAILS: (id: string) => `/draws/${id}`,
-    RESULTS: (id: string) => `/draws/${id}/results`,
-    VERIFY: (id: string) => `/draws/${id}/verify`,
+    CURRENT: '/api/draws/current',
+    DETAILS: (id: string) => `/api/draws/${id}`,
+    RESULTS: (id: string) => `/api/draws/${id}/results`,
+    VERIFY: (id: string) => `/api/draws/${id}/verify`,
   },
 
   /**
    * User endpoints
    */
   USER: {
-    PROFILE: '/user/profile',
-    STATS: '/user/stats',
-    HISTORY: '/user/history',
-    UPDATE_PROFILE: '/user/profile',
-    SETTINGS: '/user/settings',
+    PROFILE: '/api/user/profile',
+    STATS: '/api/user/stats',
+    HISTORY: '/api/user/history',
+    UPDATE_PROFILE: '/api/user/profile',
+    SETTINGS: '/api/user/settings',
   },
 
   /**
    * Gamification endpoints
    */
   GAMIFICATION: {
-    ACHIEVEMENTS: '/gamification/achievements',
-    PROGRESS: '/gamification/progress',
-    PROFILE: '/gamification/profile',
-    STREAK: '/gamification/streak',
-    CHECK_IN: '/gamification/check-in',
-    QUESTS: '/gamification/quests',
-    REWARDS: '/gamification/rewards',
-    CLAIM_REWARD: (id: string) => `/gamification/rewards/${id}/claim`,
+    ACHIEVEMENTS: '/api/gamification/achievements',
+    PROGRESS: '/api/gamification/progress',
+    PROFILE: '/api/gamification/profile',
+    STREAK: '/api/gamification/streak',
+    CHECK_IN: '/api/gamification/check-in',
+    QUESTS: '/api/gamification/quests',
+    REWARDS: '/api/gamification/rewards',
+    CLAIM_REWARD: (id: string) => `/api/gamification/rewards/${id}/claim`,
   },
 
   /**
    * Referral endpoints
    */
   REFERRAL: {
-    STATS: '/referral/stats',
-    CODE: '/referral/code',
-    HISTORY: '/referral/history',
+    STATS: '/api/referral/stats',
+    CODE: '/api/referral/code',
+    HISTORY: '/api/referral/history',
   },
 
   /**
    * Swap/Exchange endpoints
    */
   SWAP: {
-    QUOTE: '/swap/quote',
-    BUILD_TRANSACTION: '/swap/build-transaction',
-    TOKENS: '/swap/tokens',
-    RATE: (from: string, to: string) => `/swap/rate/${from}/${to}`,
+    QUOTE: '/api/swap/quote',
+    BUILD_TRANSACTION: '/api/swap/build-transaction',
+    TOKENS: '/api/swap/tokens',
+    RATE: (from: string, to: string) => `/api/swap/rate/${from}/${to}`,
   },
 
   /**
    * Admin endpoints
    */
   ADMIN: {
-    LOGIN: '/admin/login',
-    USERS: '/admin/users',
-    LOTTERIES: '/admin/lotteries',
-    DRAWS: '/admin/draws',
-    TICKETS: '/admin/tickets',
-    NOTIFICATIONS: '/admin/notifications',
-    STATS: '/admin/stats',
+    LOGIN: '/api/admin/login',
+    USERS: '/api/admin/users',
+    LOTTERIES: '/api/admin/lotteries',
+    DRAWS: '/api/admin/draws',
+    TICKETS: '/api/admin/tickets',
+    NOTIFICATIONS: '/api/admin/notifications',
+    STATS: '/api/admin/stats',
   },
 } as const;
 

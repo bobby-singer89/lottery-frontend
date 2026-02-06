@@ -44,39 +44,39 @@ async function fetchWithAuth<T>(endpoint: string, options: RequestInit = {}): Pr
 
 export const gamificationApi = {
   // Profile
-  getProfile: () => fetchWithAuth<{ success: boolean; profile: GamificationProfile }>('/gamification/profile'),
+  getProfile: () => fetchWithAuth<{ success: boolean; profile: GamificationProfile }>('/api/gamification/profile'),
 
   // Streak
-  getStreak: () => fetchWithAuth<{ success: boolean; streak: StreakInfo }>('/gamification/streak'),
-  checkIn: () => fetchWithAuth<{ success: boolean; result: CheckInResult }>('/gamification/check-in', { method: 'POST' }),
+  getStreak: () => fetchWithAuth<{ success: boolean; streak: StreakInfo }>('/api/gamification/streak'),
+  checkIn: () => fetchWithAuth<{ success: boolean; result: CheckInResult }>('/api/gamification/check-in', { method: 'POST' }),
 
   // Quests - Backend returns user's quests with progress from /quests
-  getQuests: () => fetchWithAuth<{ success: boolean; quests: Quest[] }>('/gamification/quests'),
-  getMyQuests: () => fetchWithAuth<{ success: boolean; quests: UserQuest[] }>('/gamification/quests'),
-  claimQuest: (questId: string) => fetchWithAuth<{ success: boolean; reward: UserReward }>(`/gamification/quests/${questId}/claim`, { method: 'POST' }),
+  getQuests: () => fetchWithAuth<{ success: boolean; quests: Quest[] }>('/api/gamification/quests'),
+  getMyQuests: () => fetchWithAuth<{ success: boolean; quests: UserQuest[] }>('/api/gamification/quests'),
+  claimQuest: (questId: string) => fetchWithAuth<{ success: boolean; reward: UserReward }>(`/api/gamification/quests/${questId}/claim`, { method: 'POST' }),
 
   // Achievements - Backend returns user's achievements from /achievements
-  getAchievements: () => fetchWithAuth<{ success: boolean; achievements: Achievement[] }>('/gamification/achievements'),
-  getMyAchievements: () => fetchWithAuth<{ success: boolean; achievements: UserAchievement[] }>('/gamification/achievements'),
-  getAchievementProgress: () => fetchWithAuth<{ success: boolean; progress: AchievementProgress[] }>('/gamification/achievements'),
-  claimAchievement: (id: string) => fetchWithAuth<{ success: boolean; reward: UserReward }>(`/gamification/achievements/${id}/claim`, { method: 'POST' }),
+  getAchievements: () => fetchWithAuth<{ success: boolean; achievements: Achievement[] }>('/api/gamification/achievements'),
+  getMyAchievements: () => fetchWithAuth<{ success: boolean; achievements: UserAchievement[] }>('/api/gamification/achievements'),
+  getAchievementProgress: () => fetchWithAuth<{ success: boolean; progress: AchievementProgress[] }>('/api/gamification/achievements'),
+  claimAchievement: (id: string) => fetchWithAuth<{ success: boolean; reward: UserReward }>(`/api/gamification/achievements/${id}/claim`, { method: 'POST' }),
 
   // Rewards
-  getRewards: () => fetchWithAuth<{ success: boolean; rewards: UserReward[] }>('/gamification/rewards'),
-  claimReward: (id: string) => fetchWithAuth<{ success: boolean }>(`/gamification/rewards/${id}/claim`, { method: 'POST' }),
+  getRewards: () => fetchWithAuth<{ success: boolean; rewards: UserReward[] }>('/api/gamification/rewards'),
+  claimReward: (id: string) => fetchWithAuth<{ success: boolean }>(`/api/gamification/rewards/${id}/claim`, { method: 'POST' }),
 
   // Referrals
-  getReferralStats: () => fetchWithAuth<{ success: boolean; stats: ReferralStats }>('/gamification/referral'),
-  getReferrals: () => fetchWithAuth<{ success: boolean; referrals: ReferralUser[] }>('/gamification/referral'),
-  applyReferralCode: (code: string) => fetchWithAuth<{ success: boolean }>('/gamification/referral/apply', { method: 'POST', body: JSON.stringify({ code }) }),
+  getReferralStats: () => fetchWithAuth<{ success: boolean; stats: ReferralStats }>('/api/gamification/referral'),
+  getReferrals: () => fetchWithAuth<{ success: boolean; referrals: ReferralUser[] }>('/api/gamification/referral'),
+  applyReferralCode: (code: string) => fetchWithAuth<{ success: boolean }>('/api/gamification/referral/apply', { method: 'POST', body: JSON.stringify({ code }) }),
 
   // Leaderboard
   getLeaderboard: (type: LeaderboardType = 'level', period: LeaderboardPeriod = 'all', limit = 100) =>
-    fetchWithAuth<{ success: boolean; leaderboard: LeaderboardResponse }>(`/gamification/leaderboard?type=${type}&period=${period}&limit=${limit}`),
+    fetchWithAuth<{ success: boolean; leaderboard: LeaderboardResponse }>(`/api/gamification/leaderboard?type=${type}&period=${period}&limit=${limit}`),
   
   // Mine (summary)
-  getMine: () => fetchWithAuth<{ success: boolean; data: any }>('/gamification/mine'),
+  getMine: () => fetchWithAuth<{ success: boolean; data: any }>('/api/gamification/mine'),
   
   // Progress
-  getProgress: () => fetchWithAuth<{ success: boolean; data: any }>('/gamification/progress'),
+  getProgress: () => fetchWithAuth<{ success: boolean; data: any }>('/api/gamification/progress'),
 };

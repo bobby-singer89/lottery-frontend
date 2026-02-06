@@ -139,7 +139,7 @@ class ApiClient {
       success: boolean;
       token: string;
       user: any;
-    }>('/auth/telegram', {
+    }>('/api/auth/telegram', {
       method: 'POST',
       body: JSON.stringify({
         id: telegramUser.id.toString(),
@@ -159,7 +159,7 @@ class ApiClient {
     last_name?: string;
     photo_url?: string;
   }) {
-    return this.request<{ success: boolean; user: any }>('/auth/connect-wallet', {
+    return this.request<{ success: boolean; user: any }>('/api/auth/connect-wallet', {
       method: 'POST',
       body: JSON.stringify({ tonWallet, ...telegramData }),
     });
@@ -170,7 +170,7 @@ class ApiClient {
     return this.request<{
       success: boolean;
       lotteries: any[];
-    }>('/lottery/list');
+    }>('/api/lottery/list');
   }
 
   async getLotteryInfo(slug: string) {
@@ -178,14 +178,14 @@ class ApiClient {
       success: boolean;
       lottery: any;
       nextDraw: any;
-    }>(`/lottery/${slug}/info`);
+    }>(`/api/lottery/${slug}/info`);
   }
 
   async buyTicket(slug: string, numbers: number[], txHash: string) {
     return this.request<{
       success: boolean;
       ticket: any;
-    }>(`/lottery/${slug}/buy-ticket`, {
+    }>(`/api/lottery/${slug}/buy-ticket`, {
       method: 'POST',
       body: JSON.stringify({ numbers, txHash }),
     });
@@ -196,7 +196,7 @@ class ApiClient {
       success: boolean;
       tickets: PurchasedTicket[];
       pagination: PaginationResponse;
-    }>(`/lottery/${slug}/my-tickets?page=${page}&limit=${limit}`);
+    }>(`/api/lottery/${slug}/my-tickets?page=${page}&limit=${limit}`);
   }
 
   async getAllMyTickets(lotterySlug?: string, page = 1, limit = 20) {
@@ -205,7 +205,7 @@ class ApiClient {
       success: boolean;
       tickets: PurchasedTicket[];
       pagination: PaginationResponse;
-    }>(`/tickets/my-tickets${params}`);
+    }>(`/api/tickets/my-tickets${params}`);
   }
 
   // Draws endpoints
@@ -213,7 +213,7 @@ class ApiClient {
     return this.request<{
       success: boolean;
       draw: any;
-    }>('/draws/current');
+    }>('/api/draws/current');
   }
 
   // User endpoints
@@ -221,14 +221,14 @@ class ApiClient {
     return this.request<{
       success: boolean;
       user: any;
-    }>('/user/profile');
+    }>('/api/user/profile');
   }
 
   async updateProfile(data: any) {
     return this.request<{
       success: boolean;
       user: any;
-    }>('/user/profile', {
+    }>('/api/user/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
     });
@@ -260,7 +260,7 @@ class ApiClient {
         currentStreak: number;
         bestStreak: number;
       };
-    }>('/user/stats');
+    }>('/api/user/stats');
   }
 
   async getUserHistory(filters?: any) {
@@ -273,7 +273,7 @@ class ApiClient {
     if (filters?.dateTo) params.append('dateTo', filters.dateTo);
     
     const queryString = params.toString();
-    const endpoint = queryString ? `/user/history?${queryString}` : '/user/history';
+    const endpoint = queryString ? `/api/user/history?${queryString}` : '/api/user/history';
     
     return this.request<{
       success: boolean;
@@ -302,7 +302,7 @@ class ApiClient {
   // Public endpoints
   async getLotteries() {
     try {
-      const response = await fetch(`${this.baseURL}/public/lotteries`);
+      const response = await fetch(`${this.baseURL}/api/public/lotteries`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -328,13 +328,13 @@ class ApiClient {
     return this.request<{ 
       success: boolean;
       rate: number 
-    }>(`/public/exchange-rates/${from}/${to}`);
+    }>(`/api/public/exchange-rates/${from}/${to}`);
   }
 
   // Swap endpoints
   async getSwapQuote(from: string, to: string, amount: number) {
     return this.request<{ success: boolean; quote: any }>(
-      `/swap/quote?from=${from}&to=${to}&amount=${amount}`
+      `/api/swap/quote?from=${from}&to=${to}&amount=${amount}`
     );
   }
 
@@ -351,7 +351,7 @@ class ApiClient {
       quote: any;
       minOutput: string;
       estimatedGas: string;
-    }>('/swap/build-transaction', {
+    }>('/api/swap/build-transaction', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params),
@@ -359,12 +359,12 @@ class ApiClient {
   }
 
   async getSupportedTokens() {
-    return this.request<{ success: boolean; tokens: any[] }>('/swap/tokens');
+    return this.request<{ success: boolean; tokens: any[] }>('/api/swap/tokens');
   }
 
   async getSwapRate(from: string, to: string) {
     return this.request<{ success: boolean; rate: number }>(
-      `/swap/rate/${from}/${to}`
+      `/api/swap/rate/${from}/${to}`
     );
   }
 
@@ -372,7 +372,7 @@ class ApiClient {
     return this.request<{ 
       success: boolean;
       draw: Draw | null
-    }>(`/public/lottery/${lotterySlug}/current-draw`);
+    }>(`/api/public/lottery/${lotterySlug}/current-draw`);
   }
 }
 

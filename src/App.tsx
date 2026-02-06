@@ -30,6 +30,7 @@ import VerificationPage from './pages/VerificationPage';
 import FAQPage from './pages/FAQPage';
 import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
+import AchievementsPage from './pages/AchievementsPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
@@ -237,6 +238,7 @@ function App() {
               <Route path="/lottery/:slug" element={<LotteryDetailPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/achievements" element={<AchievementsPage />} />
               <Route path="/lotteries" element={<LotteriesPage />} />
               <Route path="/history" element={<TransactionHistoryPage />} />
               <Route path="/referral" element={<ReferralPage />} />

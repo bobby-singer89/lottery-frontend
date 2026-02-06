@@ -8,7 +8,6 @@ import { useState } from 'react';
  */
 export function useStreak(userId?: string) {
   const queryClient = useQueryClient();
-  const [error, setError] = useState<string | null>(null);
   const [checkInResult, setCheckInResult] = useState<CheckInResult | null>(null);
 
   // Get current streak
@@ -25,23 +24,21 @@ export function useStreak(userId?: string) {
   const streak = streakData?.streak || null;
 
   // Check-in mutation
-const { mutate: checkIn, isPending: isCheckingIn, data: checkInData, error: checkInError } = useMutation({
-  mutationFn: gamificationApi.checkIn,
-  onSuccess: (data) => {
-    // ИСПРАВЛЕНИЕ: API возвращает не `result`, а напрямую данные
-    const { newStreak, xpAwarded } = data;
-    toast.success(`Check-in successful! +${xpAwarded} XP`);
-    
-    // Invalidate queries to refetch fresh data
-    queryClient.invalidateQueries({ queryKey: ['gamification', 'streak'] });
-    queryClient.invalidateQueries({ queryKey: ['gamification', 'profile'] });
-  },
-  onError: (error) => {
-    // You can handle specific errors here if needed
-    console.error("Check-in failed:", error);
-    toast.error("Check-in failed. You may have already checked in today.");
-  }
-});
+  const { mutate: checkIn, isPending: isCheckingIn } = useMutation({
+    mutationFn: gamificationApi.checkIn,
+    onSuccess: (data) => {
+      // Store the check-in result
+      setCheckInResult(data);
+      
+      // Invalidate queries to refetch fresh data
+      queryClient.invalidateQueries({ queryKey: ['gamification', 'streak'] });
+      queryClient.invalidateQueries({ queryKey: ['gamification', 'profile'] });
+    },
+    onError: (error) => {
+      // Handle errors
+      console.error("Check-in failed:", error);
+    }
+  });
 
   // Computed values
   const canCheckIn = streak?.canCheckIn || false;
@@ -60,15 +57,14 @@ const { mutate: checkIn, isPending: isCheckingIn, data: checkInData, error: chec
     lastCheckIn,
     nextMilestone,
     canCheckIn,
-    error,
     checkInResult,
 
     // Loading states
     isLoading,
 
     // Actions
-    checkIn: checkInMutation.mutate,
-    isCheckingIn: checkInMutation.isPending,
+    checkIn,
+    isCheckingIn,
     
     // Helper to clear check-in result
     clearCheckInResult: () => setCheckInResult(null),

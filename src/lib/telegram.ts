@@ -76,14 +76,13 @@ export function initTelegramWebApp(): TelegramWebAppData | null {
     ) : false;
     
     const isRecentAuth = authDate ? isAuthDataRecent(authDate) : false;
-    const hasHash = !!hash;
 
-    const isValid = isValidUser && isRecentAuth && hasHash;
+    const isValid = isValidUser && isRecentAuth && !!hash;
 
     if (!isValid) {
       if (!isValidUser) console.warn('⚠️ Invalid user data');
       if (!isRecentAuth) console.warn('⚠️ Auth data is not recent (>24 hours)');
-      if (!hasHash) console.warn('⚠️ Missing hash');
+      if (!hash) console.warn('⚠️ Missing hash');
     } else {
       console.log('✅ Valid Telegram user data:', user?.username || user?.first_name);
     }

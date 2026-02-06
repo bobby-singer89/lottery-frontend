@@ -101,91 +101,91 @@ export interface Reward {
 export const gamificationClient = {
   // Profile
   async getProfile(userId: string) {
-    return request('/gamification/profile', userId);
+    return request('/api/gamification/profile', userId);
   },
 
   async getLeaderboard(type: 'level' | 'xp' | 'tickets' | 'winnings' = 'level', limit: number = 10, userId?: string) {
-    return request(`/gamification/leaderboard?type=${type}&limit=${limit}`, userId);
+    return request(`/api/gamification/leaderboard?type=${type}&limit=${limit}`, userId);
   },
 
   // Referral
   async getReferralCode(userId: string) {
-    return request('/gamification/referral', userId);
+    return request('/api/gamification/referral', userId);
   },
 
   async applyReferralCode(userId: string, code: string) {
-    return request('/gamification/referral/apply', userId, {
+    return request('/api/gamification/referral/apply', userId, {
       method: 'POST',
       body: JSON.stringify({ code })
     });
   },
 
   async getReferralStats(userId: string) {
-    return request('/gamification/referral', userId);
+    return request('/api/gamification/referral', userId);
   },
 
   // Quests
   async getAvailableQuests(userId: string, type?: string) {
-    const url = type ? `/gamification/quests?type=${type}` : '/gamification/quests';
+    const url = type ? `/api/gamification/quests?type=${type}` : '/api/gamification/quests';
     return request(url, userId);
   },
 
   async getUserQuests(userId: string) {
-    return request('/gamification/quests', userId);
+    return request('/api/gamification/quests', userId);
   },
 
   async claimQuestReward(userId: string, questId: string) {
-    return request(`/gamification/quests/${questId}/claim`, userId, {
+    return request(`/api/gamification/quests/${questId}/claim`, userId, {
       method: 'POST'
     });
   },
 
   // Achievements
   async getAllAchievements(userId?: string) {
-    return request('/gamification/achievements', userId);
+    return request('/api/gamification/achievements', userId);
   },
 
   async getUserAchievements(userId: string) {
-    return request('/gamification/achievements', userId);
+    return request('/api/gamification/achievements', userId);
   },
 
   async claimAchievementReward(userId: string, achievementId: string) {
-    return request(`/gamification/achievements/${achievementId}/claim`, userId, {
+    return request(`/api/gamification/achievements/${achievementId}/claim`, userId, {
       method: 'POST'
     });
   },
 
   // Streak - ИСПРАВЛЕННЫЕ ПУТИ
   async getCurrentStreak(userId: string) {
-    return request('/gamification/streak', userId);  // было /streak/current
+    return request('/api/gamification/streak', userId);  // было /streak/current
   },
 
   async checkIn(userId: string) {
-    return request('/gamification/check-in', userId, {  // было /streak/checkin
+    return request('/api/gamification/check-in', userId, {  // было /streak/checkin
       method: 'POST'
     });
   },
 
   // Progress/Level
   async getProgress(userId: string) {
-    return request('/gamification/progress', userId);
+    return request('/api/gamification/progress', userId);
   },
 
   async getMine(userId: string) {
-    return request('/gamification/mine', userId);
+    return request('/api/gamification/mine', userId);
   },
 
   // Rewards
   async getAvailableRewards(userId: string) {
-    return request('/gamification/rewards', userId);
+    return request('/api/gamification/rewards', userId);
   },
 
   async getClaimedRewards(userId: string, limit: number = 20) {
-    return request(`/gamification/rewards/claimed?limit=${limit}`, userId);
+    return request(`/api/gamification/rewards/claimed?limit=${limit}`, userId);
   },
 
   async claimReward(userId: string, rewardId: string) {
-    return request(`/gamification/rewards/${rewardId}/claim`, userId, {
+    return request(`/api/gamification/rewards/${rewardId}/claim`, userId, {
       method: 'POST'
     });
   }

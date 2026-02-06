@@ -43,7 +43,7 @@ export async function adminLogin(telegramId: string, password: string): Promise<
     }
 
     // Call the new admin auth endpoint with password
-    const authResponse = await fetch(`${API_BASE_URL}/admin/auth/login`, {
+    const authResponse = await fetch(`${API_BASE_URL}/api/admin/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ export async function setAdminPassword(currentPassword: string | null, newPasswo
       throw new Error('Password must be at least 8 characters');
     }
 
-    const response = await fetch(`${API_BASE_URL}/admin/auth/set-password`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/auth/set-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

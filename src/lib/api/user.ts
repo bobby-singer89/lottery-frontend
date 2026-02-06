@@ -11,7 +11,7 @@ function getAuthHeaders() {
 }
 
 export async function getUserBalance() {
-  const response = await fetch(`${API_BASE_URL}/user/balance`, {
+  const response = await fetch(`${API_BASE_URL}/api/user/balance`, {
     headers: getAuthHeaders()
   });
   

@@ -72,7 +72,7 @@ export interface VerificationResult {
 export const ticketApi = {
   // Save single ticket
   async saveTicket(data: TicketPurchaseData): Promise<PurchasedTicket> {
-    const response = await fetch(`${API_URL}/tickets/purchase`, {
+    const response = await fetch(`${API_URL}/api/tickets/purchase`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export const ticketApi = {
 
   // Save multiple tickets (cart)
   async saveTickets(tickets: TicketPurchaseData[]): Promise<PurchasedTicket[]> {
-    const response = await fetch(`${API_URL}/tickets/purchase-bulk`, {
+    const response = await fetch(`${API_URL}/api/tickets/purchase-bulk`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ export const ticketApi = {
 
   // Get user's tickets
   async getUserTickets(walletAddress: string): Promise<PurchasedTicket[]> {
-    const response = await fetch(`${API_URL}/tickets/user/${walletAddress}`, {
+    const response = await fetch(`${API_URL}/api/tickets/user/${walletAddress}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ export const ticketApi = {
 
   // Verify ticket
   async verifyTicket(ticketId: string): Promise<VerificationResult> {
-    const response = await fetch(`${API_URL}/tickets/${ticketId}/verify`, {
+    const response = await fetch(`${API_URL}/api/tickets/${ticketId}/verify`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -70,7 +70,7 @@ class AdminApiClient {
       success: boolean;
       isAdmin: boolean;
       role?: string;
-    }>('/admin/check');
+    }>('/api/admin/check');
   }
 
   // Dashboard statistics
@@ -78,7 +78,7 @@ class AdminApiClient {
     return this.request<{
       success: boolean;
       stats: AdminStats;
-    }>('/admin/stats');
+    }>('/api/admin/stats');
   }
 
   // User management
@@ -102,14 +102,14 @@ class AdminApiClient {
         total: number;
         totalPages: number;
       };
-    }>(`/admin/users${query}`);
+    }>(`/api/admin/users${query}`);
   }
 
   async getUserDetails(id: number) {
     return this.request<{
       success: boolean;
       user: any;
-    }>(`/admin/users/${id}`);
+    }>(`/api/admin/users/${id}`);
   }
 
   // Lottery management
@@ -117,14 +117,14 @@ class AdminApiClient {
     return this.request<{
       success: boolean;
       lotteries: any[];
-    }>('/admin/lotteries');
+    }>('/api/admin/lotteries');
   }
 
   async updateLottery(id: number, data: any) {
     return this.request<{
       success: boolean;
       lottery: any;
-    }>(`/admin/lotteries/${id}`, {
+    }>(`/api/admin/lotteries/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
@@ -134,7 +134,7 @@ class AdminApiClient {
     return this.request<{
       success: boolean;
       lottery: any;
-    }>('/admin/lotteries', {
+    }>('/api/admin/lotteries', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -151,14 +151,14 @@ class AdminApiClient {
       success: boolean;
       draws: any[];
       pagination?: any;
-    }>(`/admin/draws${query}`);
+    }>(`/api/admin/draws${query}`);
   }
 
   async createDraw(data: any) {
     return this.request<{
       success: boolean;
       draw: any;
-    }>('/admin/draws', {
+    }>('/api/admin/draws', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -169,7 +169,7 @@ class AdminApiClient {
       success: boolean;
       draw: any;
       winners: any[];
-    }>(`/admin/draws/${id}/execute`, {
+    }>(`/api/admin/draws/${id}/execute`, {
       method: 'POST',
     });
   }
@@ -189,7 +189,7 @@ class AdminApiClient {
       success: boolean;
       tickets: any[];
       pagination: any;
-    }>(`/admin/tickets${query}`);
+    }>(`/api/admin/tickets${query}`);
   }
 
   // Notifications
@@ -201,7 +201,7 @@ class AdminApiClient {
     return this.request<{
       success: boolean;
       notification: any;
-    }>('/admin/notifications', {
+    }>('/api/admin/notifications', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -217,7 +217,7 @@ class AdminApiClient {
       success: boolean;
       notifications: any[];
       pagination?: any;
-    }>(`/admin/notifications${query}`);
+    }>(`/api/admin/notifications${query}`);
   }
 }
 

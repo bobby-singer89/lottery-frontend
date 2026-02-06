@@ -11,7 +11,7 @@ function getAuthHeaders() {
 }
 
 export async function getNotificationSettings() {
-  const response = await fetch(`${API_BASE_URL}/user/notification-settings`, {
+  const response = await fetch(`${API_BASE_URL}/api/user/notification-settings`, {
     headers: getAuthHeaders()
   });
   
@@ -27,7 +27,7 @@ export async function updateNotificationSettings(settings: {
   drawResults?: boolean;
   referrals?: boolean;
 }) {
-  const response = await fetch(`${API_BASE_URL}/user/notification-settings`, {
+  const response = await fetch(`${API_BASE_URL}/api/user/notification-settings`, {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify(settings)

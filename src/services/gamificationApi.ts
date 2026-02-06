@@ -1,49 +1,39 @@
-import axios from 'axios';
-// --- ИСПРАВЛЕНИЕ: Возвращаем все ваши импорты типов ---
+import axios, { AxiosInstance } from 'axios';
 import type {
   GamificationProfile,
   StreakInfo,
   CheckInResult,
   Quest,
-  UserQuest,
   Achievement,
-  UserAchievement,
-  AchievementProgress,
-  UserReward,
-  ReferralStats,
-  ReferralUser,
   LeaderboardType,
   LeaderboardPeriod,
   LeaderboardResponse,
+  AchievementProgress,
+  ReferralStats,
+  ReferralUser,
+  UserReward
 } from '../types/gamification';
 
-
-// URL вашего бэкенда из переменных окружения
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://lottery-backend-gm4j.onrender.com';
-
-// Создаем экземпляр axios
-const apiClient = axios.create({
-  baseURL: `${API_BASE_URL}/api/gamification`,
+// Создаем типизированный экземпляр apiClient
+const apiClient: AxiosInstance = axios.create({
+  baseURL: `${import.meta.env.VITE_API_URL}/api/gamification`,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// --- Новая функция для получения ID пользователя ---
+// --- Функция для получения ID пользователя ---
 function getTelegramUserId(): string | null {
   try {
     const tg = (window as any).Telegram?.WebApp;
-    if (tg?.initDataUnsafe?.user?.id) {
-      return String(tg.initDataUnsafe.user.id);
-    }
-    return null;
+    return tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : null;
   } catch (e) {
     console.error("Ошибка при получении user ID из Telegram WebApp:", e);
     return null;
   }
 }
 
-// --- КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Добавляем "перехватчик" запросов ---
+// --- КЛЮЧЕВОЙ ПЕРЕХВАТЧИК ЗАПРОСОВ ---
 apiClient.interceptors.request.use(
   (config) => {
     const userId = getTelegramUserId();
@@ -59,35 +49,34 @@ apiClient.interceptors.request.use(
   }
 );
 
-// --- Ваш существующий API без изменений, но теперь он использует настроенный apiClient ---
+// --- ПОЛНОСТЬЮ ВОССТАНОВЛЕННЫЙ API-СЕРВИС ---
 export const gamificationApi = {
-  getProfile: async (): Promise<{ profile: GamificationProfile }> => {
-    const response = await apiClient.get('/profile');
-    return response.data;
-  },
+  // Profile
+  getProfile: (): Promise<{ profile: GamificationProfile }> => apiClient.get('/profile').then(res => res.data),
 
-  getStreak: async (): Promise<{ streak: StreakInfo }> => {
-    const response = await apiClient.get('/streak');
-    return response.data;
-  },
-  
-  checkIn: async (): Promise<CheckInResult> => {
-    const response = await apiClient.post('/check-in');
-    return response.data;
-  },
+  // Streaks
+  getStreak: (): Promise<{ streak: StreakInfo }> => apiClient.get('/streak').then(res => res.data),
+  checkIn: (): Promise<CheckInResult> => apiClient.post('/check-in').then(res => res.data),
 
-  getAchievements: async (): Promise<{ achievements: Achievement[] }> => {
-    const response = await apiClient.get('/achievements');
-    return response.data;
-  },
-  
-  getQuests: async (): Promise<{ quests: Quest[] }> => {
-    const response = await apiClient.get('/quests');
-    return response.data;
-  },
-  
-  getLeaderboard: async (type: LeaderboardType, period: LeaderboardPeriod): Promise<LeaderboardResponse> => {
-    const response = await apiClient.get('/leaderboard', { params: { type, period } });
-    return response.data;
-  }
+  // Achievements
+  getMyAchievements: (): Promise<{ achievements: Achievement[] }> => apiClient.get('/achievements').then(res => res.data),
+  getAchievementProgress: (achievementId: string): Promise<{ progress: AchievementProgress }> => 
+    apiClient.get(`/achievements/${achievementId}/progress`).then(res => res.data),
+  claimAchievement: (achievementId: string): Promise<{ reward: UserReward }> => 
+    apiClient.post(`/achievements/${achievementId}/claim`).then(res => res.data),
+
+  // Quests
+  getMyQuests: (): Promise<{ quests: Quest[] }> => apiClient.get('/quests').then(res => res.data),
+  claimQuest: (questId: string): Promise<{ reward: UserReward }> => 
+    apiClient.post(`/quests/${questId}/claim`).then(res => res.data),
+
+  // Leaderboard
+  getLeaderboard: (type: LeaderboardType, period: LeaderboardPeriod): Promise<LeaderboardResponse> =>
+    apiClient.get(`/leaderboard?type=${type}&period=${period}`).then(res => res.data),
+
+  // Referrals
+  getReferralStats: (): Promise<{ stats: ReferralStats }> => apiClient.get('/referrals/stats').then(res => res.data),
+  getReferrals: (): Promise<{ referrals: ReferralUser[] }> => apiClient.get('/referrals').then(res => res.data),
+  applyReferralCode: (code: string): Promise<{ success: boolean; message: string }> => 
+    apiClient.post('/referrals/apply', { code }).then(res => res.data),
 };

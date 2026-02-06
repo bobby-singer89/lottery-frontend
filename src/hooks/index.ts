@@ -8,6 +8,7 @@ export { useGamification } from './useGamification';
 export { useReferral } from './useReferral';
 export { useQuests } from './useQuests';
 export { useAchievements } from './useAchievements';
+export { useAchievementProgress } from './useAchievementProgress';
 export { useStreak } from './useStreak';
 export { useRewards } from './useRewards';
 

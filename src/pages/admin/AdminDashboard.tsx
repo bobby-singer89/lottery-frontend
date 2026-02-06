@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
@@ -13,12 +12,17 @@ import AdminLayout from '../../components/Admin/AdminLayout';
 import { adminApiClient } from '../../lib/api/adminClient';
 import './AdminDashboard.css';
 
+interface ActivityItem {
+  description: string;
+  time: string;
+}
+
 interface Stats {
   totalUsers: number;
   totalTickets: number;
   totalRevenue: number;
   activeLotteries: number;
-  recentActivity: any[];
+  recentActivity: ActivityItem[];
 }
 
 export default function AdminDashboard() {

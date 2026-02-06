@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import PlayerLevel from '../components/Gamification/PlayerLevel';
@@ -26,8 +25,8 @@ function DemoPage() {
   const longestStreak = 12;
   const currentStreak = 5;
 
-  const quests: any[] = [];
-  const achievements: any[] = [];
+  const quests: never[] = [];
+  const achievements: never[] = [];
 
   const leaderboardEntries: LeaderboardEntry[] = [
     { rank: 1, username: 'CryptoKing', totalWinnings: 15000, level: 'Platinum' },

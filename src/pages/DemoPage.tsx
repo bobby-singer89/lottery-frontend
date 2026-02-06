@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -50,9 +49,9 @@ function DemoPage() {
   const currentStreak = 5;
   const longestStreak = 12;
 
-  const quests: any[] = [];
+  const quests: never[] = [];
 
-  const achievements: any[] = [];
+  const achievements: never[] = [];
 
   const leaderboardEntries: LeaderboardEntry[] = [
     { rank: 1, username: 'CryptoKing', totalWinnings: 15000, level: 'Platinum' },

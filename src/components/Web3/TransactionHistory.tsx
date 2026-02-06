@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHaptic } from '../../hooks/useHaptic';
@@ -85,8 +84,8 @@ export const TransactionHistory = ({ limit = 20 }: TransactionHistoryProps) => {
   useEffect(() => {
     const saved = localStorage.getItem('transactions');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      setTransactions(parsed.map((tx: any) => ({
+      const parsed = JSON.parse(saved) as Array<Omit<Transaction, 'timestamp'> & { timestamp: string }>;
+      setTransactions(parsed.map((tx) => ({
         ...tx,
         timestamp: new Date(tx.timestamp)
       })));

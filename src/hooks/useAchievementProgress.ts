@@ -1,23 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
-import { gamificationApi } from '../services/gamificationApi';
+import { useAchievements } from './useAchievements';
 
 /**
  * Hook for fetching individual achievement progress
- * Used for tracking specific achievement progress in real-time
+ * Leverages shared achievements data to avoid redundant API calls
+ * 
+ * @param achievementId - Achievement ID or slug to track
+ * @param userId - Optional user ID for fetching achievements
  */
-export function useAchievementProgress(achievementId?: string) {
+export function useAchievementProgress(achievementId?: string, userId?: string) {
+  // Use the shared achievements hook to avoid redundant API calls
+  const { progress, isLoading: isLoadingAll } = useAchievements(userId);
+  
   return useQuery({
     queryKey: ['achievement-progress', achievementId],
-    queryFn: async () => {
+    queryFn: () => {
       if (!achievementId) {
         throw new Error('Achievement ID is required');
       }
       
-      // Get all progress and filter for specific achievement
-      const response = await gamificationApi.getAchievementProgress();
-      const progress = response.progress || [];
-      
-      // Find specific achievement progress
+      // Find specific achievement progress from shared data
       const specificProgress = progress.find(
         p => p.achievement.id === achievementId || p.achievement.slug === achievementId
       );
@@ -28,9 +30,11 @@ export function useAchievementProgress(achievementId?: string) {
       
       return specificProgress;
     },
-    enabled: !!achievementId,
-    staleTime: 30 * 1000, // 30 seconds - refresh more frequently for real-time updates
-    refetchInterval: 60 * 1000, // Auto-refresh every minute when active
+    enabled: !!achievementId && !isLoadingAll && progress.length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes - align with main achievements hook
+    refetchOnWindowFocus: true, // Refresh when user returns to page
+    // Since this uses data from useAchievements, it will automatically update
+    // when the parent query updates
   });
 }
 

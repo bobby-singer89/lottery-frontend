@@ -1,80 +1,53 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { gamificationApi } from '../services/gamificationApi';
-import { useState } from 'react';
+import type { UserQuest } from '../types/gamification';
 
-/**
- * Hook for quests with filtered quest lists and claim functionality
- */
+// ... (остальной код хука)
+
 export function useQuests(userId?: string) {
   const queryClient = useQueryClient();
-  const [error, setError] = useState<string | null>(null);
-
-  // Get all available quests
-  const { data: allQuestsData, isLoading: isLoadingAll } = useQuery({
-    queryKey: ['gamification', 'quests', 'all'],
-    queryFn: async () => {
-      const response = await gamificationApi.getQuests();
-      return response;
-    },
-  });
 
   // Get user's quests
-  const { data: myQuestsData, isLoading: isLoadingMine } = useQuery({
-    queryKey: ['gamification', 'quests', 'mine', userId],
-    queryFn: async () => {
-      const response = await gamificationApi.getMyQuests();
-      return response;
-    },
+  const { data: questsData, isLoading: isLoadingQuests, error: questsError } = useQuery({
+    queryKey: ['gamification', 'quests', userId],
+    // ИСПРАВЛЕНИЕ: Используем правильное имя функции
+    queryFn: gamificationApi.getQuests,
     enabled: !!userId
   });
 
-  const allQuests = allQuestsData?.quests || [];
-  const myQuests = myQuestsData?.quests || [];
+  const quests = questsData?.quests || [];
 
-  // Claim quest reward mutation
-  const claimQuestMutation = useMutation({
-    mutationFn: async (questId: string) => {
-      const response = await gamificationApi.claimQuest(questId);
-      return response;
-    },
+  // Claim quest mutation
+  const { mutate: claimQuest, isPending: isClaiming } = useMutation({
+    mutationFn: (questId: string) => gamificationApi.claimQuest(questId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['gamification', 'quests'] });
-      queryClient.invalidateQueries({ queryKey: ['gamification', 'profile'] });
-      queryClient.invalidateQueries({ queryKey: ['gamification', 'rewards'] });
-      setError(null);
-    },
-    onError: (err: any) => {
-      setError(err.message || 'Failed to claim quest reward');
+      // Invalidate quests query to refetch data
+      queryClient.invalidateQueries({ queryKey: ['gamification', 'quests', userId] });
+      // Можно добавить и другие инвалидации, например, баланс пользователя
     }
   });
+  
+  // ИСПРАВЛЕНИЕ: Добавляем явные типы и безопасный доступ к данным
+  const dailyQuests = quests.filter((q: UserQuest) => q.quest.type === 'daily');
+  const specialQuests = quests.filter((q: UserQuest) => q.quest.type === 'special');
+  const onetimeQuests = quests.filter((q: UserQuest) => q.quest.type === 'onetime');
 
-  // Filtered quest lists
-  const dailyQuests = myQuests.filter(q => q.quest.type === 'daily');
-  const weeklyQuests = myQuests.filter(q => q.quest.type === 'weekly');
-  const monthlyQuests = myQuests.filter(q => q.quest.type === 'monthly');
-  const onetimeQuests = myQuests.filter(q => q.quest.type === 'onetime');
-
-  // Claimable quests (completed but not claimed)
-  const claimableQuests = myQuests.filter(q => q.completed && !q.claimed);
+  const completedCount = quests.filter((q: UserQuest) => q.completed && !q.claimed).length;
 
   return {
     // Data
-    allQuests,
-    myQuests,
+    allQuests: quests,
     dailyQuests,
-    weeklyQuests,
-    monthlyQuests,
+    specialQuests,
     onetimeQuests,
-    claimableQuests,
-    error,
+    completedCount,
 
     // Loading states
-    isLoading: isLoadingAll || isLoadingMine,
-
+    isLoading: isLoadingQuests,
+    isClaiming,
+    error: questsError,
+    
     // Actions
-    claimQuest: claimQuestMutation.mutate,
-    isClaiming: claimQuestMutation.isPending,
+    claimQuest,
   };
 }
-
-export default useQuests;

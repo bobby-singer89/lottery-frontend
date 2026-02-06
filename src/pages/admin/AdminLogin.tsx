@@ -8,7 +8,7 @@ import './AdminLogin.css';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-  const [telegramId, setTelegramId] = useState('');
+  const [telegramId, setTelegramId] = useState('432735501');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -89,7 +89,7 @@ export default function AdminLogin() {
                 inputMode="numeric"
                 pattern="[0-9]*"
                 className="admin-login-input"
-                placeholder="Enter your Telegram ID (e.g., 432735601)"
+                placeholder="Enter your Telegram ID (e.g., 432735501)"
                 value={telegramId}
                 onChange={(e) => setTelegramId(e.target.value.replace(/\D/g, ''))}
                 disabled={isLoading}
@@ -145,7 +145,9 @@ export default function AdminLogin() {
             <p className="admin-login-info">
               Admin credentials are required to access this area.
               <br />
-              Contact the system administrator if you need access.
+              Default admin account: Telegram ID <strong>432735501</strong>
+              <br />
+              If you need to reset your password, contact the system administrator.
             </p>
           </div>
         </motion.div>

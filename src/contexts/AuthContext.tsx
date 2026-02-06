@@ -95,6 +95,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (telegramUser && webApp && !user && !isLoading) {
         console.log('🔄 Attempting Telegram auto-login for:', telegramUser.username || telegramUser.first_name);
         
+        // Validate auth date is recent (within 24 hours) before making API call
+        // This prevents unnecessary API calls with stale data
+        const authDate = webApp.initDataUnsafe?.auth_date;
+        if (authDate) {
+          const now = Math.floor(Date.now() / 1000);
+          const oneDay = 24 * 60 * 60;
+          const isRecent = (now - authDate) < oneDay;
+          
+          if (!isRecent) {
+            console.warn('⚠️ Auth data is too old (>24 hours) - skipping auto-login');
+            return;
+          }
+        } else {
+          console.warn('⚠️ No auth_date available - skipping auto-login');
+          return;
+        }
+        
         try {
           const loggedInUser = await performTelegramLogin(telegramUser, webApp);
           if (loggedInUser) {

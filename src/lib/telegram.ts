@@ -34,7 +34,7 @@ export function initTelegramWebApp(): TelegramWebAppData | null {
   const tg = window.Telegram?.WebApp;
 
   if (!tg) {
-    console.warn('Telegram WebApp not available');
+    console.log('ℹ️ Telegram WebApp not available (running in browser)');
     return null;
   }
 
@@ -43,11 +43,23 @@ export function initTelegramWebApp(): TelegramWebAppData | null {
     tg.ready();
     tg.expand();
 
+    console.log('✅ Telegram WebApp initialized');
+
     // Extract user data
     const rawUser = tg.initDataUnsafe?.user;
     const authDate = tg.initDataUnsafe?.auth_date;
     const hash = tg.initDataUnsafe?.hash;
     const queryId = tg.initDataUnsafe?.query_id;
+
+    if (!rawUser) {
+      console.warn('⚠️ No user data in Telegram WebApp');
+      return {
+        user: null,
+        authDate: null,
+        hash: null,
+        isValid: false,
+      };
+    }
 
     // Build user object with auth data
     const user: TelegramWebAppUser | null = rawUser ? {
@@ -65,12 +77,22 @@ export function initTelegramWebApp(): TelegramWebAppData | null {
     
     const isRecentAuth = authDate ? isAuthDataRecent(authDate) : false;
 
+    const isValid = isValidUser && isRecentAuth && !!hash;
+
+    if (!isValid) {
+      if (!isValidUser) console.warn('⚠️ Invalid user data');
+      if (!isRecentAuth) console.warn('⚠️ Auth data is not recent (>24 hours)');
+      if (!hash) console.warn('⚠️ Missing hash');
+    } else {
+      console.log('✅ Valid Telegram user data:', user?.username || user?.first_name);
+    }
+
     return {
       user,
       authDate: authDate || null,
       hash: hash || null,
       queryId,
-      isValid: isValidUser && isRecentAuth && !!hash,
+      isValid,
     };
   } catch (error) {
     console.error('Failed to initialize Telegram WebApp:', error);

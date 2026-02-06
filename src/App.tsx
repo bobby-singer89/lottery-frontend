@@ -31,6 +31,7 @@ import FAQPage from './pages/FAQPage';
 import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
 import AchievementsPage from './pages/AchievementsPage';
+import NewMainScreen from './pages/MainScreen';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
@@ -222,6 +223,7 @@ function App() {
           {ageConfirmed && (
             <Routes>
               <Route path="/" element={<MainScreen />} />
+              <Route path="/new-design" element={<NewMainScreen />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/demo" element={<DemoPage />} />
               <Route path="/weekend-special" element={<WeekendSpecialPage />} />

@@ -107,7 +107,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           await performTelegramLogin(telegramUser, webApp);
         } catch (error) {
-          // Silent fail - user can manually login if needed
+          // Log errors in development mode only
+          if (import.meta.env.DEV) {
+            console.error('Auto-login failed:', error);
+          }
         }
       }
     };
@@ -125,7 +128,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       await performTelegramLogin(telegramUser, webApp);
     } catch (error) {
-      // Silent fail
+      // Log errors in development mode only
+      if (import.meta.env.DEV) {
+        console.error('Manual login failed:', error);
+      }
     } finally {
       setIsLoading(false);
     }

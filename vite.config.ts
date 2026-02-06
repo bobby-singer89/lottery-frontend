@@ -27,7 +27,7 @@ export default defineConfig({
 
   define: {
     global: 'globalThis',
-    'process.env': '{}',
+    'process.env': JSON.stringify({}),
   },
 
   // Expose environment variables to the client

@@ -68,6 +68,8 @@ export default function AdminTickets() {
     }
   };
 
+  const VALID_STATUSES = new Set(['active', 'won', 'lost']);
+
   const fetchTickets = async () => {
     try {
       setLoading(true);
@@ -76,7 +78,7 @@ export default function AdminTickets() {
         page: pagination.page,
         limit: pagination.limit,
         ticketId: searchQuery || undefined,
-        status: statusFilter === 'active' || statusFilter === 'won' || statusFilter === 'lost' ? statusFilter : undefined,
+        status: VALID_STATUSES.has(statusFilter) ? statusFilter as 'active' | 'won' | 'lost' : undefined,
         lotteryId: selectedLottery ? parseInt(selectedLottery) : undefined,
       });
       

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../../contexts/AuthContext';
 import { adminApiClient } from '../../lib/api/adminClient';
 import './AdminGuard.css';
 
@@ -10,21 +9,18 @@ interface AdminGuardProps {
 }
 
 export default function AdminGuard({ children }: AdminGuardProps) {
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAdminAccess = async () => {
-      // Wait for auth to finish loading
-      if (authLoading) {
-        return;
-      }
-
-      // Redirect to admin login if not authenticated
-      if (!isAuthenticated || !user) {
+      // Check for admin token (NOT regular user auth)
+      const token = localStorage.getItem('auth_token');
+      
+      if (!token) {
         navigate('/admin/login');
+        setIsCheckingAdmin(false);
         return;
       }
 
@@ -35,23 +31,23 @@ export default function AdminGuard({ children }: AdminGuardProps) {
         if (response.success && response.isAdmin) {
           setIsAdmin(true);
         } else {
-          // Not an admin, redirect to home
-          navigate('/');
+          // Not an admin, redirect to admin login
+          navigate('/admin/login');
         }
       } catch (error) {
         console.error('Admin check failed:', error);
-        // On error, redirect to home for security
-        navigate('/');
+        // On error, redirect to admin login for security
+        navigate('/admin/login');
       } finally {
         setIsCheckingAdmin(false);
       }
     };
 
     checkAdminAccess();
-  }, [user, isAuthenticated, authLoading, navigate]);
+  }, [navigate]);
 
   // Show loading state
-  if (authLoading || isCheckingAdmin) {
+  if (isCheckingAdmin) {
     return (
       <div className="admin-guard-loading">
         <motion.div

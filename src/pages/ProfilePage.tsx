@@ -558,6 +558,13 @@ function ProfilePage() {
               >
                 История транзакций →
               </button>
+              
+              <button 
+                className="profile-action-btn"
+                onClick={() => navigate('/settings')}
+              >
+                ⚙️ Настройки →
+              </button>
             </motion.div>
 
             {/* Referral Section */}

@@ -10,3 +10,8 @@ export { useQuests } from './useQuests';
 export { useAchievements } from './useAchievements';
 export { useStreak } from './useStreak';
 export { useRewards } from './useRewards';
+
+// Phase 4: User Profile Integration
+export { useUserStats } from './useUserStats';
+export { useUserHistory } from './useUserHistory';
+export { useUserBalance } from './useUserBalance';

@@ -22,7 +22,32 @@ async function fetchWithAuth<T>(endpoint: string, options: RequestInit = {}): Pr
   const userId = localStorage.getItem('user_id');
   // Also try to get telegramId if user_id is not set
   const telegramId = localStorage.getItem('telegram_id');
-  const userIdentifier = userId || telegramId;
+  // Also check auth_user from apiClient
+  const authUser = localStorage.getItem('auth_user');
+  let userIdentifier = userId || telegramId;
+  
+  // If we still don't have a user identifier, try to get it from auth_user
+  if (!userIdentifier && authUser) {
+    try {
+      const parsedUser = JSON.parse(authUser);
+      userIdentifier = parsedUser.id || parsedUser.telegramId;
+    } catch (e) {
+      console.error('Failed to parse auth_user:', e);
+    }
+  }
+  
+  // Only log in development mode
+  if (import.meta.env.DEV) {
+    console.log('📡 Gamification API Request:', {
+      endpoint,
+      hasToken: !!token,
+      userIdentifier,
+      headers: {
+        'Authorization': token ? 'Bearer ***' : 'NONE',
+        'x-user-id': userIdentifier || 'NONE'
+      }
+    });
+  }
   
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
@@ -36,6 +61,11 @@ async function fetchWithAuth<T>(endpoint: string, options: RequestInit = {}): Pr
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
+    console.error('❌ Gamification API Error:', {
+      endpoint,
+      status: response.status,
+      error
+    });
     throw new Error(error.message || error.error || `API Error: ${response.status}`);
   }
 

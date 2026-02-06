@@ -25,26 +25,23 @@ export function useStreak(userId?: string) {
   const streak = streakData?.streak || null;
 
   // Check-in mutation
-  const checkInMutation = useMutation({
-    mutationFn: async () => {
-      const response = await gamificationApi.checkIn();
-      return response;
-    },
-    onSuccess: (data) => {
-      // Store check-in result for UI feedback
-      setCheckInResult(data.result);
-      
-      // Invalidate queries
-      queryClient.invalidateQueries({ queryKey: ['gamification', 'streak'] });
-      queryClient.invalidateQueries({ queryKey: ['gamification', 'profile'] });
-      queryClient.invalidateQueries({ queryKey: ['gamification', 'quests'] });
-      setError(null);
-    },
-    onError: (err: any) => {
-      setError(err.message || 'Failed to check in');
-      setCheckInResult(null);
-    }
-  });
+const { mutate: checkIn, isPending: isCheckingIn, data: checkInData, error: checkInError } = useMutation({
+  mutationFn: gamificationApi.checkIn,
+  onSuccess: (data) => {
+    // ИСПРАВЛЕНИЕ: API возвращает не `result`, а напрямую данные
+    const { newStreak, xpAwarded } = data;
+    toast.success(`Check-in successful! +${xpAwarded} XP`);
+    
+    // Invalidate queries to refetch fresh data
+    queryClient.invalidateQueries({ queryKey: ['gamification', 'streak'] });
+    queryClient.invalidateQueries({ queryKey: ['gamification', 'profile'] });
+  },
+  onError: (error) => {
+    // You can handle specific errors here if needed
+    console.error("Check-in failed:", error);
+    toast.error("Check-in failed. You may have already checked in today.");
+  }
+});
 
   // Computed values
   const canCheckIn = streak?.canCheckIn || false;

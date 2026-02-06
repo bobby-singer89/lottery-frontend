@@ -9,10 +9,10 @@ export default function Footer() {
   const [profileOpen, setProfileOpen] = useState(false);
 
   const navItems = [
-    { icon: Home, label: 'Главная' },
-    { icon: Archive, label: 'Архив' },
+    { icon: Home, label: 'Главная', action: () => {} },
+    { icon: Archive, label: 'Архив', action: () => {} },
     { icon: User, label: 'Профиль', action: () => setProfileOpen(true) },
-    { icon: Info, label: 'Инфо' },
+    { icon: Info, label: 'Инфо', action: () => {} },
   ];
 
   return (

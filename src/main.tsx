@@ -7,6 +7,7 @@ import App from './App.tsx'
 import './i18n/config'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { LotteryErrorCatcher } from './components/LotteryErrorCatcher'
+import { ThemeProvider } from './context/ThemeContext'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,12 +21,14 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <LotteryErrorCatcher fallbackMessage="We encountered an issue loading the lottery app. Please try again.">
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </QueryClientProvider>
-    </LotteryErrorCatcher>
+    <ThemeProvider>
+      <LotteryErrorCatcher fallbackMessage="We encountered an issue loading the lottery app. Please try again.">
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </QueryClientProvider>
+      </LotteryErrorCatcher>
+    </ThemeProvider>
   </StrictMode>,
 )

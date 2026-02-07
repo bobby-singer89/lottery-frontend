@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Home, Ticket, Clock, User, Gift, ShieldCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 interface FooterProps {
@@ -50,6 +51,13 @@ function Footer({ activeTab = 'home', onTabChange }: FooterProps) {
             )}
           </motion.button>
         ))}
+      </div>
+      
+      {/* Legal Links */}
+      <div className="footer-legal">
+        <Link to="/terms" className="footer-legal-link">Условия</Link>
+        <span className="footer-legal-divider">•</span>
+        <Link to="/privacy" className="footer-legal-link">Конфиденциальность</Link>
       </div>
     </motion.footer>
   );

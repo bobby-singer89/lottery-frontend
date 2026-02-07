@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { motion } from 'framer-motion';
+import * as Sentry from '@sentry/react';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Hero from './components/Hero/Hero';
@@ -219,37 +220,75 @@ function App() {
       <AuthProvider>
         <WalletConnectionHandler />
         <SoundProvider>
-          {!ageConfirmed && <AgeGate onConfirm={handleAgeConfirm} />}
-          {ageConfirmed && (
-            <Routes>
-              <Route path="/" element={<MainScreen />} />
-              <Route path="/new-design" element={<NewMainScreen />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/demo" element={<DemoPage />} />
-              <Route path="/weekend-special" element={<WeekendSpecialPage />} />
-              <Route path="/lottery/:slug" element={<LotteryDetailPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/achievements" element={<AchievementsPage />} />
-              <Route path="/lotteries" element={<LotteriesPage />} />
-              <Route path="/history" element={<TransactionHistoryPage />} />
-              <Route path="/referral" element={<ReferralPage />} />
-              <Route path="/swap" element={<SwapPage />} />
-              <Route path="/my-tickets" element={<MyTicketsPage />} />
-              <Route path="/verify-draw/:drawId" element={<VerifyDrawPage />} />
-              <Route path="/verify/:ticketId?" element={<VerificationPage />} />
-              <Route path="/draw/:drawId/results" element={<DrawResultsPage />} />
-              <Route path="/faq" element={<FAQPage />} />
-              {/* Admin Routes */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-              <Route path="/admin/users" element={<AdminGuard><AdminUsers /></AdminGuard>} />
-              <Route path="/admin/lotteries" element={<AdminGuard><AdminLotteries /></AdminGuard>} />
-              <Route path="/admin/draws" element={<AdminGuard><AdminDraws /></AdminGuard>} />
-              <Route path="/admin/tickets" element={<AdminGuard><AdminTickets /></AdminGuard>} />
-              <Route path="/admin/notifications" element={<AdminGuard><AdminNotifications /></AdminGuard>} />
-            </Routes>
-          )}
+          <Sentry.ErrorBoundary
+            fallback={({ resetError }) => (
+              <div style={{
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#0a0a0f',
+                color: 'white',
+                padding: '20px',
+                textAlign: 'center'
+              }}>
+                <h1 style={{ fontSize: '24px', marginBottom: '16px' }}>😕 Что-то пошло не так</h1>
+                <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '24px' }}>
+                  Произошла непредвиденная ошибка. Мы уже работаем над её исправлением.
+                </p>
+                <button
+                  onClick={resetError}
+                  style={{
+                    background: 'linear-gradient(135deg, #df600c, #f45da6)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '12px 24px',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Попробовать снова
+                </button>
+              </div>
+            )}
+            onError={(error) => {
+              console.error('Caught by Sentry ErrorBoundary:', error);
+            }}
+          >
+            {!ageConfirmed && <AgeGate onConfirm={handleAgeConfirm} />}
+            {ageConfirmed && (
+              <Routes>
+                <Route path="/" element={<MainScreen />} />
+                <Route path="/new-design" element={<NewMainScreen />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/demo" element={<DemoPage />} />
+                <Route path="/weekend-special" element={<WeekendSpecialPage />} />
+                <Route path="/lottery/:slug" element={<LotteryDetailPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/achievements" element={<AchievementsPage />} />
+                <Route path="/lotteries" element={<LotteriesPage />} />
+                <Route path="/history" element={<TransactionHistoryPage />} />
+                <Route path="/referral" element={<ReferralPage />} />
+                <Route path="/swap" element={<SwapPage />} />
+                <Route path="/my-tickets" element={<MyTicketsPage />} />
+                <Route path="/verify-draw/:drawId" element={<VerifyDrawPage />} />
+                <Route path="/verify/:ticketId?" element={<VerificationPage />} />
+                <Route path="/draw/:drawId/results" element={<DrawResultsPage />} />
+                <Route path="/faq" element={<FAQPage />} />
+                {/* Admin Routes */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+                <Route path="/admin/users" element={<AdminGuard><AdminUsers /></AdminGuard>} />
+                <Route path="/admin/lotteries" element={<AdminGuard><AdminLotteries /></AdminGuard>} />
+                <Route path="/admin/draws" element={<AdminGuard><AdminDraws /></AdminGuard>} />
+                <Route path="/admin/tickets" element={<AdminGuard><AdminTickets /></AdminGuard>} />
+                <Route path="/admin/notifications" element={<AdminGuard><AdminNotifications /></AdminGuard>} />
+              </Routes>
+            )}
+          </Sentry.ErrorBoundary>
           {/* DevTools Panel - Only in Development */}
           <DevToolsPanel />
         </SoundProvider>

@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Particles from 'react-particles';
 import { loadSlim } from 'tsparticles-slim';
+import type { Engine } from 'tsparticles-engine';
 import { Settings, Home, Archive, User, HelpCircle, MoreHorizontal } from 'lucide-react';
 
 // Типы
@@ -74,8 +75,10 @@ export default function NewMainScreen() {
   const [currency, setCurrency] = useState<Currency>('TON');
   const [category, setCategory] = useState<LotteryCategory>('draw');
   const [activeCardIndex, setActiveCardIndex] = useState(2);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const touchStartXRef = useRef<number>(0);
 
-  const particlesInit = async (engine: unknown) => {
+  const particlesInit = async (engine: Engine) => {
     await loadSlim(engine);
   };
 
@@ -110,6 +113,19 @@ export default function NewMainScreen() {
       setActiveCardIndex(prev => prev + 1);
     } else if (direction === 'right' && activeCardIndex > 0) {
       setActiveCardIndex(prev => prev - 1);
+    }
+  };
+
+  // Touch event handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartXRef.current - touchEndX;
+    if (Math.abs(diff) > 50) {
+      handleSwipe(diff > 0 ? 'left' : 'right');
     }
   };
 
@@ -202,19 +218,10 @@ export default function NewMainScreen() {
 
         {/* Карточки лотерей - 3D карусель */}
         <div 
+          ref={carouselRef}
           className="relative h-[450px] flex items-center justify-center perspective-1000"
-          onTouchStart={(e) => {
-            const touchStartX = e.touches[0].clientX;
-            const handleTouchEnd = (endEvent: TouchEvent) => {
-              const touchEndX = endEvent.changedTouches[0].clientX;
-              const diff = touchStartX - touchEndX;
-              if (Math.abs(diff) > 50) {
-                handleSwipe(diff > 0 ? 'left' : 'right');
-              }
-              document.removeEventListener('touchend', handleTouchEnd);
-            };
-            document.addEventListener('touchend', handleTouchEnd);
-          }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           {currentCards.map((card, index) => {
             const offset = index - activeCardIndex;

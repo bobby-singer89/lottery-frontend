@@ -55,9 +55,9 @@ function Footer({ activeTab = 'home', onTabChange }: FooterProps) {
       
       {/* Legal Links */}
       <div className="footer-legal">
-        <Link to="/terms" className="footer-legal-link">Условия</Link>
+        <Link to="/terms" className="footer-legal-link" aria-label="Условия использования">Условия</Link>
         <span className="footer-legal-divider">•</span>
-        <Link to="/privacy" className="footer-legal-link">Конфиденциальность</Link>
+        <Link to="/privacy" className="footer-legal-link" aria-label="Политика конфиденциальности">Конфиденциальность</Link>
       </div>
     </motion.footer>
   );

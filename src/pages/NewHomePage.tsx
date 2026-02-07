@@ -4,7 +4,7 @@ import NewHeader from '../components/NewDesign/NewHeader';
 import LotteryTabs from '../components/NewDesign/LotteryTabs';
 import LotteryCarousel from '../components/NewDesign/LotteryCarousel';
 import BottomNavigation from '../components/NewDesign/BottomNavigation';
-import { LotteryCardData } from '../components/NewDesign/LotteryCard';
+import { type LotteryCardData } from '../components/NewDesign/LotteryCard';
 import './NewHomePage.css';
 
 const mockLotteries: LotteryCardData[] = [

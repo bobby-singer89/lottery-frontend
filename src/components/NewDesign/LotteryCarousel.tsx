@@ -1,7 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
-import LotteryCard, { LotteryCardData } from './LotteryCard';
+import LotteryCard, { type LotteryCardData } from './LotteryCard';
 import './LotteryCarousel.css';
 
 interface LotteryCarouselProps {
@@ -10,8 +9,6 @@ interface LotteryCarouselProps {
 
 const LotteryCarousel: React.FC<LotteryCarouselProps> = ({ lotteries }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
 
   const handleSwipe = (direction: 'left' | 'right') => {
     if (direction === 'left' && currentIndex < lotteries.length - 1) {
@@ -59,8 +56,7 @@ const LotteryCarousel: React.FC<LotteryCarouselProps> = ({ lotteries }) => {
       </div>
 
       <div 
-        className="lottery-carousel" 
-        ref={containerRef}
+        className="lottery-carousel"
         {...swipeHandlers}
       >
         {lotteries.map((lottery, index) => (

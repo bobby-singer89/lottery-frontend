@@ -1,0 +1,117 @@
+.lottery-card {
+  position: relative;
+  width: 280px;
+  height: 360px;
+  border-radius: 24px;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.lottery-card.center {
+  transform: scale(1.05);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+.card-logo {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 2rem;
+  color: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.card-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  margin: 1rem 0;
+  line-height: 1.3;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card-jackpot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.jackpot-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+}
+
+.jackpot-amount {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  line-height: 1;
+}
+
+.card-draw-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+}
+
+.draw-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: capitalize;
+}
+
+.draw-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+}
+
+@media (max-width: 375px) {
+  .lottery-card {
+    width: 260px;
+    height: 340px;
+    padding: 1.75rem 1.25rem;
+  }
+  
+  .card-logo {
+    width: 48px;
+    height: 48px;
+    font-size: 1.75rem;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+  }
+  
+  .jackpot-amount {
+    font-size: 2.25rem;
+  }
+}

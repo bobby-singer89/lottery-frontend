@@ -13,6 +13,19 @@
   --neon: #a78bfa;
   --neon-rgb: 167, 139, 250;
   --bg-gradient: linear-gradient(135deg, #1a0033, #33001a);
+  
+  /* New Premium Design Variables */
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #1a1a2e;
+  --accent-blue: #06b6d4;
+  --accent-purple: #8b5cf6;
+  --accent-pink: #ec4899;
+  --accent-teal: #14b8a6;
+  --accent-green: #22c55e;
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="new-year"] {

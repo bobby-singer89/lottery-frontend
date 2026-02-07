@@ -1,3 +1,7 @@
+// Sentry должен быть первым!
+import { initSentry } from './lib/sentry';
+initSentry();
+
 import './polyfills'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

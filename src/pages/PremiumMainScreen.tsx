@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import Particles from 'react-particles';
 import { loadSlim } from 'tsparticles-slim';
 import type { Engine } from 'tsparticles-engine';
@@ -85,7 +85,7 @@ function PremiumMainScreen() {
         value: ['#a78bfa', '#ec4899', '#d8b4fe', '#c084fc'] 
       },
       shape: { 
-        type: ['circle', 'star'] as any,
+        type: ['circle', 'star'],
         star: { 
           sides: 5, 
           inset: 2 
@@ -102,11 +102,11 @@ function PremiumMainScreen() {
       move: {
         enable: true,
         speed: 0.8,
-        direction: 'bottom' as any,
+        direction: 'bottom',
         random: true,
         straight: false,
         outModes: { 
-          default: 'out' as any
+          default: 'out'
         },
       },
       shadow: {
@@ -116,7 +116,7 @@ function PremiumMainScreen() {
       },
     },
     detectRetina: true,
-  };
+  } as const;
 
   // Calculate card position and transform
   const getCardStyle = (index: number) => {

@@ -1,0 +1,534 @@
+/* ============================================
+   PREMIUM WEEKEND MILLIONS - MAIN STYLES
+   ============================================ */
+
+/* ===== GENERAL LAYOUT ===== */
+.premium-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ===== BACKGROUND LAYERS ===== */
+.premium-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.premium-bg-layer-1 {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0a0014 0%, #1a0033 100%);
+  z-index: 1;
+}
+
+.premium-bg-layer-2 {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, #2d1b4e 0%, transparent 70%);
+  opacity: 0.85;
+  z-index: 2;
+}
+
+.premium-bg-layer-3 {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.5) 100%);
+  z-index: 3;
+}
+
+/* ===== PARTICLES CONTAINER ===== */
+.premium-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* ===== HEADER ===== */
+.premium-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.premium-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.premium-logo-icon {
+  width: 42px;
+  height: 42px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  border: 1.5px solid #a78bfa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.premium-logo-text {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #d8b4fe, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 8px rgba(167, 139, 250, 0.6));
+  white-space: nowrap;
+}
+
+.premium-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.premium-header-icon {
+  width: 28px;
+  height: 28px;
+  color: #a78bfa;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.premium-header-icon:hover {
+  color: #d8b4fe;
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 12px rgba(167, 139, 250, 0.8));
+}
+
+/* ===== MAIN CONTENT ===== */
+.premium-content {
+  position: relative;
+  z-index: 10;
+  padding-top: 64px;
+  padding-bottom: 90px;
+  min-height: 100vh;
+}
+
+/* ===== TABS SECTION ===== */
+.premium-tabs-section {
+  display: flex;
+  justify-content: center;
+  padding: 32px 20px;
+}
+
+.premium-tabs-container {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 32px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  gap: 4px;
+}
+
+.premium-tab {
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #d1d5db;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  white-space: nowrap;
+}
+
+.premium-tab:hover {
+  color: white;
+}
+
+.premium-tab.active {
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  color: white;
+  box-shadow: 0 4px 20px rgba(167, 139, 250, 0.7);
+}
+
+/* ===== CAROUSEL SECTION ===== */
+.premium-carousel-section {
+  position: relative;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+  overflow: visible;
+  padding: 40px 20px;
+}
+
+.premium-carousel-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== LOTTERY CARDS ===== */
+.premium-lottery-card {
+  position: absolute;
+  width: 260px;
+  height: 380px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32px 24px;
+}
+
+/* Card Gradient Overlay */
+.premium-lottery-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, var(--card-color-20) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Card Content */
+.premium-card-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Active (Center) Card */
+.premium-lottery-card.active {
+  transform: scale(1.12);
+  z-index: 10;
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.6),
+    0 0 48px var(--card-glow);
+}
+
+/* Side Cards */
+.premium-lottery-card.side {
+  z-index: 5;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 24px var(--card-glow-dim);
+}
+
+/* Outer Cards */
+.premium-lottery-card.outer {
+  z-index: 3;
+  opacity: 0.7;
+}
+
+/* ===== CARD LOGO ===== */
+.premium-card-logo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, transparent 0%, var(--card-color) 80%);
+  box-shadow: 
+    inset 0 4px 12px rgba(0, 0, 0, 0.4),
+    0 0 30px var(--card-color-70);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.premium-card-logo span {
+  font-size: 48px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 20px var(--card-color);
+}
+
+/* ===== CARD TEXT ===== */
+.premium-card-title {
+  font-size: 26px;
+  font-weight: bold;
+  background: linear-gradient(90deg, white, var(--card-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 8px var(--card-color-60));
+  text-align: center;
+  margin: 0;
+}
+
+.premium-card-format {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  margin: 0;
+}
+
+.premium-card-jackpot-label {
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #d1d5db;
+  letter-spacing: 2px;
+  text-align: center;
+  margin: 8px 0 0;
+}
+
+.premium-card-jackpot {
+  font-size: 40px;
+  font-weight: bold;
+  color: var(--card-color);
+  text-shadow: 0 0 20px var(--card-color-50);
+  text-align: center;
+  margin: 4px 0;
+}
+
+.premium-card-date {
+  font-size: 16px;
+  color: #d1d5db;
+  text-align: center;
+  margin: 0;
+}
+
+/* ===== FOOTER ===== */
+.premium-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  z-index: 50;
+}
+
+.premium-footer-left,
+.premium-footer-right {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.premium-footer-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #a78bfa;
+  font-size: 10px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.premium-footer-button svg {
+  width: 28px;
+  height: 28px;
+}
+
+.premium-footer-button:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 12px rgba(167, 139, 250, 0.8));
+  color: #d8b4fe;
+}
+
+/* ===== PROFILE BUTTON (CENTER) ===== */
+.premium-profile-button {
+  position: absolute;
+  top: -42px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  border: 2px solid rgba(167, 139, 250, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 40px rgba(167, 139, 250, 0.8);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.premium-profile-button svg {
+  width: 38px;
+  height: 38px;
+  color: white;
+}
+
+.premium-profile-button:hover {
+  transform: translateX(-50%) scale(1.1);
+  box-shadow: 0 0 60px rgba(167, 139, 250, 0.9);
+}
+
+/* ===== CARD COLOR VARIANTS ===== */
+.premium-lottery-card.purple {
+  --card-color: #a78bfa;
+  --card-color-20: rgba(167, 139, 250, 0.2);
+  --card-color-50: rgba(167, 139, 250, 0.5);
+  --card-color-60: rgba(167, 139, 250, 0.6);
+  --card-color-70: rgba(167, 139, 250, 0.7);
+  --card-glow: rgba(167, 139, 250, 0.6);
+  --card-glow-dim: rgba(167, 139, 250, 0.3);
+}
+
+.premium-lottery-card.pink {
+  --card-color: #ec4899;
+  --card-color-20: rgba(236, 72, 153, 0.2);
+  --card-color-50: rgba(236, 72, 153, 0.5);
+  --card-color-60: rgba(236, 72, 153, 0.6);
+  --card-color-70: rgba(236, 72, 153, 0.7);
+  --card-glow: rgba(236, 72, 153, 0.6);
+  --card-glow-dim: rgba(236, 72, 153, 0.3);
+}
+
+.premium-lottery-card.gold {
+  --card-color: #eab308;
+  --card-color-20: rgba(234, 179, 8, 0.2);
+  --card-color-50: rgba(234, 179, 8, 0.5);
+  --card-color-60: rgba(234, 179, 8, 0.6);
+  --card-color-70: rgba(234, 179, 8, 0.7);
+  --card-glow: rgba(234, 179, 8, 0.6);
+  --card-glow-dim: rgba(234, 179, 8, 0.3);
+}
+
+.premium-lottery-card.green {
+  --card-color: #22c55e;
+  --card-color-20: rgba(34, 197, 94, 0.2);
+  --card-color-50: rgba(34, 197, 94, 0.5);
+  --card-color-60: rgba(34, 197, 94, 0.6);
+  --card-color-70: rgba(34, 197, 94, 0.7);
+  --card-glow: rgba(34, 197, 94, 0.6);
+  --card-glow-dim: rgba(34, 197, 94, 0.3);
+}
+
+.premium-lottery-card.cyan {
+  --card-color: #06b6d4;
+  --card-color-20: rgba(6, 182, 212, 0.2);
+  --card-color-50: rgba(6, 182, 212, 0.5);
+  --card-color-60: rgba(6, 182, 212, 0.6);
+  --card-color-70: rgba(6, 182, 212, 0.7);
+  --card-glow: rgba(6, 182, 212, 0.6);
+  --card-glow-dim: rgba(6, 182, 212, 0.3);
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+  .premium-logo-text {
+    font-size: 18px;
+  }
+  
+  .premium-tabs-container {
+    padding: 6px;
+  }
+  
+  .premium-tab {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+  
+  .premium-footer-left,
+  .premium-footer-right {
+    gap: 24px;
+  }
+  
+  .premium-footer {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .premium-logo-text {
+    font-size: 16px;
+  }
+  
+  .premium-header {
+    padding: 0 16px;
+  }
+  
+  .premium-tab {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+  
+  .premium-lottery-card {
+    width: 240px;
+    height: 350px;
+  }
+  
+  .premium-card-logo {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .premium-card-logo span {
+    font-size: 40px;
+  }
+  
+  .premium-card-title {
+    font-size: 22px;
+  }
+  
+  .premium-card-format {
+    font-size: 18px;
+  }
+  
+  .premium-card-jackpot {
+    font-size: 34px;
+  }
+  
+  .premium-footer-left,
+  .premium-footer-right {
+    gap: 20px;
+  }
+  
+  .premium-footer {
+    padding: 0 16px;
+  }
+}

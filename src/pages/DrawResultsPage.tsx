@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trophy, Calendar, Users, DollarSign, CheckCircle2, ExternalLink } from 'lucide-react';
@@ -33,12 +33,7 @@ export default function DrawResultsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchDrawResults();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [drawId]);
-
-  const fetchDrawResults = async () => {
+  const fetchDrawResults = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -58,7 +53,11 @@ export default function DrawResultsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [drawId]);
+
+  useEffect(() => {
+    fetchDrawResults();
+  }, [fetchDrawResults]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

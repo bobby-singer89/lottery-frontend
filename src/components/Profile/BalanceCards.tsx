@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTonWallet, useTonAddress } from '@tonconnect/ui-react';
 import { getWalletBalance } from '../../lib/api/wallet';
 import { getUserBalance } from '../../lib/api/user';
@@ -11,12 +11,7 @@ export default function BalanceCards() {
   const [appBalance, setAppBalance] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadBalances();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet, address]);
-
-  async function loadBalances() {
+  const loadBalances = useCallback(async () => {
     setLoading(true);
     try {
       // Get app balance (winnings)
@@ -35,7 +30,11 @@ export default function BalanceCards() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [address]);
+
+  useEffect(() => {
+    loadBalances();
+  }, [loadBalances]);
 
   function formatAddress(addr: string): string {
     if (!addr || addr.length < 8) return addr;

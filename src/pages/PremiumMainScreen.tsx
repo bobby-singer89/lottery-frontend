@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import Particles from 'react-particles';
 import { loadSlim } from 'tsparticles-slim';
 import type { Engine } from 'tsparticles-engine';
+import type { ISourceOptions } from 'tsparticles-engine';
 import { 
   Settings, 
   Info, 
@@ -72,7 +73,7 @@ function PremiumMainScreen() {
   }, []);
 
   // Particles configuration
-  const particlesOptions = {
+  const particlesOptions: ISourceOptions = {
     particles: {
       number: { 
         value: 120, 
@@ -85,11 +86,7 @@ function PremiumMainScreen() {
         value: ['#a78bfa', '#ec4899', '#d8b4fe', '#c084fc'] 
       },
       shape: { 
-        type: ['circle', 'star'],
-        star: { 
-          sides: 5, 
-          inset: 2 
-        }
+        type: 'circle'
       },
       opacity: { 
         value: { min: 0.3, max: 0.8 },
@@ -116,7 +113,7 @@ function PremiumMainScreen() {
       },
     },
     detectRetina: true,
-  } as const;
+  };
 
   // Calculate card position and transform
   const getCardStyle = (index: number) => {

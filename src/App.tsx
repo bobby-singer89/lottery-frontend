@@ -32,6 +32,7 @@ import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
 import AchievementsPage from './pages/AchievementsPage';
 import NewMainScreen from './pages/MainScreen';
+import PremiumMainScreen from './pages/NewMainScreen';
 import { AuthProvider } from './contexts/AuthContext';
 import { SoundProvider } from './components/Advanced/SoundManager';
 import { WalletConnectionHandler } from './components/WalletConnectionHandler';
@@ -224,6 +225,7 @@ function App() {
             <Routes>
               <Route path="/" element={<MainScreen />} />
               <Route path="/new-design" element={<NewMainScreen />} />
+              <Route path="/new-home" element={<PremiumMainScreen />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/demo" element={<DemoPage />} />
               <Route path="/weekend-special" element={<WeekendSpecialPage />} />

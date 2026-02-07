@@ -31,6 +31,8 @@ import VerificationPage from './pages/VerificationPage';
 import FAQPage from './pages/FAQPage';
 import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 import AchievementsPage from './pages/AchievementsPage';
 import NewMainScreen from './pages/MainScreen';
 import { AuthProvider } from './contexts/AuthContext';
@@ -278,6 +280,8 @@ function App() {
                 <Route path="/verify/:ticketId?" element={<VerificationPage />} />
                 <Route path="/draw/:drawId/results" element={<DrawResultsPage />} />
                 <Route path="/faq" element={<FAQPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />

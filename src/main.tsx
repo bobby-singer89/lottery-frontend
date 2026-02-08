@@ -6,6 +6,18 @@ initSentry();
 import { initPostHog } from './lib/posthog';
 initPostHog();
 
+// Initialize UTM tracking
+import { initUTMTracking } from './lib/utm';
+import { trackMarketingAttribution } from './lib/marketing';
+
+const utmParams = initUTMTracking();
+if (Object.keys(utmParams).length > 0) {
+  console.log('UTM params detected:', utmParams);
+}
+
+// Track marketing attribution on first load
+trackMarketingAttribution();
+
 import './polyfills'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

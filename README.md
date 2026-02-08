@@ -91,6 +91,53 @@ src/
 - `level_up`
 - `referral_link_copied` / `referral_link_shared`
 
+## 📢 Marketing & UTM Tracking
+
+### UTM Параметры
+
+Приложение автоматически отслеживает UTM параметры из URL:
+
+| Параметр | Описание | Пример |
+|----------|----------|--------|
+| `utm_source` | Источник трафика | telegram, twitter, facebook |
+| `utm_medium` | Канал | cpc, social, email, referral |
+| `utm_campaign` | Название кампании | launch_2026, promo_feb |
+| `utm_content` | Вариант контента | button_blue, banner_v2 |
+| `utm_term` | Ключевое слово | lottery, crypto |
+| `ref` | Реферальный код | abc123 |
+
+### Примеры ссылок для кампаний
+
+**Telegram канал:**
+```
+https://t.me/your_bot?start=ref_CODE&utm_source=telegram&utm_medium=social&utm_campaign=launch
+```
+
+**Telegram Ads:**
+```
+https://t.me/your_bot?start=ref_CODE&utm_source=telegram&utm_medium=cpc&utm_campaign=feb_promo
+```
+
+**Twitter:**
+```
+https://t.me/your_bot?start=ref_CODE&utm_source=twitter&utm_medium=social&utm_campaign=giveaway
+```
+
+### Конверсии
+
+Отслеживаемые конверсии:
+- `conversion_signup` — Регистрация
+- `conversion_first_purchase` — Первая покупка
+- `conversion_deposit` — Первый депозит
+- `conversion_referral_signup` — Регистрация по реферальной ссылке
+
+### Интеграция с PostHog
+
+Все UTM данные автоматически отправляются в PostHog и доступны в:
+- **Insights** → фильтр по `utm_source`, `utm_campaign`
+- **Funnels** → анализ конверсий по каналам
+- **Retention** → retention по источникам
+
 ## 📄 Документация
 
 - [Setup Guide](./SETUP_GUIDE.md) — Инструкция по настройке

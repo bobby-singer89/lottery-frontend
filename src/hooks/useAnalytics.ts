@@ -7,10 +7,10 @@ export const useAnalytics = () => {
   const { utmParams, getForAnalytics } = useUTM();
 
   const track = useCallback((eventName: string, properties?: Record<string, unknown>) => {
-    // Автоматически добавляем UTM параметры к каждому событию
+    // Automatically add UTM parameters to each event
     trackEvent(eventName, {
-      ...properties,
       ...getForAnalytics(),
+      ...properties,
     });
   }, [getForAnalytics]);
 

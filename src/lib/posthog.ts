@@ -13,8 +13,8 @@ export const initPostHog = () => {
 
   posthog.init(POSTHOG_KEY, {
     api_host: POSTHOG_HOST,
-    // Capture pageviews automatically
-    capture_pageview: true,
+    // Capture pageviews manually via AnalyticsProvider
+    capture_pageview: false,
     // Capture pageleaves
     capture_pageleave: true,
     // Enable session recording (optional)

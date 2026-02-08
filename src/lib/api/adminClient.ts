@@ -81,13 +81,13 @@ class AdminApiClient {
   }
 
   // Check if current user is admin
-  async checkAdminStatus() {
-    return this.request<{
-      success: boolean;
-      isAdmin: boolean;
-      role?: string;
-    }>('/api/admin/check');
-  }
+async checkAdminStatus() {
+  return this.request<{
+    success: boolean;
+    isAdmin: boolean;
+    role?: string;
+  }>('/admin/auth/check');  // ✅ ПРАВИЛЬНО
+}
 
   // Dashboard statistics
   async getStats() {

@@ -43,7 +43,7 @@ export async function adminLogin(telegramId: string, password: string): Promise<
     }
 
     // Call the new admin auth endpoint with password
-    const authResponse = await fetch(`${API_BASE_URL}/api/admin/auth/login`, {
+    const authResponse = await fetch(`${API_BASE_URL}admin/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

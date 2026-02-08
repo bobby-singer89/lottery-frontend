@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { UTMParams, initUTMTracking, getStoredUTMParams, getUTMForAnalytics } from '@/lib/utm';
+import type { UTMParams } from '@/lib/utm';
+import { initUTMTracking, getStoredUTMParams, getUTMForAnalytics } from '@/lib/utm';
 
 /**
  * React hook для работы с UTM параметрами

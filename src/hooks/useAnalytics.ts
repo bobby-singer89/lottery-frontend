@@ -6,7 +6,7 @@ import { useUTM } from './useUTM';
 export const useAnalytics = () => {
   const { utmParams, getForAnalytics } = useUTM();
 
-  const track = useCallback((eventName: string, properties?: Record<string, any>) => {
+  const track = useCallback((eventName: string, properties?: Record<string, unknown>) => {
     // Автоматически добавляем UTM параметры к каждому событию
     trackEvent(eventName, {
       ...properties,

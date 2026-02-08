@@ -27,7 +27,7 @@ export const trackMarketingAttribution = () => {
 export const trackConversion = (
   conversionType: 'signup' | 'first_purchase' | 'deposit' | 'referral_signup',
   value?: number,
-  additionalProps?: Record<string, any>
+  additionalProps?: Record<string, unknown>
 ) => {
   const utmParams = getUTMForAnalytics();
 
@@ -44,7 +44,7 @@ export const trackConversion = (
 export const trackCampaignEvent = (
   eventName: string,
   campaignId?: string,
-  props?: Record<string, any>
+  props?: Record<string, unknown>
 ) => {
   const utmParams = getUTMForAnalytics();
 
@@ -60,7 +60,7 @@ export const trackCampaignEvent = (
  */
 export const identifyWithMarketing = (
   userId: string | number,
-  userProps?: Record<string, any>
+  userProps?: Record<string, unknown>
 ) => {
   const utmParams = getUTMForAnalytics();
 

@@ -43,7 +43,7 @@ VITE_APP_URL="http://localhost:5173"
 | Web3 | TON Connect, @ton/core |
 | State | TanStack Query, React Context |
 | i18n | i18next |
-| Мониторинг | Sentry |
+| Мониторинг | Sentry, PostHog |
 
 ## 🏗️ Структура проекта
 
@@ -63,6 +63,33 @@ src/
 ## 🔗 Связанные репозитории
 
 - [lottery-backend](https://github.com/bobby-singer89/lottery-backend) — Backend API
+
+## 📊 Analytics
+
+Проект использует PostHog для product analytics.
+
+### Настройка
+
+1. Создай аккаунт на [PostHog](https://posthog.com)
+2. Создай проект
+3. Скопируй Project API Key
+4. Добавь в `.env`:
+   ```env
+   VITE_POSTHOG_KEY=phc_your_key_here
+   VITE_POSTHOG_HOST=https://eu.posthog.com
+   ```
+
+### Отслеживаемые события
+
+- `user_login` / `user_logout`
+- `lottery_viewed`
+- `numbers_selected`
+- `purchase_started` / `purchase_completed` / `purchase_failed`
+- `wallet_connected` / `wallet_disconnected`
+- `draw_viewed` / `draw_verified`
+- `achievement_unlocked`
+- `level_up`
+- `referral_link_copied` / `referral_link_shared`
 
 ## 📄 Документация
 

@@ -2,6 +2,10 @@
 import { initSentry } from './lib/sentry';
 initSentry();
 
+// Initialize PostHog analytics
+import { initPostHog } from './lib/posthog';
+initPostHog();
+
 import './polyfills'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
